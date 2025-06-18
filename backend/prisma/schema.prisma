@@ -1,0 +1,125 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("admins")
+}
+
+model Revenda {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  password     String?
+  webhookToken String   @unique @default(cuid())
+  externalId   String?  @unique // ID do sistema externo
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relacionamentos
+  produtos Produto[]
+  webhooks Webhook[]
+
+  @@map("revendas")
+}
+
+model Produto {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  price       Decimal  @db.Decimal(10, 2)
+  active      Boolean  @default(true)
+  externalId  String? // ID do produto no sistema externo
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relacionamentos
+  revendaId String
+  revenda   Revenda   @relation(fields: [revendaId], references: [id], onDelete: Cascade)
+  webhooks  Webhook[]
+
+  @@map("produtos")
+}
+
+model Webhook {
+  id           String        @id @default(cuid())
+  event        String // Tipo do evento (PAYMENT_CREATED, PAYMENT_UPDATED, etc.)
+  status       WebhookStatus @default(PENDING)
+  payload      Json // Dados completos do webhook
+  signature    String? // Assinatura do webhook para validação
+  processedAt  DateTime? // Quando foi processado
+  retryCount   Int           @default(0)
+  maxRetries   Int           @default(3)
+  errorMessage String? // Mensagem de erro se houver falha
+  externalId   String? // ID da transação/cobrança no Asaas
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  // Relacionamentos
+  revendaId String
+  revenda   Revenda @relation(fields: [revendaId], references: [id], onDelete: Cascade)
+
+  produtoId String?
+  produto   Produto? @relation(fields: [produtoId], references: [id], onDelete: SetNull)
+
+  // Logs de processamento
+  logs WebhookLog[]
+
+  @@map("webhooks")
+}
+
+model WebhookLog {
+  id        String   @id @default(cuid())
+  level     LogLevel @default(INFO)
+  message   String
+  details   Json? // Detalhes adicionais do log
+  createdAt DateTime @default(now())
+
+  // Relacionamento
+  webhookId String
+  webhook   Webhook @relation(fields: [webhookId], references: [id], onDelete: Cascade)
+
+  @@map("webhook_logs")
+}
+
+// Enums
+enum WebhookStatus {
+  PENDING // Aguardando processamento
+  PROCESSING // Em processamento
+  SUCCESS // Processado com sucesso
+  FAILED // Falha no processamento
+  RETRY // Aguardando retry
+  DEAD_LETTER // Falha definitiva (excedeu max retries)
+
+  @@map("webhook_status")
+}
+
+enum LogLevel {
+  DEBUG
+  INFO
+  WARN
+  ERROR
+
+  @@map("log_level")
+}
