@@ -1,0 +1,59 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: dashboard-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: dashboard_user
+      POSTGRES_PASSWORD: dashboard_pass
+      POSTGRES_DB: dashboard_webhooks_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    networks:
+      - dashboard-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dashboard -d dashboard_webhooks_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:8-alpine
+    container_name: dashboard-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
+    networks:
+      - dashboard-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: dashboard-redis-ui
+    restart: unless-stopped
+    environment:
+      REDIS_HOSTS: local:redis:6379
+    ports:
+      - "8081:8081"
+    depends_on:
+      - redis
+    networks:
+      - dashboard-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  dashboard-network:
+    driver: bridge
