@@ -10,11 +10,16 @@ import {
 import ENV from "../env";
 import "../queues/worker";
 import { queueJobsRoutes } from "../routes/queueJobs";
+import { registerLoggingHooks } from "../middlewares/logging";
+import { registerErrorHandler } from "../middlewares/errorHandler";
 
 const app = Fastify().withTypeProvider<ZodTypeProvider>();
 
 app.setValidatorCompiler(validatorCompiler);
 app.setSerializerCompiler(serializerCompiler);
+
+registerLoggingHooks(app);
+registerErrorHandler(app);
 
 app.get("/", () => "Hello World!");
 
@@ -58,32 +63,6 @@ app.register(ScalarApiReference, {
 
 // Registrar rotas de queueJobs
 app.register(queueJobsRoutes);
-
-// Middleware de logging
-app.addHook("onRequest", async (request, reply) => {
-	request.log.info(
-		{ method: request.method, url: request.url },
-		"Requisição recebida",
-	);
-});
-
-app.addHook("onResponse", async (request, reply) => {
-	request.log.info(
-		{ method: request.method, url: request.url, statusCode: reply.statusCode },
-		"Resposta enviada",
-	);
-});
-
-// Middleware global de tratamento de erros
-app.setErrorHandler((error, request, reply) => {
-	request.log.error(error, "Erro não tratado");
-	reply.status(error.statusCode || 500).send({
-		error: true,
-		message: error.message || "Erro interno do servidor",
-		statusCode: error.statusCode || 500,
-		details: error.validation || undefined,
-	});
-});
 
 async function start() {
 	try {
