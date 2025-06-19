@@ -29,6 +29,7 @@ const ENV = (() => {
   } catch (error) {
     console.error("❌ Erro na validação das variáveis de ambiente:");
     if (error instanceof z.ZodError) {
+      // biome-ignore lint/complexity/noForEach: <explanation>
       error.errors.forEach((err) => {
         console.error(`   - ${err.path.join(".")}: ${err.message}`);
       });

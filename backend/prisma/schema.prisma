@@ -86,6 +86,11 @@ model Webhook {
   // Logs de processamento
   logs WebhookLog[]
 
+  @@index([revendaId])
+  @@index([produtoId])
+  @@index([status])
+  @@index([externalId])
+  @@index([createdAt])
   @@map("webhooks")
 }
 
