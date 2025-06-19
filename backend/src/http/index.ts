@@ -12,6 +12,9 @@ import "../queues/worker";
 import { queueJobsRoutes } from "../routes/queueJobs";
 import { registerLoggingHooks } from "../middlewares/logging";
 import { registerErrorHandler } from "../middlewares/errorHandler";
+import fastifyJwt from "@fastify/jwt";
+import { protectRoute } from "../middlewares/jwt";
+import { zodExampleRoutes } from "../routes/zodExample";
 
 const app = Fastify().withTypeProvider<ZodTypeProvider>();
 
@@ -20,8 +23,6 @@ app.setSerializerCompiler(serializerCompiler);
 
 registerLoggingHooks(app);
 registerErrorHandler(app);
-
-app.get("/", () => "Hello World!");
 
 app.register(cors, {
 	origin: ENV.CORS_ORIGIN,
@@ -61,9 +62,27 @@ app.register(ScalarApiReference, {
 	},
 });
 
+// Registrar JWT
+app.register(fastifyJwt, {
+	secret: ENV.JWT_SECRET,
+});
+
 // Registrar rotas de queueJobs
 app.register(queueJobsRoutes);
 
+// Registrar rotas de zodExample
+app.register(zodExampleRoutes);
+
+// Exemplo de rota protegida e validada com Zod
+app.get(
+	"/private-test",
+	{ preHandler: protectRoute },
+	async (request, reply) => {
+		return reply.send({ message: "Acesso autorizado!", user: request.user });
+	},
+);
+
+// Iniciar servidor
 async function start() {
 	try {
 		await app.listen({ port: ENV.PORT });

@@ -31,11 +31,11 @@
 
 ### 2.1 Estrutura da API
 
-- [ ] Configurar Fastify com TypeScript
-- [ ] Configurar middleware de autenticação
-- [ ] Configurar middleware de validação (Zod)
-- [ ] Configurar middleware de logging
-- [ ] Configurar tratamento de erros
+- [x] Configurar Fastify com TypeScript
+- [x] Configurar middleware de autenticação
+- [x] Configurar middleware de validação (Zod)
+- [x] Configurar middleware de logging
+- [x] Configurar tratamento de erros
 
 ### 2.2 Autenticação e Autorização
 
