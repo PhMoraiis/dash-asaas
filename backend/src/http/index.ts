@@ -15,6 +15,8 @@ import { registerErrorHandler } from "../middlewares/errorHandler";
 import fastifyJwt from "@fastify/jwt";
 import { protectRoute } from "../middlewares/jwt";
 import { zodExampleRoutes } from "../routes/zodExample";
+import { authRoutes } from "../routes/auth";
+import cookie from "@fastify/cookie";
 
 const app = Fastify().withTypeProvider<ZodTypeProvider>();
 
@@ -62,6 +64,16 @@ app.register(ScalarApiReference, {
 	},
 });
 
+app.register(cookie, {
+	secret: ENV.COOKIE_SECRET, // Chave secreta para assinar cookies
+	hook: "onRequest", // Assina cookies no início da requisição
+	parseOptions: {
+		expires: new Date(Date.now() + 60 * 60 * 24 * 7 * 1000), // Expira em 7 dias
+		secure: ENV.NODE_ENV === "production", // Usa cookies seguros em produção
+		sameSite: "lax", // Protege contra CSRF
+	},
+});
+
 // Registrar JWT
 app.register(fastifyJwt, {
 	secret: ENV.JWT_SECRET,
@@ -72,6 +84,9 @@ app.register(queueJobsRoutes);
 
 // Registrar rotas de zodExample
 app.register(zodExampleRoutes);
+
+// Registrar rotas de autenticação
+app.register(authRoutes);
 
 // Exemplo de rota protegida e validada com Zod
 app.get(

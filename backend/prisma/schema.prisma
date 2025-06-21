@@ -30,7 +30,7 @@ model Revenda {
   id           String   @id @default(cuid())
   name         String
   email        String   @unique
-  password     String?
+  password     String
   webhookToken String   @unique @default(cuid())
   externalId   String?  @unique // ID do sistema externo
   active       Boolean  @default(true)
