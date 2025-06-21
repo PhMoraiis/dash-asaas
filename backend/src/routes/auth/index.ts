@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import { loginSchema } from "./schemas";
 import { prisma } from "@/database/client";
-import { compare } from "bcryptjs";
+import { compare, hash } from "bcryptjs";
 
 export async function authRoutes(app: FastifyInstance) {
 	app.post(
@@ -63,5 +63,26 @@ export async function authRoutes(app: FastifyInstance) {
 	app.post("/api/logout", async (request, reply) => {
 		reply.clearCookie("auth_token", { path: "/" });
 		return reply.send({ success: true });
+	});
+
+	// Rota secreta para bootstrap do primeiro admin
+	app.post("/__secret-create-admin", async (request, reply) => {
+		const { name, email, password } = request.body as {
+			name: string;
+			email: string;
+			password: string;
+		};
+		// Verifica se já existe admin com esse email
+		const exists = await prisma.admin.findUnique({ where: { email } });
+		if (exists) {
+			return reply
+				.status(409)
+				.send({ error: true, message: "Admin já existe" });
+		}
+		const hashed = await hash(password, 10);
+		const admin = await prisma.admin.create({
+			data: { name, email, password: hashed },
+		});
+		return reply.send({ success: true, id: admin.id, email: admin.email });
 	});
 }
