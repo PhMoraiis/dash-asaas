@@ -17,6 +17,7 @@ import { protectRoute } from "../middlewares/jwt";
 import { zodExampleRoutes } from "../routes/zodExample";
 import { authRoutes } from "../routes/auth";
 import cookie from "@fastify/cookie";
+import { requireRole } from "../middlewares/role";
 
 const app = Fastify().withTypeProvider<ZodTypeProvider>();
 
@@ -94,6 +95,30 @@ app.get(
 	{ preHandler: protectRoute },
 	async (request, reply) => {
 		return reply.send({ message: "Acesso autorizado!", user: request.user });
+	},
+);
+
+// Exemplo: rota só para admin
+app.get(
+	"/admin-only",
+	{ preHandler: [protectRoute, requireRole("admin")] },
+	async (request, reply) => {
+		return reply.send({
+			message: "Acesso autorizado para admin!",
+			user: request.user,
+		});
+	},
+);
+
+// Exemplo: rota só para revenda
+app.get(
+	"/revenda-only",
+	{ preHandler: [protectRoute, requireRole("revenda")] },
+	async (request, reply) => {
+		return reply.send({
+			message: "Acesso autorizado para revenda!",
+			user: request.user,
+		});
 	},
 );
 
