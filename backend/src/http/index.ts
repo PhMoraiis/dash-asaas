@@ -40,18 +40,15 @@ app.register(swagger, {
 			version: "1.0.0",
 			description: "API documentation for Dashboard Webhooks ASAAS",
 		},
-		servers: [
-			{
-				url: `http://localhost:${ENV.PORT}`,
-				description: "Local development server",
+		components: {
+			securitySchemes: {
+				apiKey: {
+					type: "apiKey",
+					name: "apiKey",
+					in: "header",
+				},
 			},
-		],
-		tags: [
-			{ name: "auth", description: "Autenticação" },
-			{ name: "admin", description: "Administração" },
-			{ name: "test", description: "Rotas de Teste" },
-			{ name: "webhooks", description: "Webhook-related endpoints" },
-		],
+		},
 	},
 });
 
