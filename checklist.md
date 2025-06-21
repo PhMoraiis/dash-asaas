@@ -39,22 +39,12 @@
 
 ### 2.2 Autenticação e Autorização
 
-- [ ] Implementar JWT para autenticação
-- [ ] Criar middleware de validação de token
-- [ ] Implementar diferentes níveis de acesso (Admin/Revenda)
-- [ ] Criar endpoints de login/logout
-- [ ] Gerar tokens únicos para webhooks
+- [x] Implementar JWT para autenticação
+- [x] Criar middleware de validação de token
+- [x] Implementar diferentes níveis de acesso (Admin/Revenda)
+- [x] Criar endpoints de login/logout
 
-### 2.3 Endpoints de Webhooks
-
-- [ ] **POST** `/api/webhooks/asaas/:userId` - Receber webhooks por usuário
-- [ ] **POST** `/api/webhooks/asaas` - Receber webhooks com token no header
-- [ ] **GET** `/api/webhooks` - Listar webhooks
-- [ ] **GET** `/api/webhooks/:id` - Detalhes do webhook
-- [ ] **PUT** `/api/webhooks/:id/reprocess` - Reprocessar webhook
-- [ ] **GET** `/api/webhooks/test/:userId` - Testar webhook (ping/pong)
-
-### 2.4 Endpoints de Gerenciamento
+### 2.3 Endpoints de Gerenciamento
 
 - [ ] **POST** `/api/admin/revendas` - Criar revenda
 - [ ] **GET** `/api/admin/revendas` - Listar revendas
@@ -64,6 +54,16 @@
 - [ ] **GET** `/api/produtos` - Listar produtos
 - [ ] **PUT** `/api/produtos/:id` - Editar produto
 - [ ] **DELETE** `/api/produtos/:id` - Deletar produto
+
+### 2.4 Endpoints de Webhooks
+
+- [ ] Gerar tokens únicos para webhooks
+- [ ] **POST** `/api/webhooks/asaas/:userId` - Receber webhooks por usuário
+- [ ] **POST** `/api/webhooks/asaas` - Receber webhooks com token no header
+- [ ] **GET** `/api/webhooks` - Listar webhooks
+- [ ] **GET** `/api/webhooks/:id` - Detalhes do webhook
+- [ ] **PUT** `/api/webhooks/:id/reprocess` - Reprocessar webhook
+- [ ] **GET** `/api/webhooks/test/:userId` - Testar webhook (ping/pong)
 
 ### 2.5 Endpoints de Configuração
 

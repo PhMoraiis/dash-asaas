@@ -13,11 +13,10 @@ import { queueJobsRoutes } from "../routes/queueJobs";
 import { registerLoggingHooks } from "../middlewares/logging";
 import { registerErrorHandler } from "../middlewares/errorHandler";
 import fastifyJwt from "@fastify/jwt";
-import { protectRoute } from "../middlewares/jwt";
 import { zodExampleRoutes } from "../routes/zodExample";
 import { authRoutes } from "../routes/auth";
 import cookie from "@fastify/cookie";
-import { requireRole } from "../middlewares/role";
+import { testRoutes } from "@/routes/testRoutes";
 
 const app = Fastify().withTypeProvider<ZodTypeProvider>();
 
@@ -48,10 +47,10 @@ app.register(swagger, {
 			},
 		],
 		tags: [
-			{
-				name: "webhooks",
-				description: "Webhook-related endpoints",
-			},
+			{ name: "auth", description: "Autenticação" },
+			{ name: "admin", description: "Administração" },
+			{ name: "test", description: "Rotas de Teste" },
+			{ name: "webhooks", description: "Webhook-related endpoints" },
 		],
 	},
 });
@@ -80,47 +79,17 @@ app.register(fastifyJwt, {
 	secret: ENV.JWT_SECRET,
 });
 
-// Registrar rotas de queueJobs
+// Rotas de queueJobs
 app.register(queueJobsRoutes);
 
-// Registrar rotas de zodExample
+// Rotas de zodExample
 app.register(zodExampleRoutes);
 
-// Registrar rotas de autenticação
+// Rotas de autenticação
 app.register(authRoutes);
 
-// Exemplo de rota protegida e validada com Zod
-app.get(
-	"/private-test",
-	{ preHandler: protectRoute },
-	async (request, reply) => {
-		return reply.send({ message: "Acesso autorizado!", user: request.user });
-	},
-);
-
-// Exemplo: rota só para admin
-app.get(
-	"/admin-only",
-	{ preHandler: [protectRoute, requireRole("admin")] },
-	async (request, reply) => {
-		return reply.send({
-			message: "Acesso autorizado para admin!",
-			user: request.user,
-		});
-	},
-);
-
-// Exemplo: rota só para revenda
-app.get(
-	"/revenda-only",
-	{ preHandler: [protectRoute, requireRole("revenda")] },
-	async (request, reply) => {
-		return reply.send({
-			message: "Acesso autorizado para revenda!",
-			user: request.user,
-		});
-	},
-);
+// Rotas de teste
+app.register(testRoutes);
 
 // Iniciar servidor
 async function start() {
