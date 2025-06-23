@@ -1,6 +1,6 @@
 # 📋 Checklist Completo - Dashboard Webhooks Asaas
 
-## **🚀 FASE 1: Setup Inicial Back-end e Infraestrutura**
+## **🚀 FASE 1: Setup Inicial e Estrutura da API (Concluído)**
 
 ### 1.1 Configuração do Ambiente
 
@@ -27,9 +27,7 @@
 - [x] Implementar dead letter queue
 - [x] Configurar retry automático para falhas
 
-## **🔧 FASE 2: API Backend (Node.js + Fastify)**
-
-### 2.1 Estrutura da API
+### 1.4 Estrutura da API
 
 - [x] Configurar Fastify com TypeScript
 - [x] Configurar middleware de autenticação
@@ -37,64 +35,17 @@
 - [x] Configurar middleware de logging
 - [x] Configurar tratamento de erros
 
-### 2.2 Autenticação e Autorização
+## **🔑 FASE 2: Autenticação e Layout Base (Backend + Frontend)**
+*(Objetivo: Ter um sistema onde o usuário pode se autenticar e ver a estrutura inicial do dashboard)*
 
-- [x] Implementar JWT para autenticação
-- [x] Criar middleware de validação de token
-- [x] Implementar diferentes níveis de acesso (Admin/Revenda)
-- [x] Criar endpoints de login/logout
+### 2.1 Backend - Autenticação e Autorização (Concluído)
 
-### 2.3 Endpoints de Gerenciamento
+- [x] Implementar JWT para autenticação (Admin/Revenda).
+- [x] Criar endpoints de login/logout com cookies seguros.
+- [x] Implementar autorização por role (níveis de acesso Admin/Revenda).
+- [x] Criar rota secreta para bootstrap de admin.
 
-- [ ] **POST** `/api/admin/revendas` - Criar revenda
-- [ ] **GET** `/api/admin/revendas` - Listar revendas
-- [ ] **PUT** `/api/admin/revendas/:id` - Editar revenda
-- [ ] **DELETE** `/api/admin/revendas/:id` - Desativar revenda
-- [ ] **POST** `/api/produtos` - Criar produto
-- [ ] **GET** `/api/produtos` - Listar produtos
-- [ ] **PUT** `/api/produtos/:id` - Editar produto
-- [ ] **DELETE** `/api/produtos/:id` - Deletar produto
-
-### 2.4 Endpoints de Webhooks
-
-- [ ] Gerar tokens únicos para webhooks
-- [ ] **POST** `/api/webhooks/asaas/:userId` - Receber webhooks por usuário
-- [ ] **POST** `/api/webhooks/asaas` - Receber webhooks com token no header
-- [ ] **GET** `/api/webhooks` - Listar webhooks
-- [ ] **GET** `/api/webhooks/:id` - Detalhes do webhook
-- [ ] **PUT** `/api/webhooks/:id/reprocess` - Reprocessar webhook
-- [ ] **GET** `/api/webhooks/test/:userId` - Testar webhook (ping/pong)
-
-### 2.5 Endpoints de Configuração
-
-- [ ] **GET** `/api/users/:id/webhook-config` - Obter configuração do webhook
-- [ ] **POST** `/api/users/:id/webhook-token` - Gerar novo token
-- [ ] **GET** `/api/users/:id/webhook-status` - Status da conexão
-- [ ] **GET** `/api/stats` - Estatísticas dashboard
-- [ ] **GET** `/api/stats/:userId` - Estatísticas por usuário
-
-### 2.6 Processamento de Webhooks
-
-- [ ] Validar assinatura dos webhooks Asaas
-- [ ] Implementar identificação por userId na URL
-- [ ] Implementar identificação por token no header
-- [ ] Implementar processamento na fila
-- [ ] Criar sistema de retry para falhas
-- [ ] Criar logs de auditoria
-- [ ] Implementar idempotência (evitar duplicatas)
-
-### 2.7 Integração com Sistema Externo
-
-- [ ] **POST** `/api/webhooks/user-created` - Receber novos usuários
-- [ ] Implementar validação de token do sistema externo
-- [ ] Criar usuário automaticamente
-- [ ] Gerar token de webhook automaticamente
-- [ ] Enviar email de boas-vindas (opcional)
-- [ ] Sincronização bidirecional de dados
-
-## **🎨 FASE 3: Dashboard Frontend (Next.js)**
-
-### 3.1 Setup do Next.js
+### 2.2 Frontend - Setup Inicial
 
 - [ ] Configurar Next.js 15 com App Router
 - [ ] Configurar Tailwind CSS
@@ -103,15 +54,7 @@
 - [ ] Configurar TypeScript
 - [ ] Configurar internacionalização (i18n)
 
-### 3.2 Autenticação Frontend
-
-- [ ] Configurar auth personalizado
-- [ ] Criar páginas de login/logout
-- [ ] Implementar proteção de rotas
-- [ ] Criar contexto de autenticação
-- [ ] Implementar refresh token automático
-
-### 3.3 Layout e Componentes Base
+### 2.3 Frontend - Layout e Componentes Base
 
 - [ ] Criar layout principal com sidebar
 - [ ] Implementar toggle de tema (dark/light)
@@ -119,221 +62,125 @@
 - [ ] Implementar navegação responsiva
 - [ ] Criar componente de notificações toast
 
-### 3.4 Configuração de Webhooks
+### 2.4 Frontend - Autenticação
+
+- [ ] Configurar auth personalizado para consumir a API
+- [ ] Criar páginas de login/logout
+- [ ] Implementar proteção de rotas (client-side e server-side)
+- [ ] Criar contexto de autenticação global
+- [ ] Implementar refresh token automático (se necessário)
+
+## **🏢 FASE 3: Gerenciamento de Revendas (Admin - Backend + Frontend)**
+*(Objetivo: O admin poderá logar e gerenciar as revendas)*
+
+### 3.1 Backend - Endpoints de Gerenciamento
+
+- [ ] **POST** `/api/admin/revendas` - Criar revenda
+- [ ] **GET** `/api/admin/revendas` - Listar revendas
+- [ ] **PUT** `/api/admin/revendas/:id` - Editar revenda
+- [ ] **DELETE** `/api/admin/revendas/:id` - Desativar revenda
+
+### 3.2 Frontend - Interface de Gestão de Revendas
+
+- [ ] Página para listar revendas
+- [ ] Formulário/Modal para criar nova revenda
+- [ ] Formulário/Modal para editar/desativar revenda
+- [ ] Visualizar produtos e status de webhooks por revenda
+
+## **📦 FASE 4: Gerenciamento de Produtos (Revenda - Backend + Frontend)**
+*(Objetivo: A revenda poderá logar e gerenciar seus produtos)*
+
+### 4.1 Backend - Endpoints de Gerenciamento
+
+- [ ] **POST** `/api/produtos` - Criar produto
+- [ ] **GET** `/api/produtos` - Listar produtos
+- [ ] **PUT** `/api/produtos/:id` - Editar produto
+- [ ] **DELETE** `/api/produtos/:id` - Deletar produto
+
+### 4.2 Frontend - Interface de Gestão de Produtos
+
+- [ ] Página para listar produtos
+- [ ] Formulário/Modal para criar novo produto
+- [ ] Formulário/Modal para editar produto
+- [ ] Visualizar webhooks por produto
+
+## **🔗 FASE 5: Configuração e Recebimento de Webhooks (Backend + Frontend)**
+*(Objetivo: A revenda poderá configurar e o sistema começará a receber webhooks)*
+
+### 5.1 Backend - Endpoints
+
+- [ ] **GET** `/api/revenda/webhook-config` - Obter configuração do webhook (URL e token)
+- [ ] **POST** `/api/revenda/webhook-token` - Gerar novo token
+- [ ] **POST** `/api/webhooks/asaas` - Receber webhooks com token no header (validar e enfileirar)
+- [ ] **POST** `/api/webhooks/asaas/:revendaId` - Receber webhooks por ID (outra forma de identificação)
+
+### 5.2 Frontend - Interface de Configuração de Webhooks
 
 - [ ] Página de configuração de webhook
-- [ ] Exibir URL única do webhook
-- [ ] Exibir token de autenticação
+- [ ] Exibir URL única do webhook e token de autenticação
 - [ ] Botão para copiar URL/token
 - [ ] Botão para regenerar token
 - [ ] Instruções passo-a-passo para configuração no Asaas
-- [ ] Lista de eventos recomendados
-- [ ] Teste de webhook (ping/pong)
-- [ ] Indicador de status da conexão
-- [ ] Logs de webhooks em tempo real
 
-### 3.5 Páginas Principais
+## **📊 FASE 6: Visualização de Webhooks e Dashboard (Backend + Frontend)**
+*(Objetivo: O usuário poderá ver os webhooks recebidos e um dashboard com estatísticas)*
 
-#### Dashboard Principal
+### 6.1 Backend - Endpoints
 
-- [ ] Página inicial com estatísticas
-- [ ] Gráficos de webhooks (Chart.js/Recharts)
-- [ ] Cards com métricas principais
-- [ ] Lista de webhooks recentes
-- [ ] Status de saúde dos webhooks
-- [ ] Indicadores de performance
+- [ ] **GET** `/api/webhooks` - Listar todos os webhooks com filtros
+- [ ] **GET** `/api/webhooks/:id` - Detalhes do webhook
+- [ ] **PUT** `/api/webhooks/:id/reprocess` - Reprocessar webhook
+- [ ] **GET** `/api/stats` - Estatísticas para o dashboard
 
-#### Gestão de Revendas (Admin)
+### 6.2 Frontend - Interfaces
 
-- [ ] Listar revendas
-- [ ] Criar nova revenda
-- [ ] Editar/desativar revenda
-- [ ] Visualizar produtos por revenda
-- [ ] Status de webhooks por revenda
-- [ ] Estatísticas por revenda
+- [ ] **Página de Webhooks:** Listar, filtrar, buscar, ver detalhes (JSON viewer) e reprocessar webhooks.
+- [ ] **Dashboard Principal:** Página inicial com estatísticas, gráficos e lista de webhooks recentes.
 
-#### Gestão de Produtos (Revenda)
+## **🛠️ FASE 7: Scripts e Utilitários (Backend)**
 
-- [ ] Listar produtos
-- [ ] Criar novo produto
-- [ ] Editar produto
-- [ ] Visualizar webhooks por produto
-- [ ] Configurar webhooks por produto
-- [ ] Estatísticas por produto
+### 7.1 Script de Importação e Sincronização
 
-#### Webhooks
+- [ ] Criar script para importar base existente de revendas/produtos
+- [ ] Script/Cron job para sincronização de usuários com sistema externo
 
-- [ ] Listar todos os webhooks
-- [ ] Filtros avançados (data, status, produto, evento)
-- [ ] Visualizar detalhes do webhook (JSON viewer)
-- [ ] Reprocessar webhook com falha
-- [ ] Busca textual no conteúdo
-- [ ] Exportar webhooks filtrados
-
-#### Configurações
-
-- [ ] Perfil do usuário
-- [ ] Configuração de tokens
-- [ ] Configuração de notificações
-- [ ] Configuração de alertas
-- [ ] Configuração de temas
-- [ ] Configuração de idioma
-
-### 3.6 Funcionalidades Avançadas
-
-- [ ] Real-time updates (WebSockets ou Server-Sent Events)
-- [ ] Exportação de dados (CSV/Excel/PDF)
-- [ ] Sistema de notificações push
-- [ ] Busca global
-- [ ] Filtros salvos/favoritos
-- [ ] Dashboard customizável
-
-## **📊 FASE 4: Scripts e Utilitários**
-
-### 4.1 Script de Importação da Base Existente
-
-- [ ] Criar script para importar base existente
-- [ ] Suportar múltiplos formatos (CSV/JSON/Excel/SQL)
-- [ ] Validar dados antes da importação
-- [ ] Mapear dados para o schema atual
-- [ ] Criar relatório de importação
-- [ ] Implementar rollback em caso de erro
-- [ ] Backup automático antes da importação
-- [ ] Importação incremental (updates)
-
-### 4.2 Sincronização de Usuários
-
-- [ ] Script de sincronização manual
-- [ ] Cron job para sincronização automática
-- [ ] Webhook para sincronização em tempo real
-- [ ] Logs de sincronização
-- [ ] Tratamento de conflitos
-- [ ] Sincronização de atualizações
-
-### 4.3 Monitoramento e Logs
+### 7.2 Monitoramento e Manutenção
 
 - [ ] Configurar sistema de logs (Winston/Pino)
 - [ ] Implementar health checks
-- [ ] Criar dashboard de monitoramento interno
-- [ ] Configurar alertas por email/Slack
-- [ ] Métricas de performance
-- [ ] Alertas de webhook parado
+- [ ] Scripts de limpeza de logs/webhooks antigos
 
-### 4.4 Manutenção e Limpeza
+## **🔒 FASE 8: Segurança e Performance (Backend + Frontend)**
 
-- [ ] Script de limpeza de logs antigos
-- [ ] Script de arquivamento de webhooks antigos
-- [ ] Backup automático de dados
-- [ ] Limpeza de cache Redis
-- [ ] Otimização de índices do banco
+### 8.1 Segurança
 
-## **🔒 FASE 5: Segurança e Performance**
-
-### 5.1 Segurança
-
-- [ ] Implementar rate limiting por IP/usuário
+- [ ] Implementar rate limiting
 - [ ] Validar e sanitizar todos os inputs
-- [ ] Configurar CORS adequadamente
-- [ ] Implementar CSP (Content Security Policy)
-- [ ] Validar tokens de webhook com timestamps
-- [ ] Implementar HTTPS obrigatório
+- [ ] Configurar CORS, CSP
 - [ ] Criptografar dados sensíveis
-- [ ] Implementar auditoria de segurança
 
-### 5.2 Performance
+### 8.2 Performance
 
 - [ ] Implementar cache com Redis
-- [ ] Cache de estatísticas (5min TTL)
-- [ ] Cache de configurações (1h TTL)
-- [ ] Otimizar queries do banco (índices)
+- [ ] Otimizar queries do banco
 - [ ] Implementar paginação em todas as listas
-- [ ] Configurar compressão gzip
-- [ ] Otimizar bundle do frontend
-- [ ] Lazy loading de componentes
-- [ ] CDN para assets estáticos
+- [ ] Otimizar bundle do frontend (Lazy loading, etc.)
 
-### 5.3 Testes
+### 8.3 Testes
 
-- [ ] Testes unitários (Jest) - 80% coverage
-- [ ] Testes de integração (API)
-- [ ] Testes E2E (Playwright/Cypress)
-- [ ] Testes de carga (webhooks)
-- [ ] Testes de segurança
-- [ ] Testes de performance
+- [ ] Testes unitários, de integração e E2E
 
-## **🚀 FASE 6: Deploy e Produção**
+## **🚀 FASE 9: Deploy e Produção (Infraestrutura)**
 
-### 6.1 Containerização
+- [ ] Containerização (Dockerfiles para produção)
+- [ ] Configurar CI/CD (GitHub Actions)
+- [ ] Configurar infraestrutura em nuvem (AWS/GCP/DigitalOcean)
+- [ ] Configurar monitoramento e alertas (APM, logs centralizados)
 
-- [ ] Dockerfile para API
-- [ ] Dockerfile para Frontend
-- [ ] Docker Compose para produção
-- [ ] Configurar multi-stage builds
-- [ ] Otimizar tamanho das imagens
-- [ ] Health checks nos containers
+## **💡 FASE 10: Melhorias Contínuas e Features Avançadas**
+*(Itens a serem avaliados após o MVP)*
 
-### 6.2 CI/CD
-
-- [ ] GitHub Actions ou GitLab CI
-- [ ] Pipeline de testes automáticos
-- [ ] Deploy automático (staging/prod)
-- [ ] Rollback automático
-- [ ] Deploy blue-green
-- [ ] Notificações de deploy
-
-### 6.3 Infraestrutura
-
-- [ ] Escolher provedor (AWS/GCP/Azure/DigitalOcean)
-- [ ] Configurar banco de dados gerenciado
-- [ ] Configurar Redis gerenciado
-- [ ] Configurar load balancer
-- [ ] Configurar SSL/TLS
-- [ ] Configurar CDN
-- [ ] Configurar backup automático
-
-### 6.4 Monitoramento Produção
-
-- [ ] Configurar APM (New Relic/DataDog)
-- [ ] Configurar alertas de erro
-- [ ] Configurar alertas de performance
-- [ ] Configurar backup automático
-- [ ] Configurar logs centralizados
-- [ ] Dashboard de métricas de negócio
-
-## **📈 FASE 7: Melhorias e Otimizações**
-
-### 7.1 Features Avançadas
-
-- [ ] API GraphQL (opcional)
 - [ ] Webhooks outbound (notificar terceiros)
-- [ ] Sistema de templates para notificações
-- [ ] Integração com outros gateways de pagamento
-- [ ] Sistema de plugins/extensões
-- [ ] API pública para terceiros
-
-### 7.2 UX/UI
-
-- [ ] Implementar skeleton loading
-- [ ] Otimizar para mobile (PWA)
+- [ ] API GraphQL (opcional)
 - [ ] Implementar PWA completo
-- [ ] Adicionar animações e transições
-- [ ] Modo offline básico
-- [ ] Atalhos de teclado
-
-### 7.3 Analytics e Relatórios
-
-- [ ] Implementar analytics de uso (Google Analytics)
-- [ ] Dashboard de métricas de negócio
-- [ ] Relatórios automatizados
-- [ ] Exportação de relatórios
-- [ ] Alertas baseados em métricas
-- [ ] Dashboards customizáveis
-
-### 7.4 Integrações Futuras
-
-- [ ] Integração com Slack/Discord
-- [ ] Integração com email marketing
-- [ ] Integração com CRM
-- [ ] Integração com sistemas de cobrança
-- [ ] API para mobile apps
-- [ ] Webhooks bidirecionais
+- [ ] Integrações futuras (Slack, Email, etc.)
