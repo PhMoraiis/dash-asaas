@@ -54,21 +54,14 @@
 - [x] Configurar TypeScript
 - [x] Configurar internacionalização (i18n)
 
-### 2.3 Frontend - Layout e Componentes Base
+### 2.3 Frontend - Autenticação
 
-- [ ] Criar layout principal com sidebar
-- [ ] Implementar toggle de tema (dark/light)
-- [ ] Criar componentes base (Card, Table, Modal, etc.)
-- [ ] Implementar navegação responsiva
-- [ ] Criar componente de notificações toast
-
-### 2.4 Frontend - Autenticação
-
-- [ ] Configurar auth personalizado para consumir a API
-- [ ] Criar páginas de login/logout
-- [ ] Implementar proteção de rotas (client-side e server-side)
-- [ ] Criar contexto de autenticação global
-- [ ] Implementar refresh token automático (se necessário)
+- [x] Configurar auth personalizado para consumir a API
+- [x] Criar páginas de login
+- [x] Criar botão de logout
+- [x] Implementar proteção de rotas (client-side e server-side)
+- [x] Criar contexto de autenticação global
+- [x] Implementar refresh token automático (frontend e backend)
 
 ## **🏢 FASE 3: Gerenciamento de Revendas (Admin - Backend + Frontend)**
 *(Objetivo: O admin poderá logar e gerenciar as revendas)*

@@ -1,8 +1,9 @@
 import type { FastifyInstance } from "fastify";
 import { loginSchema } from "./schemas";
-import { prisma } from "@/database/client";
+import { prisma, redis } from "@/database/client";
 import { compare, hash } from "bcryptjs";
 import { z } from "zod";
+import { generateRefreshToken } from "@/utils/auth";
 
 export async function authRoutes(app: FastifyInstance) {
 	app.post(
@@ -62,27 +63,126 @@ export async function authRoutes(app: FastifyInstance) {
 				role,
 			});
 
-			// Seta cookie seguro
-			reply.setCookie("auth_token", token, {
-				httpOnly: true,
-				secure: process.env.NODE_ENV === "production",
-				sameSite: "lax",
-				path: "/",
-				maxAge: 60 * 60 * 24 * 7, // 7 dias
-			});
+			// Gera refresh token
+			const refreshToken = generateRefreshToken();
+			await redis.set(
+				`refresh:${refreshToken}`,
+				user.id,
+				"EX",
+				60 * 60 * 24 * 7,
+			); // 7 dias
+
+			// Seta cookies seguros
+			reply
+				.setCookie("auth_token", token, {
+					httpOnly: true,
+					secure: process.env.NODE_ENV === "production",
+					sameSite: "lax",
+					path: "/",
+					maxAge: 60 * 60 * 24 * 7, // 7 dias
+				})
+				.setCookie("refresh_token", refreshToken, {
+					httpOnly: true,
+					secure: process.env.NODE_ENV === "production",
+					sameSite: "lax",
+					path: "/",
+					maxAge: 60 * 60 * 24 * 7,
+				});
 
 			return reply.send({ success: true, role });
 		},
 	);
 
-	// Logout: limpa o cookie
+	// Refresh token endpoint
+	app.post(
+		"/api/refresh",
+		{
+			schema: {
+				tags: ["auth"],
+				summary: "Renova o access token usando refresh token",
+				description:
+					"Gera novo JWT e refresh token se o refresh token for válido.",
+				response: {
+					200: z.object({ success: z.boolean() }),
+					401: z.object({ error: z.boolean(), message: z.string() }),
+				},
+			},
+		},
+		async (request, reply) => {
+			const refreshToken = request.cookies.refresh_token;
+			if (!refreshToken) {
+				return reply
+					.status(401)
+					.send({ error: true, message: "Refresh token ausente" });
+			}
+
+			const userId = await redis.get(`refresh:${refreshToken}`);
+			if (!userId) {
+				return reply
+					.status(401)
+					.send({ error: true, message: "Refresh token inválido" });
+			}
+
+			// Busca usuário (admin ou revenda)
+			let user = await prisma.admin.findUnique({ where: { id: userId } });
+			let role: "admin" | "revenda" | null = null;
+			if (user) {
+				role = "admin";
+			} else {
+				user = await prisma.revenda.findUnique({ where: { id: userId } });
+				if (user) role = "revenda";
+			}
+			if (!user || !role) {
+				return reply
+					.status(401)
+					.send({ error: true, message: "Usuário não encontrado" });
+			}
+
+			// Gera novo JWT
+			const token = app.jwt.sign({
+				id: user.id,
+				email: user.email,
+				role,
+			});
+
+			// Rotaciona refresh token
+			const newRefreshToken = generateRefreshToken();
+			await redis.del(`refresh:${refreshToken}`);
+			await redis.set(
+				`refresh:${newRefreshToken}`,
+				user.id,
+				"EX",
+				60 * 60 * 24 * 7,
+			);
+
+			reply
+				.setCookie("auth_token", token, {
+					httpOnly: true,
+					secure: process.env.NODE_ENV === "production",
+					sameSite: "lax",
+					path: "/",
+					maxAge: 60 * 60 * 24 * 7,
+				})
+				.setCookie("refresh_token", newRefreshToken, {
+					httpOnly: true,
+					secure: process.env.NODE_ENV === "production",
+					sameSite: "lax",
+					path: "/",
+					maxAge: 60 * 60 * 24 * 7,
+				});
+
+			return reply.send({ success: true });
+		},
+	);
+
+	// Logout: limpa o cookie e remove refresh token do Redis
 	app.post(
 		"/api/logout",
 		{
 			schema: {
 				tags: ["auth"],
 				summary: "Logout",
-				description: "Remove o cookie de autenticação.",
+				description: "Remove o cookie de autenticação e o refresh token.",
 				response: {
 					200: z.object({
 						success: z.boolean(),
@@ -91,8 +191,14 @@ export async function authRoutes(app: FastifyInstance) {
 			},
 		},
 		async (request, reply) => {
-			reply.clearCookie("auth_token", { path: "/" });
-			return reply.send({ success: true });
+			const refreshToken = request.cookies.refresh_token;
+			if (refreshToken) {
+				await redis.del(`refresh:${refreshToken}`);
+			}
+			reply
+				.clearCookie("auth_token", { path: "/" })
+				.clearCookie("refresh_token", { path: "/" })
+				.send({ success: true });
 		},
 	);
 
