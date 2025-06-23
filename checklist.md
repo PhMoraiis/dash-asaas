@@ -47,12 +47,12 @@
 
 ### 2.2 Frontend - Setup Inicial
 
-- [ ] Configurar Next.js 15 com App Router
-- [ ] Configurar Tailwind CSS
-- [ ] Configurar shadcn/ui
-- [ ] Configurar tema claro/escuro
-- [ ] Configurar TypeScript
-- [ ] Configurar internacionalização (i18n)
+- [x] Configurar Next.js 15 com App Router
+- [x] Configurar Tailwind CSS
+- [x] Configurar shadcn/ui
+- [x] Configurar tema claro/escuro
+- [x] Configurar TypeScript
+- [x] Configurar internacionalização (i18n)
 
 ### 2.3 Frontend - Layout e Componentes Base
 
