@@ -31,7 +31,7 @@ export const useAuthStore = create<AuthState>()(
 			checkAuth: async () => {
 				set({ loading: true });
 				try {
-					const res = await fetchWithAuth("/api/me");
+					const res = await fetchWithAuth("http://localhost:3333/api/me");
 					if (!res.ok) throw new Error("Not authenticated");
 					const user = await res.json();
 					set({ user, isAuthenticated: true, loading: false });

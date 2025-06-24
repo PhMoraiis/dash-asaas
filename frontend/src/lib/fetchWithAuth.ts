@@ -8,7 +8,7 @@ export async function fetchWithAuth(
 
 	if (response.status === 401) {
 		// Tenta renovar o token
-		const refresh = await fetch("/api/refresh", {
+		const refresh = await fetch("http://localhost:3333/api/refresh", {
 			method: "POST",
 			credentials: "include",
 		});
