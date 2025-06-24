@@ -5,6 +5,7 @@ import { compare, hash } from "bcryptjs";
 import { z } from "zod";
 import { generateRefreshToken } from "@/utils/auth";
 import { protectRoute } from "@/middlewares/jwt";
+import ENV from "@/env";
 
 export async function authRoutes(app: FastifyInstance) {
 	app.post(
@@ -80,20 +81,18 @@ export async function authRoutes(app: FastifyInstance) {
 			reply
 				.setCookie("auth_token", token, {
 					httpOnly: true,
-					secure: process.env.NODE_ENV === "production",
+					secure: ENV.NODE_ENV === "production",
 					sameSite: "lax",
 					path: "/",
 					maxAge: 60 * 60 * 24 * 7, // 7 dias
 				})
 				.setCookie("refresh_token", refreshToken, {
 					httpOnly: true,
-					secure: process.env.NODE_ENV === "production",
+					secure: ENV.NODE_ENV === "production",
 					sameSite: "lax",
 					path: "/",
 					maxAge: 60 * 60 * 24 * 7,
 				});
-
-			console.log("user retornado do banco", user);
 			return reply.send({
 				id: user.id,
 				name: user.name,
@@ -169,14 +168,14 @@ export async function authRoutes(app: FastifyInstance) {
 			reply
 				.setCookie("auth_token", token, {
 					httpOnly: true,
-					secure: process.env.NODE_ENV === "production",
+					secure: ENV.NODE_ENV === "production",
 					sameSite: "lax",
 					path: "/",
 					maxAge: 60 * 60 * 24 * 7,
 				})
 				.setCookie("refresh_token", newRefreshToken, {
 					httpOnly: true,
-					secure: process.env.NODE_ENV === "production",
+					secure: ENV.NODE_ENV === "production",
 					sameSite: "lax",
 					path: "/",
 					maxAge: 60 * 60 * 24 * 7,
@@ -225,7 +224,13 @@ export async function authRoutes(app: FastifyInstance) {
 				body: z.object({
 					name: z.string(),
 					email: z.string().email(),
-					password: z.string().min(6),
+					password: z
+						.string()
+						.min(12)
+						.regex(
+							/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{12,}$/,
+							"Senha deve ter pelo menos 12 caracteres, incluindo letras maiúsculas, minúsculas, números e símbolos.",
+						),
 				}),
 				response: {
 					200: z.object({
@@ -253,7 +258,7 @@ export async function authRoutes(app: FastifyInstance) {
 					.status(409)
 					.send({ error: true, message: "Admin já existe" });
 			}
-			const hashed = await hash(password, 10);
+			const hashed = await hash(password, 12);
 			const admin = await prisma.admin.create({
 				data: { name, email, password: hashed },
 			});

@@ -14,6 +14,16 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  email     String // E-mail do usuário (admin ou revenda)
+  userType  String // "admin" ou "revenda"
+  token     String   @unique
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
 model Admin {
   id        String   @id @default(cuid())
   email     String   @unique

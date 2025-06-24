@@ -13,10 +13,9 @@ import { queueJobsRoutes } from "../routes/queueJobs";
 import { registerLoggingHooks } from "../middlewares/logging";
 import { registerErrorHandler } from "../middlewares/errorHandler";
 import fastifyJwt from "@fastify/jwt";
-import { zodExampleRoutes } from "../routes/zodExample";
 import { authRoutes } from "../routes/auth";
+import { forgotRoutes } from "../routes/forgot";
 import cookie from "@fastify/cookie";
-import { testRoutes } from "@/routes/testRoutes";
 
 const app = Fastify().withTypeProvider<ZodTypeProvider>();
 
@@ -74,19 +73,20 @@ app.register(cookie, {
 // Registrar JWT
 app.register(fastifyJwt, {
 	secret: ENV.JWT_SECRET,
+	cookie: {
+		cookieName: "auth_token",
+		signed: false, // Assina o cookie
+	},
 });
 
 // Rotas de queueJobs
 app.register(queueJobsRoutes);
 
-// Rotas de zodExample
-app.register(zodExampleRoutes);
-
 // Rotas de autenticação
 app.register(authRoutes);
 
-// Rotas de teste
-app.register(testRoutes);
+// Rotas de recuperação de senha
+app.register(forgotRoutes);
 
 // Iniciar servidor
 async function start() {

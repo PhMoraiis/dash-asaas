@@ -4,6 +4,8 @@ const envSchema = z.object({
 	PORT: z.string().transform(Number).pipe(z.number().min(1000).max(65535)),
 	DATABASE_URL: z.string().url(),
 	REDIS_URL: z.string().url(),
+	REDIS_HOST: z.string(),
+	REDIS_PORT: z.string(),
 	JWT_SECRET: z
 		.string()
 		.min(32, "JWT_SECRET deve ter pelo menos 32 caracteres"),
@@ -23,6 +25,7 @@ const envSchema = z.object({
 	EXTERNAL_API_TOKEN: z
 		.string()
 		.min(10, "EXTERNAL_API_TOKEN deve ter pelo menos 10 caracteres"),
+	RESEND_API_KEY: z.string(),
 });
 
 // Validação das variáveis de ambiente
