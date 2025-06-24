@@ -1,3 +1,4 @@
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
@@ -30,7 +31,7 @@ export const useAuthStore = create<AuthState>()(
 			checkAuth: async () => {
 				set({ loading: true });
 				try {
-					const res = await fetch("/api/me", { credentials: "include" });
+					const res = await fetchWithAuth("/api/me");
 					if (!res.ok) throw new Error("Not authenticated");
 					const user = await res.json();
 					set({ user, isAuthenticated: true, loading: false });

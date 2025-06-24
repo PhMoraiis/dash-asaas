@@ -4,6 +4,7 @@ import { prisma, redis } from "@/database/client";
 import { compare, hash } from "bcryptjs";
 import { z } from "zod";
 import { generateRefreshToken } from "@/utils/auth";
+import { protectRoute } from "@/middlewares/jwt";
 
 export async function authRoutes(app: FastifyInstance) {
 	app.post(
@@ -17,6 +18,9 @@ export async function authRoutes(app: FastifyInstance) {
 				response: {
 					200: z.object({
 						success: z.boolean(),
+						id: z.string(),
+						name: z.string(),
+						email: z.string().email(),
 						role: z.enum(["admin", "revenda"]),
 					}),
 					401: z.object({
@@ -89,7 +93,14 @@ export async function authRoutes(app: FastifyInstance) {
 					maxAge: 60 * 60 * 24 * 7,
 				});
 
-			return reply.send({ success: true, role });
+			console.log("user retornado do banco", user);
+			return reply.send({
+				id: user.id,
+				name: user.name,
+				email: user.email,
+				role,
+				success: true,
+			});
 		},
 	);
 
@@ -246,7 +257,57 @@ export async function authRoutes(app: FastifyInstance) {
 			const admin = await prisma.admin.create({
 				data: { name, email, password: hashed },
 			});
-			return reply.send({ success: true, id: admin.id, email: admin.email });
+			return reply.send({
+				success: true,
+				id: admin.id,
+				name: admin.name,
+				email: admin.email,
+			});
+		},
+	);
+
+	// Endpoint para retornar dados do usuário autenticado
+	app.get(
+		"/api/me",
+		{
+			schema: {
+				tags: ["auth"],
+				summary: "Retorna dados do usuário autenticado",
+				response: {
+					200: z.object({
+						id: z.string(),
+						name: z.string(),
+						email: z.string().email(),
+						role: z.enum(["admin", "revenda"]),
+					}),
+					401: z.object({ error: z.boolean(), message: z.string() }),
+				},
+			},
+			preHandler: protectRoute,
+		},
+		async (request, reply) => {
+			const { id, role } = request.user as {
+				id: string;
+				role: "admin" | "revenda";
+			};
+			// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+			let user: any;
+			if (role === "admin") {
+				user = await prisma.admin.findUnique({ where: { id } });
+			} else {
+				user = await prisma.revenda.findUnique({ where: { id } });
+			}
+			if (!user) {
+				return reply
+					.status(401)
+					.send({ error: true, message: "Usuário não encontrado" });
+			}
+			return reply.send({
+				id: user.id,
+				name: user.name,
+				email: user.email,
+				role,
+			});
 		},
 	);
 }

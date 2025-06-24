@@ -1,5 +1,7 @@
+"use client";
+
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { useAuthStore } from "@/stores/auth-store";
 
 export default function LoginPage() {
@@ -9,22 +11,41 @@ export default function LoginPage() {
 	const login = useAuthStore((s) => s.login);
 	const setUser = useAuthStore((s) => s.setUser);
 	const router = useRouter();
+	const params = useParams();
+	const lang =
+		typeof params?.lang === "string"
+			? params.lang
+			: Array.isArray(params?.lang)
+				? params.lang[0]
+				: "pt";
 
 	async function handleSubmit(e: React.FormEvent) {
 		e.preventDefault();
 		setError("");
 		try {
-			const res = await fetch("/api/login", {
+			const res = await fetch("http://localhost:3333/api/login", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ email, password }),
 				credentials: "include",
 			});
 			if (!res.ok) throw new Error("Login inválido");
-			const user = await res.json();
+			const data = await res.json();
+			console.log("data:", data);
+			const user = {
+				id: data.id,
+				name: data.name,
+				email: data.email,
+				role: data.role,
+			};
 			login(user);
 			setUser(user);
-			router.push("/dashboard");
+			console.log("user:", user);
+			if (user.role === "admin") {
+				router.push(`/${lang}/admin/${user.id}/dashboard`);
+			} else {
+				router.push(`/${lang}/revenda/${user.id}/dashboard`);
+			}
 			// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 		} catch (err: any) {
 			setError(err.message || "Erro ao logar");
