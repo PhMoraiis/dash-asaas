@@ -26,7 +26,17 @@ export const useAuthStore = create<AuthState>()(
 			isAuthenticated: false,
 			loading: false,
 			login: (user) => set({ user, isAuthenticated: true, loading: false }),
-			logout: () => set({ user: null, isAuthenticated: false, loading: false }),
+			logout: async () => {
+				try {
+					await fetch("http://localhost:3333/api/logout", {
+						method: "POST",
+						credentials: "include",
+					});
+				} catch (e) {
+					// Tratar erros aqui, se necessário
+				}
+				set({ user: null, isAuthenticated: false, loading: false });
+			},
 			setUser: (user) => set({ user, isAuthenticated: !!user }),
 			checkAuth: async () => {
 				set({ loading: true });

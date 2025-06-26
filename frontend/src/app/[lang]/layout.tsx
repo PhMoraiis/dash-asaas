@@ -1,10 +1,15 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Oxanium, JetBrains_Mono } from "next/font/google";
 import "../globals.css";
-import { ThemeProvider } from "next-themes";
+import { ThemeProvider } from "@/lib/themeProvider";
+import { Toaster } from "@/components/ui/sonner";
 
-const interSans = Inter({
-	variable: "--font-inter-sans",
+const oxanium = Oxanium({
+	variable: "--font-sans",
+	subsets: ["latin"],
+});
+const jetBrainsMono = JetBrains_Mono({
+	variable: "--font-mono",
 	subsets: ["latin"],
 });
 
@@ -22,14 +27,18 @@ export default async function RootLayout({
 }>) {
 	return (
 		<html lang={(await params).lang} suppressHydrationWarning>
-			<body className={`${interSans.variable} antialiased`}>
+			<body
+				className={`${oxanium.variable} ${jetBrainsMono.variable} antialiased`}
+			>
 				<ThemeProvider
-					attribute="data-theme"
+					attribute="class"
 					defaultTheme="system"
 					enableSystem
+					disableTransitionOnChange
 				>
 					{children}
 				</ThemeProvider>
+				<Toaster />
 			</body>
 		</html>
 	);

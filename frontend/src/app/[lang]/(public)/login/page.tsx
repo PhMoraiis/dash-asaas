@@ -157,7 +157,7 @@ export default function LoginPage() {
 								<p className="text-sm text-muted-foreground">
 									Esqueceu sua senha?{" "}
 									<Link
-										className="text-blue-600 hover:underline duration-200"
+										className="text-primary hover:underline duration-200"
 										href="/forgot-password"
 									>
 										Clique aqui
@@ -171,14 +171,14 @@ export default function LoginPage() {
 						<p className="text-sm text-muted-foreground">
 							By signing in, you agree to our{" "}
 							<Link
-								className="text-blue-600 hover:underline duration-200"
+								className="text-primary hover:underline duration-200"
 								href={"/terms"}
 							>
 								Terms of Service
 							</Link>{" "}
 							and{" "}
 							<Link
-								className="text-blue-600 hover:underline duration-200"
+								className="text-primary hover:underline duration-200"
 								href={"/privacy"}
 							>
 								Privacy Policy

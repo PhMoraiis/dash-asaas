@@ -1,32 +1,35 @@
-"use client";
+import { AppSidebar } from "@/components/dashboard/app-sidebar";
+import { DataTable } from "@/components/dashboard/data-table";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
-import { useEffect } from "react";
-import { useParams } from "next/navigation";
-import { useAuthStore } from "@/stores/auth-store";
+import data from "./data.json";
+import Navbar from "@/components/navbar";
 
-export default function AdminPage() {
-	const { user, isAuthenticated, loading, checkAuth } = useAuthStore();
-	const params = useParams();
-	const adminId =
-		typeof params?.adminId === "string"
-			? params.adminId
-			: Array.isArray(params?.adminId)
-				? params.adminId[0]
-				: "";
-
-	useEffect(() => {
-		if (!isAuthenticated && !loading) {
-			checkAuth();
-		}
-	}, [isAuthenticated, loading, checkAuth]);
-
-	if (!isAuthenticated || user?.role !== "admin" || user?.id !== adminId)
-		return <div>Carregando...</div>;
-
+export default function Page() {
 	return (
-		<div className="p-8">
-			<h1 className="text-2xl font-bold mb-4">Admin {user.name}</h1>
-			<p>Área restrita para administradores.</p>
-		</div>
+		<SidebarProvider
+			style={
+				{
+					"--sidebar-width": "calc(var(--spacing) * 72)",
+					"--header-height": "calc(var(--spacing) * 12)",
+				} as React.CSSProperties
+			}
+		>
+			<AppSidebar variant="inset" />
+			<SidebarInset>
+				<Navbar />
+				<div className="flex flex-1 flex-col">
+					<div className="@container/main flex flex-1 flex-col gap-2">
+						<div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
+							{/* <SectionCards />
+							<div className="px-4 lg:px-6">
+								<ChartAreaInteractive />
+							</div> */}
+							<DataTable data={data} />
+						</div>
+					</div>
+				</div>
+			</SidebarInset>
+		</SidebarProvider>
 	);
 }
