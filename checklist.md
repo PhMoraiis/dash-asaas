@@ -68,15 +68,15 @@
 
 ### 3.1 Backend - Endpoints de Gerenciamento
 
-- [ ] **POST** `/api/admin/revendas` - Criar revenda
-- [ ] **GET** `/api/admin/revendas` - Listar revendas
-- [ ] **PUT** `/api/admin/revendas/:id` - Editar revenda
-- [ ] **DELETE** `/api/admin/revendas/:id` - Desativar revenda
+- [x] **POST** `/api/admin/revendas` - Criar revenda
+- [x] **GET** `/api/admin/revendas` - Listar revendas
+- [x] **PUT** `/api/admin/revendas/:id` - Editar revenda
+- [x] **DELETE** `/api/admin/revendas/:id` - Desativar revenda
 
 ### 3.2 Frontend - Interface de Gestão de Revendas
 
-- [ ] Página para listar revendas
 - [ ] Formulário/Modal para criar nova revenda
+- [ ] Página para listar revendas
 - [ ] Formulário/Modal para editar/desativar revenda
 - [ ] Visualizar produtos e status de webhooks por revenda
 

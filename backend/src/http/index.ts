@@ -16,6 +16,7 @@ import fastifyJwt from "@fastify/jwt";
 import { authRoutes } from "../routes/auth";
 import { forgotRoutes } from "../routes/forgot";
 import cookie from "@fastify/cookie";
+import { revendasRoutes } from "../routes/manageRevendas";
 
 const app = Fastify().withTypeProvider<ZodTypeProvider>();
 
@@ -87,6 +88,9 @@ app.register(authRoutes);
 
 // Rotas de recuperação de senha
 app.register(forgotRoutes);
+
+// Rotas de revendas
+app.register(revendasRoutes);
 
 // Iniciar servidor
 async function start() {
