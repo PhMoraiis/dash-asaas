@@ -66,14 +66,29 @@
 ## **🏢 FASE 3: Gerenciamento de Revendas (Admin - Backend + Frontend)**
 *(Objetivo: O admin poderá logar e gerenciar as revendas)*
 
-### 3.1 Backend - Endpoints de Gerenciamento
+# Criar arquivo .env.local com NEXT_PUBLIC_JWT_SECRET
+
+### 3.1 Backend - Endpoinst de Gerenciamento de Administradores
+
+- [] **GET** '/api/admin/adm' - Listar admins
+- [] **POST** '/api/admin/adm' - Criar admin
+- [] **PUT** '/api/admin/adm/:id' - Editar admin
+- [] **DELETE** '/api/admin/adm/:id' - Desativar admin
+
+### 3.2 Frontend - Interface de Gestão de Administradores
+
+- [ ] Formulário/Modal para criar novo administrador
+- [ ] Página para listar administradores
+- [ ] Formulário/Modal para editar/desativar administradores
+
+### 3.3 Backend - Endpoints de Gerenciamento de Revendas
 
 - [x] **POST** `/api/admin/revendas` - Criar revenda
 - [x] **GET** `/api/admin/revendas` - Listar revendas
 - [x] **PUT** `/api/admin/revendas/:id` - Editar revenda
 - [x] **DELETE** `/api/admin/revendas/:id` - Desativar revenda
 
-### 3.2 Frontend - Interface de Gestão de Revendas
+### 3.4 Frontend - Interface de Gestão de Revendas
 
 - [ ] Formulário/Modal para criar nova revenda
 - [ ] Página para listar revendas

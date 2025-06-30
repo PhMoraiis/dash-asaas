@@ -5,7 +5,10 @@ const envSchema = z.object({
 	DATABASE_URL: z.string().url(),
 	REDIS_URL: z.string().url(),
 	REDIS_HOST: z.string(),
-	REDIS_PORT: z.string(),
+	REDIS_PORT: z
+		.string()
+		.transform(Number)
+		.pipe(z.number().min(1000).max(65535)),
 	JWT_SECRET: z
 		.string()
 		.min(32, "JWT_SECRET deve ter pelo menos 32 caracteres"),

@@ -1,7 +1,8 @@
-"use client";
-
-import type * as React from "react";
-import { IconDashboard, IconFolder } from "@tabler/icons-react";
+import {
+	CheckerboardIcon,
+	IdentificationBadgeIcon,
+	FolderUserIcon,
+} from "@phosphor-icons/react/dist/ssr";
 import { NavMain } from "@/components/dashboard/nav-main";
 import {
 	Sidebar,
@@ -13,27 +14,30 @@ import Logo from "../navbar/logo";
 import Link from "next/link";
 import { SignOutButton } from "./signOutButton";
 
-const data = {
-	user: {
-		name: "shadcn",
-		email: "m@example.com",
-		avatar: "/avatars/shadcn.jpg",
-	},
-	navMain: [
-		{
-			title: "Dashboard",
-			url: "#",
-			icon: IconDashboard,
-		},
-		{
-			title: "Revendas",
-			url: "/dashboard/revendas",
-			icon: IconFolder,
-		},
-	],
-};
+export default function AppSidebar({ params, ...props }) {
+	const lang = params.lang;
+	const userId = params.id;
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+	const data = {
+		navMain: [
+			{
+				title: "Dashboard",
+				url: `/${lang}/admin/${userId}/dashboard`,
+				icon: CheckerboardIcon,
+			},
+			{
+				title: "Revendas",
+				url: "/dashboard/revendas",
+				icon: FolderUserIcon,
+			},
+			{
+				title: "Administradores",
+				url: "/dashboard/admins",
+				icon: IdentificationBadgeIcon,
+			},
+		],
+	};
+
 	return (
 		<Sidebar collapsible="offcanvas" {...props}>
 			<SidebarHeader className="bg-background shadow-sm rounded h-16 flex items-center justify-between flex-row px-4">

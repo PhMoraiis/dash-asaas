@@ -11,13 +11,12 @@
     "start": "NODE_ENV=production node dist/index.js",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
-    "db:migrate": "prisma migrate dev",
-    "db:seed": "tsx src/database/seed.ts"
+    "db:migrate": "prisma migrate dev"
   },
   "devDependencies": {
     "@biomejs/biome": "2.0.0",
     "@types/node": "^24.0.3",
-    "prisma": "^6.10.0",
+    "prisma": "^6.10.1",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3"
   },
@@ -26,7 +25,7 @@
     "@fastify/cors": "^11.0.1",
     "@fastify/jwt": "^9.1.0",
     "@fastify/swagger": "^9.5.1",
-    "@prisma/client": "^6.10.0",
+    "@prisma/client": "^6.10.1",
     "@scalar/fastify-api-reference": "^1.31.14",
     "bcryptjs": "^3.0.2",
     "bullmq": "^5.54.3",

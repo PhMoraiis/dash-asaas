@@ -1,13 +1,12 @@
 "use client";
 
 import type { Icon } from "@tabler/icons-react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
 	SidebarGroup,
 	SidebarGroupContent,
 	SidebarMenu,
-
 } from "@/components/ui/sidebar";
 import { PlusIcon } from "@phosphor-icons/react/dist/ssr";
 
@@ -21,6 +20,7 @@ export function NavMain({
 	}[];
 }) {
 	const router = useRouter();
+	const pathname = usePathname();
 
 	return (
 		<SidebarGroup>
@@ -35,8 +35,10 @@ export function NavMain({
 				<SidebarMenu className="flex space-y-2">
 					{items.map((item) => (
 						<Button
-							variant="ghost"
-							className="w-full justify-start px-0 cursor-pointer"
+							variant={pathname === item.url ? "default" : "ghost"}
+							className={`w-full justify-start px-0 cursor-pointer ${
+								pathname === item.url ? "font-bold bg-muted" : ""
+							}`}
 							key={item.title}
 							onClick={() => {
 								router.push(item.url);
@@ -44,7 +46,7 @@ export function NavMain({
 						>
 							<div className="flex items-center gap-2">
 								<div className="size-9 bg-border rounded-lg flex items-center justify-center">
-									{item.icon && <item.icon size={20} />}
+									{item.icon && <item.icon size={24} width="bold" />}
 								</div>
 								<span>{item.title}</span>
 							</div>

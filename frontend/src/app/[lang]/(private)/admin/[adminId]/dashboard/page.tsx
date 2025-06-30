@@ -15,7 +15,7 @@ export default function Page() {
 				} as React.CSSProperties
 			}
 		>
-			<AppSidebar variant="inset" />
+			<AppSidebar lang={params.lang} userId={params.id} variant="inset" />
 			<SidebarInset>
 				<Navbar />
 				<div className="flex flex-1 flex-col">
