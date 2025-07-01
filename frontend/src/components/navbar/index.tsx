@@ -23,7 +23,7 @@ import Link from "next/link";
 import { SidebarTrigger } from "../ui/sidebar";
 import { Separator } from "../ui/separator";
 import { useAuthStore } from "@/stores/auth-store";
-import { CommandBar } from "../dashboard/commandBar";
+import { CommandBar } from "./command-bar";
 
 // Language options
 const languages = [

@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/sidebar";
 import Logo from "../navbar/logo";
 import Link from "next/link";
-import { SignOutButton } from "./signOutButton";
+import { SignOutButton } from "./sign-out-button";
 import { useAuthStore } from "@/stores/auth-store";
 import { useParams } from "next/navigation";
 import type { ComponentProps } from "react";

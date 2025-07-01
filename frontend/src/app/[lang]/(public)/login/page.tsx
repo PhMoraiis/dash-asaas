@@ -64,6 +64,10 @@ export default function LoginPage() {
 			};
 			login(user);
 			setUser(user);
+			if (data.mustChangePassword) {
+				router.push(`/${lang}/new-password`);
+				return;
+			}
 			if (user.role === "admin") {
 				router.push(`/${lang}/admin/${user.slug}/dashboard`);
 			} else {

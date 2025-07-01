@@ -9,6 +9,9 @@ import {
 } from "@/components/ui/sidebar";
 import { PlusIcon } from "@phosphor-icons/react/dist/ssr";
 
+import { useState } from "react";
+import { CreateRevendaModal } from "./create-revenda-modal";
+
 export function NavMain({
 	items,
 }: {
@@ -21,17 +24,19 @@ export function NavMain({
 }) {
 	const router = useRouter();
 	const pathname = usePathname();
+	const [open, setOpen] = useState(false);
 
 	return (
 		<SidebarGroup>
 			<SidebarGroupContent className="flex flex-col gap-2">
 				<Button
 					className="justify-center items-center text-md cursor-pointer"
-					onClick={() => {}}
+					onClick={() => setOpen(true)}
 				>
 					<PlusIcon size={24} />
 					<span>Cadastrar Revenda</span>
 				</Button>
+				<CreateRevendaModal open={open} onOpenChange={setOpen} />
 				<SidebarMenu className="flex space-y-2">
 					{items.map((item) => (
 						<Button

@@ -93,9 +93,11 @@ export async function middleware(request: NextRequest) {
 	// Decodifica o JWT para saber o papel do usuário
 	let role: string | null = null;
 	let slug: string | null = null;
+	const jwtSecret = process.env.NEXT_PUBLIC_JWT_SECRET;
+	if (!jwtSecret) {
+		return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
+	}
 	try {
-		// biome-ignore lint/style/noNonNullAssertion: <explanation>
-		const jwtSecret = process.env.NEXT_PUBLIC_JWT_SECRET!;
 		const { payload } = await jwtVerify(
 			token,
 			new TextEncoder().encode(jwtSecret),
@@ -105,6 +107,26 @@ export async function middleware(request: NextRequest) {
 	} catch (e) {
 		return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
 	}
+
+	// --- NOVO: Consulta o backend para saber se precisa trocar a senha ---
+	try {
+		const meRes = await fetch("http://localhost:3333/api/me", {
+			headers: { Cookie: `auth_token=${token}` },
+			credentials: "include",
+		});
+		if (meRes.ok) {
+			const user = await meRes.json();
+			if (
+				user.mustChangePassword &&
+				!pathname.startsWith(`/${locale}/new-password`)
+			) {
+				const url = new URL(request.url);
+				url.pathname = `/${locale}/new-password`;
+				return NextResponse.redirect(url);
+			}
+		}
+	} catch {}
+	// --- FIM NOVO ---
 
 	// Protege área de admin: apenas admin pode acessar /admin
 	const adminMatch = pathWithoutLocale.match(/^\/admin\/([^/]+)/);

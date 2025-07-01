@@ -11,14 +11,17 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { getInitials } from "@/lib/utils";
+import { getFirstName, getInitials } from "@/lib/utils";
 import { useAuthStore } from "@/stores/auth-store";
 import {
 	BookOpenIcon,
+	HandWavingIcon,
 	LifebuoyIcon,
 	SignOutIcon,
 } from "@phosphor-icons/react/dist/ssr";
+import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
+import { toast } from "sonner";
 
 const avatarStyles = [
 	"adventurer-neutral",
@@ -37,6 +40,8 @@ function randomStyle() {
 
 export default function UserMenu() {
 	const user = useAuthStore((s) => s.user);
+	const logout = useAuthStore((s) => s.logout);
+	const router = useRouter();
 	const dicebearUrl = `https://api.dicebear.com/9.x/fun-emoji/svg?seed=${encodeURIComponent(user?.name || "User")}`;
 
 	const [style, setStyle] = useState<string | null>(null);
@@ -58,6 +63,20 @@ export default function UserMenu() {
 	}, []);
 
 	if (!style) return null;
+
+	async function handleLogout() {
+		await logout();
+		toast(`Até breve ${getFirstName(user?.name)}!`, {
+			duration: 2000,
+			closeButton: true,
+			icon: <HandWavingIcon size={22} />,
+			style: {
+				backgroundColor: "var(--destructive)",
+				color: "var(--destructive-foreground)",
+			},
+		});
+		router.replace("/login");
+	}
 
 	return (
 		<DropdownMenu>
@@ -96,7 +115,7 @@ export default function UserMenu() {
 					</DropdownMenuItem>
 				</DropdownMenuGroup>
 				<DropdownMenuSeparator />
-				<DropdownMenuItem>
+				<DropdownMenuItem onClick={handleLogout}>
 					<SignOutIcon size={16} className="opacity-60" aria-hidden="true" />
 					<span>Logout</span>
 				</DropdownMenuItem>

@@ -66,32 +66,32 @@
 ## **🏢 FASE 3: Gerenciamento de Revendas (Admin - Backend + Frontend)**
 *(Objetivo: O admin poderá logar e gerenciar as revendas)*
 
-### 3.1 Backend - Endpoinst de Gerenciamento de Administradores
-
-- [] **GET** '/api/admin/adm' - Listar admins
-- [] **POST** '/api/admin/adm' - Criar admin
-- [] **PUT** '/api/admin/adm/:id' - Editar admin
-- [] **DELETE** '/api/admin/adm/:id' - Desativar admin
-
-### 3.2 Frontend - Interface de Gestão de Administradores
-
-- [ ] Formulário/Modal para criar novo administrador
-- [ ] Página para listar administradores
-- [ ] Formulário/Modal para editar/desativar administradores
-
-### 3.3 Backend - Endpoints de Gerenciamento de Revendas
+### 3.1 Backend - Endpoints de Gerenciamento de Revendas
 
 - [x] **POST** `/api/admin/revendas` - Criar revenda
 - [x] **GET** `/api/admin/revendas` - Listar revendas
 - [x] **PUT** `/api/admin/revendas/:id` - Editar revenda
 - [x] **DELETE** `/api/admin/revendas/:id` - Desativar revenda
 
-### 3.4 Frontend - Interface de Gestão de Revendas
+### 3.2 Frontend - Interface de Gestão de Revendas
 
-- [ ] Formulário/Modal para criar nova revenda
-- [ ] Página para listar revendas
-- [ ] Formulário/Modal para editar/desativar revenda
-- [ ] Visualizar produtos e status de webhooks por revenda
+- [x] Formulário/Modal para criar nova revenda
+- [x] Página para listar revendas
+- [x] Formulário/Modal para editar/desativar revenda
+
+### 3.3 Backend - Endpoinst de Gerenciamento de Administradores
+
+- [] **GET** '/api/admin/adm' - Listar admins
+- [] **POST** '/api/admin/adm' - Criar admin
+- [] **PUT** '/api/admin/adm/:id' - Editar admin
+- [] **DELETE** '/api/admin/adm/:id' - Desativar admin
+
+### 3.4 Frontend - Interface de Gestão de Administradores
+
+- [ ] Formulário/Modal para criar novo administrador
+- [ ] Página para listar administradores
+- [ ] Formulário/Modal para editar/desativar administradores
+
 
 ## **📦 FASE 4: Gerenciamento de Produtos (Revenda - Backend + Frontend)**
 *(Objetivo: A revenda poderá logar e gerenciar seus produtos)*
@@ -109,6 +109,10 @@
 - [ ] Formulário/Modal para criar novo produto
 - [ ] Formulário/Modal para editar produto
 - [ ] Visualizar webhooks por produto
+
+### 4.3 Frontend - Interface de Gestão de Produtos ADMIN
+
+- [ ] Visualizar produtos e status de webhooks por revenda
 
 ## **🔗 FASE 5: Configuração e Recebimento de Webhooks (Backend + Frontend)**
 *(Objetivo: A revenda poderá configurar e o sistema começará a receber webhooks)*

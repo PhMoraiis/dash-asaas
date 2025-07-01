@@ -1,83 +1,34 @@
-import { useEffect, useState } from "react";
-import { useRouter, useParams } from "next/navigation";
-import { useAuthStore } from "@/stores/auth-store";
-import { fetchWithAuth } from "@/lib/fetchWithAuth";
+import AppSidebar from "@/components/dashboard/app-sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
-export default function DashboardPage() {
-	const { user, isAuthenticated, loading, checkAuth, logout } = useAuthStore();
-	const router = useRouter();
-	const params = useParams();
-	const [error, setError] = useState("");
-	const [privateData, setPrivateData] = useState<string | null>(null);
+import Navbar from "@/components/navbar";
+import DashTable from "@/components/dashboard/dash-table";
 
-	const revendaId =
-		typeof params?.revendaId === "string"
-			? params.revendaId
-			: Array.isArray(params?.revendaId)
-				? params.revendaId[0]
-				: "";
-
-	useEffect(() => {
-		if (!isAuthenticated && !loading) {
-			checkAuth().then(() => {
-				const { isAuthenticated, user } = useAuthStore.getState();
-				if (
-					!isAuthenticated ||
-					user?.role !== "revenda" ||
-					user?.id !== revendaId
-				) {
-					router.replace("/login");
-				}
-			});
-		} else if (
-			isAuthenticated &&
-			(user?.role !== "revenda" || user?.id !== revendaId)
-		) {
-			router.replace("/login");
-		}
-	}, [isAuthenticated, loading, user, checkAuth, router, revendaId]);
-
-	if (!isAuthenticated || user?.role !== "revenda" || user?.id !== revendaId)
-		return <div>Carregando...</div>;
-
-	// useEffect(() => {
-	// 	async function fetchProtected() {
-	// 		try {
-	// 			const res = await fetchWithAuth("/api/private-test");
-	// 			if (!res.ok) throw new Error("Erro ao buscar dados protegidos");
-	// 			const data = await res.json();
-	// 			setPrivateData(data.message);
-	// 		} catch (err: unknown) {
-	// 			if (err instanceof Error) {
-	// 				setError(err.message || "Sessão expirada. Faça login novamente.");
-	// 			} else {
-	// 				setError("Sessão expirada. Faça login novamente.");
-	// 			}
-	// 		}
-	// 	}
-	// 	if (isAuthenticated) fetchProtected();
-	// }, [isAuthenticated]);
-
-	function handleLogout() {
-		logout();
-		router.replace("/login");
-	}
-
+export default function RevendaDashboard() {
 	return (
-		<div className="p-8">
-			<h1 className="text-2xl font-bold mb-4">Dashboard</h1>
-			<p>
-				Bem-vindo, {user?.name} ({user?.role})
-			</p>
-			{privateData && <p className="mt-4 text-green-700">{privateData}</p>}
-			{error && <p className="mt-4 text-red-600 font-semibold">{error}</p>}
-			<button
-				onClick={handleLogout}
-				type="button"
-				className="mt-6 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
-			>
-				Logout
-			</button>
-		</div>
+		<SidebarProvider
+			style={
+				{
+					"--sidebar-width": "calc(var(--spacing) * 72)",
+					"--header-height": "calc(var(--spacing) * 12)",
+				} as React.CSSProperties
+			}
+		>
+			<AppSidebar variant="inset" />
+			<SidebarInset>
+				<Navbar />
+				<div className="flex flex-1 flex-col">
+					<div className="@container/main flex flex-1 flex-col gap-2">
+						<div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
+							{/* <SectionCards />
+							<div className="px-4 lg:px-6">
+								<ChartAreaInteractive />
+							</div> */}
+							<DashTable />
+						</div>
+					</div>
+				</div>
+			</SidebarInset>
+		</SidebarProvider>
 	);
 }
