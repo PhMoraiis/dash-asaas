@@ -8,24 +8,25 @@ import {
 	type ZodTypeProvider,
 } from "fastify-type-provider-zod";
 import ENV from "../env";
-import "../queues/worker";
-import { queueJobsRoutes } from "../routes/queueJobs";
 import { registerLoggingHooks } from "../middlewares/logging";
 import { registerErrorHandler } from "../middlewares/errorHandler";
-import fastifyJwt from "@fastify/jwt";
-import { authRoutes } from "../routes/auth";
-import { forgotRoutes } from "../routes/forgot";
 import cookie from "@fastify/cookie";
-import { revendasRoutes } from "../routes/manageRevendas";
+import fastifyJwt from "@fastify/jwt";
+import { queueJobsRoutes } from "../routes/QueueJobs";
+import { authRoutes } from "../routes/AdminAuth";
+import { forgotRoutes } from "../routes/PasswordForgot";
+import { revendasRoutes } from "../routes/ManageRevendas";
 
+// Validator and Serializer Compilers ZOD
 const app = Fastify().withTypeProvider<ZodTypeProvider>();
-
 app.setValidatorCompiler(validatorCompiler);
 app.setSerializerCompiler(serializerCompiler);
 
+// Log e Error Handling
 registerLoggingHooks(app);
 registerErrorHandler(app);
 
+// CORS Config
 app.register(cors, {
 	origin: ENV.CORS_ORIGIN,
 	methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
@@ -33,6 +34,7 @@ app.register(cors, {
 	allowedHeaders: ["Content-Type", "Authorization"],
 });
 
+// Swagger Config
 app.register(swagger, {
 	openapi: {
 		info: {
@@ -52,6 +54,7 @@ app.register(swagger, {
 	},
 });
 
+// Scalar Config
 app.register(ScalarApiReference, {
 	routePrefix: `/${ENV.API_VERSION}/docs`,
 	configuration: {
@@ -61,6 +64,7 @@ app.register(ScalarApiReference, {
 	},
 });
 
+// Cookies Config
 app.register(cookie, {
 	secret: ENV.COOKIE_SECRET, // Chave secreta para assinar cookies
 	hook: "onRequest", // Assina cookies no início da requisição
@@ -71,7 +75,7 @@ app.register(cookie, {
 	},
 });
 
-// Registrar JWT
+// JWT Config
 app.register(fastifyJwt, {
 	secret: ENV.JWT_SECRET,
 	cookie: {
@@ -82,13 +86,10 @@ app.register(fastifyJwt, {
 
 // Rotas de queueJobs
 app.register(queueJobsRoutes);
-
 // Rotas de autenticação
 app.register(authRoutes);
-
 // Rotas de recuperação de senha
 app.register(forgotRoutes);
-
 // Rotas de revendas
 app.register(revendasRoutes);
 

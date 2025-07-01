@@ -4,6 +4,7 @@ import { hash } from "bcryptjs";
 import { z } from "zod";
 import { protectRoute } from "@/middlewares/jwt";
 import { requireRole } from "@/middlewares/role";
+import { generateUniqueSlug } from "@/utils/slugIncremental";
 
 const createRevendaSchema = z.object({
 	name: z.string().min(2),
@@ -31,7 +32,13 @@ export async function revendasRoutes(app: FastifyInstance) {
 				summary: "Criar revenda",
 				body: createRevendaSchema,
 				response: {
-					201: z.object({ success: z.boolean(), id: z.string() }),
+					201: z.object({
+						success: z.boolean(),
+						id: z.string(),
+						slug: z.string(),
+						name: z.string(),
+						email: z.string().email(),
+					}),
 					409: z.object({ error: z.boolean(), message: z.string() }),
 				},
 			},
@@ -47,10 +54,13 @@ export async function revendasRoutes(app: FastifyInstance) {
 					.send({ error: true, message: "Revenda já existe" });
 			}
 			const hashed = await hash(password, 12);
+			const slug = await generateUniqueSlug(name, "revenda");
 			const revenda = await prisma.revenda.create({
-				data: { name, email, password: hashed, externalId },
+				data: { name, email, password: hashed, externalId, slug },
 			});
-			return reply.status(201).send({ success: true, id: revenda.id });
+			return reply
+				.status(201)
+				.send({ success: true, id: revenda.id, slug: revenda.slug });
 		},
 	);
 
@@ -69,6 +79,7 @@ export async function revendasRoutes(app: FastifyInstance) {
 							name: z.string(),
 							email: z.string().email(),
 							externalId: z.string().nullable(),
+							slug: z.string(),
 							active: z.boolean(),
 							createdAt: z.string(),
 							updatedAt: z.string(),
@@ -84,6 +95,7 @@ export async function revendasRoutes(app: FastifyInstance) {
 					name: true,
 					email: true,
 					externalId: true,
+					slug: true,
 					active: true,
 					createdAt: true,
 					updatedAt: true,

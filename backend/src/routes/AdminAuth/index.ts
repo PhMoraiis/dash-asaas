@@ -6,6 +6,7 @@ import { z } from "zod";
 import { generateRefreshToken } from "@/utils/auth";
 import { protectRoute } from "@/middlewares/jwt";
 import ENV from "@/env";
+import { generateUniqueSlug } from "@/utils/slugIncremental";
 
 export async function authRoutes(app: FastifyInstance) {
 	app.post(
@@ -23,6 +24,7 @@ export async function authRoutes(app: FastifyInstance) {
 						name: z.string(),
 						email: z.string().email(),
 						role: z.enum(["admin", "revenda"]),
+						slug: z.string(),
 					}),
 					401: z.object({
 						error: z.boolean(),
@@ -66,6 +68,7 @@ export async function authRoutes(app: FastifyInstance) {
 				id: user.id,
 				email: user.email,
 				role,
+				slug: user.slug,
 			});
 
 			// Gera refresh token
@@ -98,6 +101,7 @@ export async function authRoutes(app: FastifyInstance) {
 				name: user.name,
 				email: user.email,
 				role,
+				slug: user.slug,
 				success: true,
 			});
 		},
@@ -153,6 +157,7 @@ export async function authRoutes(app: FastifyInstance) {
 				id: user.id,
 				email: user.email,
 				role,
+				slug: user.slug,
 			});
 
 			// Rotaciona refresh token
@@ -237,6 +242,8 @@ export async function authRoutes(app: FastifyInstance) {
 						success: z.boolean(),
 						id: z.string(),
 						email: z.string().email(),
+						slug: z.string(),
+						name: z.string(),
 					}),
 					409: z.object({
 						error: z.boolean(),
@@ -259,14 +266,16 @@ export async function authRoutes(app: FastifyInstance) {
 					.send({ error: true, message: "Admin já existe" });
 			}
 			const hashed = await hash(password, 12);
+			const slug = await generateUniqueSlug(name, "admin");
 			const admin = await prisma.admin.create({
-				data: { name, email, password: hashed },
+				data: { name, email, password: hashed, slug },
 			});
 			return reply.send({
 				success: true,
 				id: admin.id,
 				name: admin.name,
 				email: admin.email,
+				slug: admin.slug,
 			});
 		},
 	);
@@ -312,6 +321,7 @@ export async function authRoutes(app: FastifyInstance) {
 				name: user.name,
 				email: user.email,
 				role,
+				slug: user.slug,
 			});
 		},
 	);

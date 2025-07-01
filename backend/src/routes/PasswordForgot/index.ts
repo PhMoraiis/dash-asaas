@@ -51,7 +51,7 @@ export async function forgotRoutes(app: FastifyInstance) {
 			// Envia e-mail usando Resend
 			const resend = new Resend(ENV.RESEND_API_KEY);
 
-			const result = await resend.emails.send({
+			await resend.emails.send({
 				from: "Dash <no-reply@philipemorais.com>",
 				to: email,
 				subject: "Recuperação de senha",
