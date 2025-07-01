@@ -3,12 +3,22 @@ import slugify from "slugify";
 
 type ModelType = "admin" | "revenda";
 
+const STOPWORDS = ["de", "da", "do", "dos", "das", "e"];
+
+function removeStopwords(name: string) {
+  return name
+  .split(" ")
+  .filter((word) => !STOPWORDS.includes(word.toLowerCase()))
+  .join(" ");
+}
+
 // Função para gerar slug único
 export async function generateUniqueSlug(
 	name: string,
 	model: ModelType,
 ): Promise<string> {
-	const baseSlug = slugify(name, { lower: true, strict: true });
+	const cleanName = removeStopwords(name);
+	const baseSlug = slugify(cleanName, { lower: true, strict: true });
 	let slug = baseSlug;
 	let count = 2;
 

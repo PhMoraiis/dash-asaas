@@ -5,21 +5,8 @@ import { z } from "zod";
 import { protectRoute } from "@/middlewares/jwt";
 import { requireRole } from "@/middlewares/role";
 import { generateUniqueSlug } from "@/utils/slugIncremental";
-
-const createRevendaSchema = z.object({
-	name: z.string().min(2),
-	email: z.string().email(),
-	password: z.string().min(8),
-	externalId: z.string().optional(),
-});
-
-const updateRevendaSchema = z.object({
-	name: z.string().min(2).optional(),
-	email: z.string().email().optional(),
-	password: z.string().min(8).optional(),
-	externalId: z.string().optional(),
-	active: z.boolean().optional(),
-});
+import { createRevendaSchema, updateRevendaSchema } from "./schemas";
+import { generateRandomPassword } from "@/utils/generateRandomPassword";
 
 export async function revendasRoutes(app: FastifyInstance) {
 	// Criar revenda
@@ -38,29 +25,34 @@ export async function revendasRoutes(app: FastifyInstance) {
 						slug: z.string(),
 						name: z.string(),
 						email: z.string().email(),
+						password: z.string(),
 					}),
 					409: z.object({ error: z.boolean(), message: z.string() }),
 				},
 			},
 		},
 		async (request, reply) => {
-			const { name, email, password, externalId } = createRevendaSchema.parse(
-				request.body,
-			);
+			const { name, email } = createRevendaSchema.parse(request.body);
 			const exists = await prisma.revenda.findUnique({ where: { email } });
 			if (exists) {
 				return reply
 					.status(409)
 					.send({ error: true, message: "Revenda já existe" });
 			}
+			const password = generateRandomPassword(12);
 			const hashed = await hash(password, 12);
 			const slug = await generateUniqueSlug(name, "revenda");
 			const revenda = await prisma.revenda.create({
-				data: { name, email, password: hashed, externalId, slug },
+				data: { name, email, password: hashed, slug, mustChangePassword: true },
 			});
-			return reply
-				.status(201)
-				.send({ success: true, id: revenda.id, slug: revenda.slug });
+			return reply.status(201).send({
+				success: true,
+				id: revenda.id,
+				slug: revenda.slug,
+				name: revenda.name,
+				email: revenda.email,
+				password,
+			});
 		},
 	);
 
@@ -78,7 +70,6 @@ export async function revendasRoutes(app: FastifyInstance) {
 							id: z.string(),
 							name: z.string(),
 							email: z.string().email(),
-							externalId: z.string().nullable(),
 							slug: z.string(),
 							active: z.boolean(),
 							createdAt: z.string(),
@@ -94,7 +85,6 @@ export async function revendasRoutes(app: FastifyInstance) {
 					id: true,
 					name: true,
 					email: true,
-					externalId: true,
 					slug: true,
 					active: true,
 					createdAt: true,
@@ -102,18 +92,24 @@ export async function revendasRoutes(app: FastifyInstance) {
 				},
 				orderBy: { createdAt: "desc" },
 			});
-			return reply.send(revendas);
+			const revendasSerializadas = revendas.map((r) => ({
+				...r,
+				createdAt: r.createdAt.toISOString(),
+				updatedAt: r.updatedAt.toISOString(),
+			}));
+			console.log("REVENDAS SERIALIZADAS:", revendasSerializadas);
+			return reply.send(revendasSerializadas);
 		},
 	);
 
-	// Editar revenda
-	app.put(
+	// Editar revenda (pode ser usado para ativar/desativar via active: true/false)
+	app.patch(
 		"/api/admin/revendas/:id",
 		{
 			preHandler: [protectRoute, requireRole("admin")],
 			schema: {
 				tags: ["admin", "revendas"],
-				summary: "Editar revenda",
+				summary: "Editar revenda (pode ativar/desativar)",
 				params: z.object({ id: z.string() }),
 				body: updateRevendaSchema,
 				response: {
@@ -128,6 +124,10 @@ export async function revendasRoutes(app: FastifyInstance) {
 			if (data.password) {
 				data.password = await hash(data.password, 12);
 			}
+			// Impede alteração do campo 'active' por esse endpoint
+			if ("active" in data) {
+				data.active = undefined;
+			}
 			try {
 				await prisma.revenda.update({ where: { id }, data });
 				return reply.send({ success: true });
@@ -139,14 +139,44 @@ export async function revendasRoutes(app: FastifyInstance) {
 		},
 	);
 
-	// Desativar revenda (soft delete)
-	app.delete(
-		"/api/admin/revendas/:id",
+	// Ativar ou desativar revenda (soft delete/reativar)
+	app.patch(
+		"/api/admin/revendas/:id/status",
 		{
 			preHandler: [protectRoute, requireRole("admin")],
 			schema: {
 				tags: ["admin", "revendas"],
-				summary: "Desativar revenda",
+				summary: "Ativar ou desativar revenda",
+				params: z.object({ id: z.string() }),
+				body: z.object({ active: z.boolean() }),
+				response: {
+					200: z.object({ success: z.boolean() }),
+					404: z.object({ error: z.boolean(), message: z.string() }),
+				},
+			},
+		},
+		async (request, reply) => {
+			const { id } = request.params as { id: string };
+			const { active } = request.body as { active: boolean };
+			try {
+				await prisma.revenda.update({ where: { id }, data: { active } });
+				return reply.send({ success: true });
+			} catch (e) {
+				return reply
+					.status(404)
+					.send({ error: true, message: "Revenda não encontrada" });
+			}
+		},
+	);
+
+	// Excluir revenda (delete real)
+	app.delete(
+		"/api/admin/revendas/:id/force",
+		{
+			preHandler: [protectRoute, requireRole("admin")],
+			schema: {
+				tags: ["admin", "revendas"],
+				summary: "Excluir revenda do banco de dados (delete real)",
 				params: z.object({ id: z.string() }),
 				response: {
 					200: z.object({ success: z.boolean() }),
@@ -157,7 +187,7 @@ export async function revendasRoutes(app: FastifyInstance) {
 		async (request, reply) => {
 			const { id } = request.params as { id: string };
 			try {
-				await prisma.revenda.update({ where: { id }, data: { active: false } });
+				await prisma.revenda.delete({ where: { id } });
 				return reply.send({ success: true });
 			} catch (e) {
 				return reply

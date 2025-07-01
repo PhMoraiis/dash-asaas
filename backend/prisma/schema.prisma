@@ -25,29 +25,30 @@ model PasswordResetToken {
 }
 
 model Admin {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  password  String
-  name      String
-  slug      String   @unique
-  active    Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                 String   @id @default(cuid())
+  email              String   @unique
+  password           String
+  name               String
+  slug               String   @unique
+  mustChangePassword Boolean  @default(true)
+  active             Boolean  @default(true)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 
   @@map("admins")
 }
 
 model Revenda {
-  id           String   @id @default(cuid())
-  name         String
-  email        String   @unique
-  password     String
-  slug         String   @unique
-  webhookToken String   @unique @default(cuid())
-  externalId   String?  @unique // ID do sistema externo
-  active       Boolean  @default(true)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id                 String   @id @default(cuid())
+  name               String
+  email              String   @unique
+  password           String
+  slug               String   @unique
+  mustChangePassword Boolean  @default(true)
+  webhookToken       String   @unique @default(cuid())
+  active             Boolean  @default(true)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 
   // Relacionamentos
   produtos Produto[]
@@ -62,7 +63,6 @@ model Produto {
   description String?
   price       Decimal  @db.Decimal(10, 2)
   active      Boolean  @default(true)
-  externalId  String? // ID do produto no sistema externo
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 

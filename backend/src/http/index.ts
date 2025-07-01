@@ -13,9 +13,9 @@ import { registerErrorHandler } from "../middlewares/errorHandler";
 import cookie from "@fastify/cookie";
 import fastifyJwt from "@fastify/jwt";
 import { queueJobsRoutes } from "../routes/QueueJobs";
-import { authRoutes } from "../routes/AdminAuth";
+import { authRoutes } from "../routes/Auth";
 import { forgotRoutes } from "../routes/PasswordForgot";
-import { revendasRoutes } from "../routes/ManageRevendas";
+import { revendasRoutes } from "@/routes/ManageRevendas";
 
 // Validator and Serializer Compilers ZOD
 const app = Fastify().withTypeProvider<ZodTypeProvider>();
@@ -29,7 +29,7 @@ registerErrorHandler(app);
 // CORS Config
 app.register(cors, {
 	origin: ENV.CORS_ORIGIN,
-	methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+	methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
 	credentials: true,
 	allowedHeaders: ["Content-Type", "Authorization"],
 });
