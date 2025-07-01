@@ -7,6 +7,7 @@ interface User {
 	name: string;
 	email: string;
 	role: "admin" | "revenda";
+	slug: string;
 }
 
 interface AuthState {

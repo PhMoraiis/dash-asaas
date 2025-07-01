@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useId, useState } from "react";
-import { FileTextIcon, HomeIcon, LayersIcon, UsersIcon } from "lucide-react";
 import Image from "next/image";
 import {
 	HandWavingIcon,
@@ -13,18 +12,6 @@ import {
 import Logo from "@/components/navbar/logo";
 import ThemeToggle from "@/components/navbar/theme-toggle";
 import UserMenu from "@/components/navbar/user-menu";
-import { Button } from "@/components/ui/button";
-import {
-	NavigationMenu,
-	NavigationMenuItem,
-	NavigationMenuLink,
-	NavigationMenuList,
-} from "@/components/ui/navigation-menu";
-import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from "@/components/ui/popover";
 import {
 	Select,
 	SelectContent,
@@ -37,14 +24,6 @@ import { SidebarTrigger } from "../ui/sidebar";
 import { Separator } from "../ui/separator";
 import { useAuthStore } from "@/stores/auth-store";
 import { CommandBar } from "../dashboard/commandBar";
-
-// Navigation links with icons for desktop icon-only navigation
-const navigationLinks = [
-	{ href: "#", label: "Dashboard", icon: HomeIcon, active: true },
-	{ href: "#", label: "Projects", icon: LayersIcon },
-	{ href: "#", label: "Documentation", icon: FileTextIcon },
-	{ href: "#", label: "Team", icon: UsersIcon },
-];
 
 // Language options
 const languages = [

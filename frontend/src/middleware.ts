@@ -22,8 +22,6 @@ function isPublicPath(pathname: string) {
 
 export async function middleware(request: NextRequest) {
 	const { pathname } = request.nextUrl;
-	console.log("=== [MIDDLEWARE] ===");
-	console.log("Pathname:", pathname);
 
 	// Permite acesso a arquivos estáticos e _next
 	if (
@@ -31,7 +29,6 @@ export async function middleware(request: NextRequest) {
 		pathname.startsWith("/public") ||
 		pathname.match(/\.[^/]+$/)
 	) {
-		console.log("Acesso liberado: estático ou _next");
 		return NextResponse.next();
 	}
 
@@ -42,7 +39,6 @@ export async function middleware(request: NextRequest) {
 
 	if (!pathnameHasLocale) {
 		const locale = getLocale(request);
-		console.log("Redirecionando para locale:", locale);
 		let redirectPath = `/${locale}${pathname}`;
 		if (pathname === "/") {
 			redirectPath = `/${locale}`;
@@ -58,13 +54,11 @@ export async function middleware(request: NextRequest) {
 	const locale =
 		locales.find((loc) => pathname.startsWith(`/${loc}`)) || defaultLocale;
 	const pathWithoutLocale = pathname.replace(`/${locale}`, "");
-	console.log("Locale:", locale, "Path sem locale:", pathWithoutLocale);
 
 	// Permite acesso a rotas públicas
 	if (isPublicPath(pathWithoutLocale)) {
 		// Se está autenticado, redireciona para o dashboard correto
 		const token = request.cookies.get("auth_token")?.value;
-		console.log("Rota pública. Token:", token);
 		if (token) {
 			try {
 				// biome-ignore lint/style/noNonNullAssertion: <explanation>
@@ -74,39 +68,31 @@ export async function middleware(request: NextRequest) {
 					new TextEncoder().encode(jwtSecret),
 				);
 				const role = payload.role as string;
-				const userId = payload.id as string;
-				console.log("Token válido. Role:", role, "UserId:", userId);
+				const slug = payload.slug as string;
 				if (role === "admin") {
-					console.log("Redirecionando para dashboard admin");
 					return NextResponse.redirect(
-						new URL(`/${locale}/admin/${userId}/dashboard`, request.url),
+						new URL(`/${locale}/admin/${slug}/dashboard`, request.url),
 					);
 				}
 				if (role === "revenda") {
-					console.log("Redirecionando para dashboard revenda");
 					return NextResponse.redirect(
-						new URL(`/${locale}/revenda/${userId}/dashboard`, request.url),
+						new URL(`/${locale}/revenda/${slug}/dashboard`, request.url),
 					);
 				}
-			} catch (e) {
-				console.log("Token inválido:", e);
-			}
+			} catch (e) {}
 		}
-		console.log("Acesso liberado para rota pública");
 		return NextResponse.next();
 	}
 
 	// Checa se existe cookie de autenticação
 	const token = request.cookies.get("auth_token")?.value;
-	console.log("Token recebido:", token);
 	if (!token) {
-		console.log("Sem token. Redirecionando para login.");
 		return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
 	}
 
 	// Decodifica o JWT para saber o papel do usuário
 	let role: string | null = null;
-	let userId: string | null = null;
+	let slug: string | null = null;
 	try {
 		// biome-ignore lint/style/noNonNullAssertion: <explanation>
 		const jwtSecret = process.env.NEXT_PUBLIC_JWT_SECRET!;
@@ -115,19 +101,15 @@ export async function middleware(request: NextRequest) {
 			new TextEncoder().encode(jwtSecret),
 		);
 		role = payload.role as string;
-		userId = payload.id as string;
-		console.log("Token decodificado. Role:", role, "UserId:", userId);
+		slug = payload.slug as string;
 	} catch (e) {
-		console.log("Token inválido ao decodificar:", e);
 		return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
 	}
 
 	// Protege área de admin: apenas admin pode acessar /admin
 	const adminMatch = pathWithoutLocale.match(/^\/admin\/([^/]+)/);
 	if (adminMatch) {
-		console.log("Tentando acessar área admin. URL id:", adminMatch[1]);
-		if (role !== "admin" || adminMatch[1] !== userId) {
-			console.log("Acesso negado à área admin. Redirecionando para login.");
+		if (role !== "admin" || adminMatch[1] !== slug) {
 			return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
 		}
 	}
@@ -135,15 +117,12 @@ export async function middleware(request: NextRequest) {
 	// Protege área de revendas: apenas revenda pode acessar /revenda
 	const revendaMatch = pathWithoutLocale.match(/^\/revenda\/([^/]+)/);
 	if (revendaMatch) {
-		console.log("Tentando acessar área revenda. URL id:", revendaMatch[1]);
-		if (role !== "revenda" || revendaMatch[1] !== userId) {
-			console.log("Acesso negado à área revenda. Redirecionando para login.");
+		if (role !== "revenda" || revendaMatch[1] !== slug) {
 			return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
 		}
 	}
 
 	// Se chegou aqui, está autenticado e pode acessar
-	console.log("Acesso autenticado liberado.");
 	return NextResponse.next();
 }
 

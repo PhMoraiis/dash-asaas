@@ -1,3 +1,5 @@
+"use client";
+
 import {
 	CheckerboardIcon,
 	IdentificationBadgeIcon,
@@ -13,26 +15,31 @@ import {
 import Logo from "../navbar/logo";
 import Link from "next/link";
 import { SignOutButton } from "./signOutButton";
+import { useAuthStore } from "@/stores/auth-store";
+import { useParams } from "next/navigation";
+import type { ComponentProps } from "react";
 
-export default function AppSidebar({ params, ...props }) {
+export default function AppSidebar(props: ComponentProps<typeof Sidebar>) {
+	const user = useAuthStore((s) => s.user);
+	const params = useParams();
 	const lang = params.lang;
-	const userId = params.id;
+	const slug = params.slug
 
 	const data = {
 		navMain: [
 			{
 				title: "Dashboard",
-				url: `/${lang}/admin/${userId}/dashboard`,
+				url: `/${lang}/admin/${slug}/dashboard`,
 				icon: CheckerboardIcon,
 			},
 			{
 				title: "Revendas",
-				url: "/dashboard/revendas",
+				url: `/${lang}/admin/${slug}/revendas`,
 				icon: FolderUserIcon,
 			},
 			{
 				title: "Administradores",
-				url: "/dashboard/admins",
+				url: `/${lang}/admin/${slug}/admins`,
 				icon: IdentificationBadgeIcon,
 			},
 		],

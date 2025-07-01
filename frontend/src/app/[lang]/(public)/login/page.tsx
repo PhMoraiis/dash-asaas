@@ -60,13 +60,14 @@ export default function LoginPage() {
 				name: data.name,
 				email: data.email,
 				role: data.role,
+				slug: data.slug,
 			};
 			login(user);
 			setUser(user);
 			if (user.role === "admin") {
-				router.push(`/${lang}/admin/${user.id}/dashboard`);
+				router.push(`/${lang}/admin/${user.slug}/dashboard`);
 			} else {
-				router.push(`/${lang}/revenda/${user.id}/dashboard`);
+				router.push(`/${lang}/revenda/${user.slug}/dashboard`);
 			}
 		} catch (err: unknown) {
 			if (err instanceof Error) {

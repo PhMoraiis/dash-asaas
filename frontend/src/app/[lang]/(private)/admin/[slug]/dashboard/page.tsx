@@ -1,4 +1,4 @@
-import { AppSidebar } from "@/components/dashboard/app-sidebar";
+import AppSidebar from "@/components/dashboard/app-sidebar";
 import { DataTable } from "@/components/dashboard/data-table";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
@@ -15,7 +15,7 @@ export default function Page() {
 				} as React.CSSProperties
 			}
 		>
-			<AppSidebar lang={params.lang} userId={params.id} variant="inset" />
+			<AppSidebar variant="inset" />
 			<SidebarInset>
 				<Navbar />
 				<div className="flex flex-1 flex-col">

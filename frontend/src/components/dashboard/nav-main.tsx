@@ -1,6 +1,5 @@
 "use client";
 
-import type { Icon } from "@tabler/icons-react";
 import { useRouter, usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,7 +15,8 @@ export function NavMain({
 	items: {
 		title: string;
 		url: string;
-		icon?: Icon;
+		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+		icon?: React.ComponentType<any>;
 	}[];
 }) {
 	const router = useRouter();
@@ -35,9 +35,11 @@ export function NavMain({
 				<SidebarMenu className="flex space-y-2">
 					{items.map((item) => (
 						<Button
-							variant={pathname === item.url ? "default" : "ghost"}
+							variant={pathname === item.url ? "input" : "ghost"}
 							className={`w-full justify-start px-0 cursor-pointer ${
-								pathname === item.url ? "font-bold bg-muted" : ""
+								pathname === item.url
+									? "font-bold bg-muted"
+									: "text-gray-600 dark:text-gray-300"
 							}`}
 							key={item.title}
 							onClick={() => {
@@ -46,7 +48,7 @@ export function NavMain({
 						>
 							<div className="flex items-center gap-2">
 								<div className="size-9 bg-border rounded-lg flex items-center justify-center">
-									{item.icon && <item.icon size={24} width="bold" />}
+									{item.icon && <item.icon size={24} weight="bold" />}
 								</div>
 								<span>{item.title}</span>
 							</div>

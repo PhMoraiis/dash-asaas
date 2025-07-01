@@ -66,8 +66,6 @@
 ## **🏢 FASE 3: Gerenciamento de Revendas (Admin - Backend + Frontend)**
 *(Objetivo: O admin poderá logar e gerenciar as revendas)*
 
-# Criar arquivo .env.local com NEXT_PUBLIC_JWT_SECRET
-
 ### 3.1 Backend - Endpoinst de Gerenciamento de Administradores
 
 - [] **GET** '/api/admin/adm' - Listar admins
