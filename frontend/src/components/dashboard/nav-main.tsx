@@ -10,7 +10,7 @@ import {
 import { PlusIcon } from "@phosphor-icons/react/dist/ssr";
 
 import { useState } from "react";
-import { CreateRevendaModal } from "./create-revenda-modal";
+import { CreateRevendaModal } from "../../app/[lang]/(private)/admin/[slug]/revendas/_components/create-revenda-modal";
 
 export function NavMain({
 	items,

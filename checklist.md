@@ -81,16 +81,16 @@
 
 ### 3.3 Backend - Endpoinst de Gerenciamento de Administradores
 
-- [] **GET** '/api/admin/adm' - Listar admins
-- [] **POST** '/api/admin/adm' - Criar admin
-- [] **PUT** '/api/admin/adm/:id' - Editar admin
-- [] **DELETE** '/api/admin/adm/:id' - Desativar admin
+- [x] **GET** '/api/admin/adm' - Listar admins
+- [x] **POST** '/api/admin/adm' - Criar admin
+- [x] **PUT** '/api/admin/adm/:id' - Editar admin
+- [x] **DELETE** '/api/admin/adm/:id' - Desativar admin
 
 ### 3.4 Frontend - Interface de Gestão de Administradores
 
-- [ ] Formulário/Modal para criar novo administrador
-- [ ] Página para listar administradores
-- [ ] Formulário/Modal para editar/desativar administradores
+- [x] Formulário/Modal para criar novo administrador
+- [x] Página para listar administradores
+- [x] Formulário/Modal para editar/desativar administradores
 
 
 ## **📦 FASE 4: Gerenciamento de Produtos (Revenda - Backend + Frontend)**

@@ -21,32 +21,54 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import type { Row } from "@tanstack/react-table";
-import {
-	EllipsisIcon,
-	CircleAlertIcon,
-	AlertTriangleIcon,
-} from "lucide-react";
+import { EllipsisIcon, CircleAlertIcon, AlertTriangleIcon } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import type { Item } from "./page";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CircleNotchIcon } from "@phosphor-icons/react/dist/ssr";
 
-export const RowActions = ({
+export type RowActionsProps<T> = {
+	row: Row<T>;
+	onEdit: (item: T) => void;
+	refetch: () => void;
+	// Endpoints para ativar/desativar e deletar
+	statusEndpoint: (id: string) => string;
+	deleteEndpoint: (id: string) => string;
+	// Status atual e labels customizáveis
+	isInactive: (item: T) => boolean;
+	actionLabels?: {
+		activate?: string;
+		deactivate?: string;
+		delete?: string;
+	};
+	dialogMessages?: {
+		activate?: string;
+		deactivate?: string;
+		delete?: string;
+	};
+	// Permite esconder ação de deletar se não quiser exibir
+	showDeleteWhenInactive?: boolean;
+};
+
+export function RowActions<T extends { id: string }>({
 	row,
 	onEdit,
 	refetch,
-}: {
-	row: Row<Item>;
-	onEdit: (revenda: Item) => void;
-	refetch: () => void;
-}) => {
+	statusEndpoint,
+	deleteEndpoint,
+	isInactive,
+	actionLabels,
+	dialogMessages,
+	showDeleteWhenInactive = true,
+}: RowActionsProps<T>) {
 	const [openDialog, setOpenDialog] = useState(false);
 	const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-	const revendaId = row.original.id;
-	const isInactive = row.original.status === "Inativo";
-	const actionLabel = isInactive ? "Reativar" : "Desativar";
-	const actionColor = isInactive
+	const item = row.original;
+	const inactive = isInactive(item);
+	const actionLabel = inactive
+		? actionLabels?.activate || "Reativar"
+		: actionLabels?.deactivate || "Desativar";
+	const actionColor = inactive
 		? "text-green-600 focus:text-green-600"
 		: "text-destructive focus:text-destructive";
 
@@ -55,50 +77,46 @@ export const RowActions = ({
 	// Mutation para ativar/desativar
 	const toggleActiveMutation = useMutation({
 		mutationFn: async () => {
-			const res = await fetchWithAuth(
-				`http://localhost:3333/api/admin/revendas/${revendaId}/status`,
-				{
-					method: "PATCH",
-					headers: { "Content-Type": "application/json" },
-					body: JSON.stringify({ active: isInactive }),
-				},
-			);
-			if (!res.ok) throw new Error("Erro ao atualizar revenda.");
+			const res = await fetchWithAuth(statusEndpoint(item.id), {
+				method: "PATCH",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ active: inactive }),
+			});
+			if (!res.ok) throw new Error("Erro ao atualizar status.");
 			return res.json();
 		},
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["revendas"] });
+			queryClient.invalidateQueries();
 			toast.success(
-				isInactive
-					? "Revenda ativada com sucesso!"
-					: "Revenda desativada com sucesso!",
+				inactive
+					? actionLabels?.activate || "Ativado com sucesso!"
+					: actionLabels?.deactivate || "Desativado com sucesso!",
 			);
 			setOpenDialog(false);
+			refetch();
 		},
 		onError: () => {
-			toast.error("Erro ao atualizar revenda.");
+			toast.error("Erro ao atualizar status.");
 		},
 	});
 
 	// Mutation para exclusão permanente
 	const deleteMutation = useMutation({
 		mutationFn: async () => {
-			const res = await fetchWithAuth(
-				`http://localhost:3333/api/admin/revendas/${revendaId}/force`,
-				{
-					method: "DELETE",
-				},
-			);
-			if (!res.ok) throw new Error("Erro ao excluir revenda.");
+			const res = await fetchWithAuth(deleteEndpoint(item.id), {
+				method: "DELETE",
+			});
+			if (!res.ok) throw new Error("Erro ao excluir.");
 			return res.json();
 		},
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["revendas"] });
-			toast.success("Revenda excluída permanentemente!");
+			queryClient.invalidateQueries();
+			toast.success(actionLabels?.delete || "Excluído permanentemente!");
 			setOpenDeleteDialog(false);
+			refetch();
 		},
 		onError: () => {
-			toast.error("Erro ao excluir revenda.");
+			toast.error("Erro ao excluir.");
 		},
 	});
 
@@ -111,7 +129,7 @@ export const RowActions = ({
 							size="icon"
 							variant="ghost"
 							className="shadow-none"
-							aria-label="Editar revenda"
+							aria-label="Ações"
 						>
 							<EllipsisIcon size={16} aria-hidden="true" />
 						</Button>
@@ -119,7 +137,7 @@ export const RowActions = ({
 				</DropdownMenuTrigger>
 				<DropdownMenuContent align="end">
 					<DropdownMenuGroup>
-						<DropdownMenuItem onSelect={() => onEdit(row.original)}>
+						<DropdownMenuItem onSelect={() => onEdit(item)}>
 							<span>Editar</span>
 						</DropdownMenuItem>
 					</DropdownMenuGroup>
@@ -130,12 +148,12 @@ export const RowActions = ({
 					>
 						<span>{actionLabel}</span>
 					</DropdownMenuItem>
-					{isInactive && (
+					{inactive && showDeleteWhenInactive && (
 						<DropdownMenuItem
 							className="text-destructive focus:text-destructive"
 							onSelect={() => setOpenDeleteDialog(true)}
 						>
-							<span>Excluir</span>
+							<span>{actionLabels?.delete || "Excluir"}</span>
 						</DropdownMenuItem>
 					)}
 				</DropdownMenuContent>
@@ -153,9 +171,10 @@ export const RowActions = ({
 						<AlertDialogHeader>
 							<AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
 							<AlertDialogDescription>
-								{isInactive
-									? "Esta ação irá reativar a revenda."
-									: "Esta ação irá desativar a revenda permanentemente."}
+								{inactive
+									? dialogMessages?.activate || "Esta ação irá reativar o item."
+									: dialogMessages?.deactivate ||
+										"Esta ação irá desativar o item permanentemente."}
 							</AlertDialogDescription>
 						</AlertDialogHeader>
 					</div>
@@ -188,10 +207,10 @@ export const RowActions = ({
 							/>
 						</div>
 						<AlertDialogHeader>
-							<AlertDialogTitle>Excluir revenda?</AlertDialogTitle>
+							<AlertDialogTitle>Excluir item?</AlertDialogTitle>
 							<AlertDialogDescription>
-								Esta ação é irreversível e excluirá a revenda permanentemente do
-								sistema.
+								{dialogMessages?.delete ||
+									"Esta ação é irreversível e excluirá permanentemente do sistema."}
 							</AlertDialogDescription>
 						</AlertDialogHeader>
 					</div>
@@ -204,7 +223,7 @@ export const RowActions = ({
 							{deleteMutation.isPending ? (
 								<CircleNotchIcon size={22} className="animate-spin" />
 							) : (
-								"Excluir"
+								actionLabels?.delete || "Excluir"
 							)}
 						</AlertDialogAction>
 					</AlertDialogFooter>
@@ -212,4 +231,4 @@ export const RowActions = ({
 			</AlertDialog>
 		</>
 	);
-};
+}

@@ -71,11 +71,11 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
-import { CreateRevendaModal } from "@/components/dashboard/create-revenda-modal";
-import { EditRevendaModal } from "@/components/dashboard/edit-revenda-modal";
+import { CreateRevendaModal } from "@/app/[lang]/(private)/admin/[slug]/revendas/_components/create-revenda-modal";
+import { EditRevendaModal } from "@/app/[lang]/(private)/admin/[slug]/revendas/_components/edit-revenda-modal";
 
 import { useQuery } from "@tanstack/react-query";
-import { RowActions } from "./RowActions";
+import { RevendaRowActions } from "./RevendaRowActions";
 
 const revendaSchema = z.object({
 	id: z.string(),
@@ -210,7 +210,11 @@ export default function AdminRevendasPage() {
 			id: "actions",
 			header: () => <span className="sr-only">Actions</span>,
 			cell: ({ row }) => (
-				<RowActions row={row} onEdit={handleEditRevenda} refetch={refetch} />
+				<RevendaRowActions
+					row={row}
+					onEdit={handleEditRevenda}
+					refetch={refetch}
+				/>
 			),
 			size: 60,
 			enableHiding: false,
