@@ -15,7 +15,8 @@ import fastifyJwt from "@fastify/jwt";
 import { queueJobsRoutes } from "../routes/QueueJobs";
 import { authRoutes } from "../routes/Auth";
 import { forgotRoutes } from "../routes/PasswordForgot";
-import { revendasRoutes } from "@/routes/ManageRevendas";
+import { revendasRoutes } from "@/routes/(admin)/ManageRevendas";
+import { adminRoutes } from "@/routes/(admin)/ManageAdmin";
 
 // Validator and Serializer Compilers ZOD
 const app = Fastify().withTypeProvider<ZodTypeProvider>();
@@ -92,6 +93,8 @@ app.register(authRoutes);
 app.register(forgotRoutes);
 // Rotas de revendas
 app.register(revendasRoutes);
+// Rotas de admin
+app.register(adminRoutes);
 
 // Iniciar servidor
 async function start() {

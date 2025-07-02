@@ -18,5 +18,4 @@ export const updateRevendaSchema = z.object({
 			/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{12,}$/,
 		)
 		.optional(),
-	active: z.boolean().optional(),
 });
