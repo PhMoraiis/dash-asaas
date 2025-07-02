@@ -23,26 +23,45 @@ export default function AppSidebar(props: ComponentProps<typeof Sidebar>) {
 	const user = useAuthStore((s) => s.user);
 	const params = useParams();
 	const lang = params.lang;
-	const slug = params.slug
+	const slug = params.slug;
 
 	const data = {
-		navMain: [
-			{
-				title: "Dashboard",
-				url: `/${lang}/admin/${slug}/dashboard`,
-				icon: CheckerboardIcon,
-			},
-			{
-				title: "Revendas",
-				url: `/${lang}/admin/${slug}/revendas`,
-				icon: FolderUserIcon,
-			},
-			{
-				title: "Administradores",
-				url: `/${lang}/admin/${slug}/admins`,
-				icon: IdentificationBadgeIcon,
-			},
-		],
+		navMain:
+			user?.role === "admin"
+				? [
+						{
+							title: "Dashboard",
+							url: `/${lang}/admin/${slug}/dashboard`,
+							icon: CheckerboardIcon,
+						},
+						{
+							title: "Revendas",
+							url: `/${lang}/admin/${slug}/revendas`,
+							icon: FolderUserIcon,
+						},
+						{
+							title: "Administradores",
+							url: `/${lang}/admin/${slug}/admins`,
+							icon: IdentificationBadgeIcon,
+						},
+					]
+				: [
+						{
+							title: "Dashboard",
+							url: `/${lang}/revenda/${slug}/dashboard`,
+							icon: CheckerboardIcon,																				
+						},
+						{
+							title: "Produtos",
+							url: `/${lang}/revenda/${slug}/produtos`,
+							icon: FolderUserIcon,
+						},
+						{
+							title: "Webhooks",
+							url: `/${lang}/revenda/${slug}/webhooks`,
+							icon: IdentificationBadgeIcon,
+						},
+					],
 	};
 
 	return (
