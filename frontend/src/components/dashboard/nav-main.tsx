@@ -7,10 +7,17 @@ import {
 	SidebarGroupContent,
 	SidebarMenu,
 } from "@/components/ui/sidebar";
-import { PlusIcon } from "@phosphor-icons/react/dist/ssr";
+import { CaretDownIcon, PlusIcon } from "@phosphor-icons/react/dist/ssr";
+import {
+	DropdownMenu,
+	DropdownMenuTrigger,
+	DropdownMenuContent,
+	DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 
 import { useState } from "react";
 import { CreateRevendaModal } from "../../app/[lang]/(private)/admin/[slug]/revendas/_components/create-revenda-modal";
+import { CreateAdminModal } from "../../app/[lang]/(private)/admin/[slug]/admins/_components/create-admin-modal";
 
 export function NavMain({
 	items,
@@ -24,19 +31,30 @@ export function NavMain({
 }) {
 	const router = useRouter();
 	const pathname = usePathname();
-	const [open, setOpen] = useState(false);
+	const [openRevenda, setOpenRevenda] = useState(false);
+	const [openAdmin, setOpenAdmin] = useState(false);
 
 	return (
 		<SidebarGroup>
 			<SidebarGroupContent className="flex flex-col gap-2">
-				<Button
-					className="justify-center items-center text-md cursor-pointer"
-					onClick={() => setOpen(true)}
-				>
-					<PlusIcon size={24} />
-					<span>Cadastrar Revenda</span>
-				</Button>
-				<CreateRevendaModal open={open} onOpenChange={setOpen} />
+				<DropdownMenu>
+					<DropdownMenuTrigger asChild>
+						<Button className="justify-center items-center text-md cursor-pointer">
+							<span>Menu de Cadastros</span>
+							<CaretDownIcon size={24} />
+						</Button>
+					</DropdownMenuTrigger>
+					<DropdownMenuContent>
+						<DropdownMenuItem onSelect={() => setOpenRevenda(true)}>
+							Cadastrar Revenda
+						</DropdownMenuItem>
+						<DropdownMenuItem onSelect={() => setOpenAdmin(true)}>
+							Cadastrar Administrador
+						</DropdownMenuItem>
+					</DropdownMenuContent>
+				</DropdownMenu>
+				<CreateRevendaModal open={openRevenda} onOpenChange={setOpenRevenda} />
+				<CreateAdminModal open={openAdmin} onOpenChange={setOpenAdmin} />
 				<SidebarMenu className="flex space-y-2">
 					{items.map((item) => (
 						<Button
