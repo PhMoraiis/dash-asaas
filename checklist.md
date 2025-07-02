@@ -92,16 +92,15 @@
 - [x] Página para listar administradores
 - [x] Formulário/Modal para editar/desativar administradores
 
-
 ## **📦 FASE 4: Gerenciamento de Produtos (Revenda - Backend + Frontend)**
 *(Objetivo: A revenda poderá logar e gerenciar seus produtos)*
 
 ### 4.1 Backend - Endpoints de Gerenciamento
 
-- [ ] **POST** `/api/produtos` - Criar produto
-- [ ] **GET** `/api/produtos` - Listar produtos
-- [ ] **PUT** `/api/produtos/:id` - Editar produto
-- [ ] **DELETE** `/api/produtos/:id` - Deletar produto
+- [x] **POST** `/api/produtos` - Criar produto
+- [x] **GET** `/api/produtos` - Listar produtos
+- [x] **PUT** `/api/produtos/:id` - Editar produto
+- [x] **DELETE** `/api/produtos/:id` - Deletar produto
 
 ### 4.2 Frontend - Interface de Gestão de Produtos
 

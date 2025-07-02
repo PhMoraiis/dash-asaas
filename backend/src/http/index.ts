@@ -17,6 +17,7 @@ import { authRoutes } from "../routes/Auth";
 import { forgotRoutes } from "../routes/PasswordForgot";
 import { revendasRoutes } from "@/routes/(admin)/ManageRevendas";
 import { adminRoutes } from "@/routes/(admin)/ManageAdmin";
+import { productRoutes } from "@/routes/(revenda)/ManageProduct";
 
 // Validator and Serializer Compilers ZOD
 const app = Fastify().withTypeProvider<ZodTypeProvider>();
@@ -95,6 +96,8 @@ app.register(forgotRoutes);
 app.register(revendasRoutes);
 // Rotas de admin
 app.register(adminRoutes);
+// Rotas de produtos (revenda)
+app.register(productRoutes);
 
 // Iniciar servidor
 async function start() {

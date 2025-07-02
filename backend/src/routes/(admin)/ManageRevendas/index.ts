@@ -121,15 +121,25 @@ export async function revendasRoutes(app: FastifyInstance) {
 		async (request, reply) => {
 			const { id } = request.params as { id: string };
 			const data = updateRevendaSchema.parse(request.body);
-			if (data.password) {
-				data.password = await hash(data.password, 12);
-			}
 			// Impede alteração do campo 'active' por esse endpoint
 			if ("active" in data) {
 				data.active = undefined;
 			}
+			const revendaAtual = await prisma.revenda.findUnique({ where: { id } });
+			if (!revendaAtual) {
+				return reply
+					.status(404)
+					.send({ error: true, message: "Revenda não encontrada" });
+			}
 			try {
-				await prisma.revenda.update({ where: { id }, data });
+				await prisma.revenda.update({
+					where: { id },
+					data: {
+						...data,
+						name: data.name ?? revendaAtual.name,
+						email: data.email ?? revendaAtual.email,
+					},
+				});
 				return reply.send({ success: true });
 			} catch (e) {
 				return reply

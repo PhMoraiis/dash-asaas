@@ -7,6 +7,7 @@ import { requireRole } from "@/middlewares/role";
 import { generateUniqueSlug } from "@/utils/slugIncremental";
 import { createAdminSchema, updateAdminSchema } from "./schemas";
 import { generateRandomPassword } from "@/utils/generateRandomPassword";
+import { email } from "zod/v4";
 
 export async function adminRoutes(app: FastifyInstance) {
 	// Listar admins
@@ -120,21 +121,21 @@ export async function adminRoutes(app: FastifyInstance) {
 		async (request, reply) => {
 			const { id } = request.params as { id: string };
 			const data = updateAdminSchema.parse(request.body);
-			if (data.password) {
-				data.password = await hash(data.password, 12);
-			}
-			// Impede alteração do campo 'active' por esse endpoint
-			if ("active" in data) {
-				data.active = undefined;
-			}
-			try {
-				await prisma.admin.update({ where: { id }, data });
-				return reply.send({ success: true });
-			} catch (e) {
+			const adminAtual = await prisma.admin.findUnique({ where: { id } });
+			if (!adminAtual) {
 				return reply
 					.status(404)
 					.send({ error: true, message: "Admin não encontrado" });
 			}
+			await prisma.admin.update({
+				where: { id },
+				data: {
+					...data,
+					name: data.name ?? adminAtual.name,
+					email: data.email ?? adminAtual.email,
+				},
+			});
+			return reply.send({ success: true });
 		},
 	);
 
