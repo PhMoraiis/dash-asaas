@@ -104,14 +104,9 @@
 
 ### 4.2 Frontend - Interface de Gestão de Produtos
 
-- [ ] Página para listar produtos
-- [ ] Formulário/Modal para criar novo produto
-- [ ] Formulário/Modal para editar produto
-- [ ] Visualizar webhooks por produto
-
-### 4.3 Frontend - Interface de Gestão de Produtos ADMIN
-
-- [ ] Visualizar produtos e status de webhooks por revenda
+- [x] Página para listar produtos
+- [x] Formulário/Modal para criar novo produto
+- [x] Formulário/Modal para editar produto
 
 ## **🔗 FASE 5: Configuração e Recebimento de Webhooks (Backend + Frontend)**
 *(Objetivo: A revenda poderá configurar e o sistema começará a receber webhooks)*
@@ -145,6 +140,9 @@
 
 - [ ] **Página de Webhooks:** Listar, filtrar, buscar, ver detalhes (JSON viewer) e reprocessar webhooks.
 - [ ] **Dashboard Principal:** Página inicial com estatísticas, gráficos e lista de webhooks recentes.
+- [ ] Visualizar webhooks por produto na página de Produtos
+- [ ] Visualizar produtos e status de webhooks por revenda na página de Admin
+
 
 ## **🛠️ FASE 7: Scripts e Utilitários (Backend)**
 

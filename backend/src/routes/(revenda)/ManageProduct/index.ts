@@ -129,9 +129,52 @@ export async function productRoutes(app: FastifyInstance) {
 		},
 	);
 
+	// Ativar ou desativar produto (soft delete/reativar)
+	app.patch(
+		"/api/products/:id/status",
+		{
+			preHandler: [protectRoute, requireRole("revenda")],
+			schema: {
+				tags: ["products", "revendas"],
+				summary: "Ativar ou desativar revenda",
+				params: z.object({ id: z.string() }),
+				body: z.object({ active: z.boolean() }),
+				response: {
+					200: z.object({ success: z.boolean() }),
+					404: z.object({ error: z.boolean(), message: z.string() }),
+				},
+			},
+		},
+		async (request, reply) => {
+			const { id: revendaId } = request.user as { id: string };
+			const { id } = request.params as { id: string };
+			const { active } = request.body as { active: boolean };
+			// Só permite alterar o status de produtos da própria revenda
+			const produto = await prisma.produto.findFirst({
+				where: { id, revendaId },
+			});
+			if (!produto) {
+				return reply
+					.status(404)
+					.send({ error: true, message: "Produto não encontrado" });
+			}
+			try {
+				await prisma.produto.update({
+					where: { id, revendaId },
+					data: { active },
+				});
+				return reply.send({ success: true });
+			} catch (e) {
+				return reply
+					.status(404)
+					.send({ error: true, message: "Revenda não encontrada" });
+			}
+		},
+	);
+
 	// Deletar produto
 	app.delete(
-		"/api/products/:id",
+		"/api/products/:id/force",
 		{
 			preHandler: [protectRoute, requireRole("revenda")],
 			schema: {

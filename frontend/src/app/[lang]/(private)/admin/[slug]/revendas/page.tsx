@@ -75,7 +75,7 @@ import { CreateRevendaModal } from "@/app/[lang]/(private)/admin/[slug]/revendas
 import { EditRevendaModal } from "@/app/[lang]/(private)/admin/[slug]/revendas/_components/edit-revenda-modal";
 
 import { useQuery } from "@tanstack/react-query";
-import { RevendaRowActions } from "./RevendaRowActions";
+import { RevendaRowActions } from "./_components/RevendaRowActions";
 
 const revendaSchema = z.object({
 	id: z.string(),
@@ -98,7 +98,7 @@ export type Item = {
 	name: string;
 	email: string;
 	slug: string;
-	status: "Ativo" | "Inativo" | "Pendente";
+	status: "Ativo" | "Inativo";
 };
 
 // Custom filter function for multi-column searching

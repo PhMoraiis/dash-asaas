@@ -72,7 +72,7 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import { useQuery } from "@tanstack/react-query";
-import { AdminRowActions } from "./AdminRowActions";
+import { AdminRowActions } from "./_components/AdminRowActions";
 import { CreateAdminModal } from "./_components/create-admin-modal";
 import { EditAdminModal } from "./_components/edit-admin-modal";
 
