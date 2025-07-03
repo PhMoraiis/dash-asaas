@@ -65,6 +65,9 @@ model Produto {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  // Novo campo:
+  webhookToken String @unique @default(uuid())
+
   // Relacionamentos
   revendaId String
   revenda   Revenda   @relation(fields: [revendaId], references: [id], onDelete: Cascade)

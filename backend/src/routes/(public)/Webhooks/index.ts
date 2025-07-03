@@ -24,20 +24,23 @@ export async function webhooksPublicRoutes(app: FastifyInstance) {
 			console.info(
 				`[WEBHOOK] Recebido: id=${body.id} event=${body.event} revenda=${body.revendaId}`,
 			);
+			console.log("Payload do webhook:", body);
 			const token = request.headers["asaas-access-token"] as string | undefined;
-			if (!token) {
-				return reply.status(401).send({
-					error: true,
-					message: "Token ausente no header asaas-access-token",
-				});
+			const produto = await prisma.produto.findUnique({
+				where: { webhookToken: token },
+			});
+			if (!produto) {
+				return reply
+					.status(401)
+					.send({ error: true, message: "Token inválido" });
 			}
 			const revenda = await prisma.revenda.findUnique({
-				where: { webhookToken: token },
+				where: { id: produto.revendaId },
 			});
 			if (!revenda) {
 				return reply
 					.status(401)
-					.send({ error: true, message: "Token inválido" });
+					.send({ error: true, message: "Revenda não encontrada" });
 			}
 
 			// Idempotência: verifica se já existe esse evento
@@ -63,6 +66,7 @@ export async function webhooksPublicRoutes(app: FastifyInstance) {
 					event: body.event,
 					payload: body,
 					revendaId: revenda.id,
+					produtoId: produto.id,
 					externalId: body.payment?.id ?? null,
 					status: "PENDING",
 				},

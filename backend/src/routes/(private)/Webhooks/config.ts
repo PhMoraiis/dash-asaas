@@ -7,33 +7,6 @@ import ENV from "@/env";
 import { z } from "zod";
 
 export async function webhookConfigRoutes(app: FastifyInstance) {
-	// Gera novo token para a revenda autenticada
-	app.post(
-		"/api/revenda/webhook-token",
-		{
-			preHandler: [protectRoute, requireRole("revenda")],
-			schema: {
-				tags: ["webhook"],
-				summary: "Gerar novo token de webhook para revenda",
-				response: {
-					200: z.object({
-						webhookToken: z.string(),
-					}),
-				},
-			},
-		},
-		async (request, reply) => {
-			const { id: revendaId } = request.user as { id: string };
-			// Gera novo token aleatório
-			const novoToken = crypto.randomUUID();
-			await prisma.revenda.update({
-				where: { id: revendaId },
-				data: { webhookToken: novoToken },
-			});
-			return reply.send({ webhookToken: novoToken });
-		},
-	);
-
 	// Retorna URL e token atual do webhook da revenda autenticada
 	app.get(
 		"/api/revenda/webhook-config",

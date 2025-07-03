@@ -129,6 +129,7 @@
 
 ### 5.3 Frontend - Interface de Configuração de Webhooks
 
+- [ ] No frontend, ao listar ou exibir detalhes do produto, mostre o campo webhookToken para que o usuário possa copiar e cadastrar no Asaas.
 - [ ] Página de configuração de webhook
 - [ ] Exibir URL única do webhook e token de autenticação
 - [ ] Botão para copiar URL/token

@@ -4,6 +4,8 @@ import { protectRoute } from "@/middlewares/jwt";
 import { requireRole } from "@/middlewares/role";
 import { createProductSchema, updateProductSchema } from "./schemas";
 import { z } from "zod";
+import { randomUUID } from "node:crypto";
+import ENV from "@/env";
 
 export async function productRoutes(app: FastifyInstance) {
 	// Criar produto
@@ -22,6 +24,7 @@ export async function productRoutes(app: FastifyInstance) {
 						active: z.boolean(),
 						createdAt: z.string(),
 						updatedAt: z.string(),
+						webhookToken: z.string(),
 					}),
 					409: z.object({ error: z.boolean(), message: z.string() }),
 				},
@@ -39,8 +42,9 @@ export async function productRoutes(app: FastifyInstance) {
 					.status(409)
 					.send({ error: true, message: "Produto já existe" });
 			}
+			const webhookToken = randomUUID();
 			const produto = await prisma.produto.create({
-				data: { ...data, revendaId },
+				data: { ...data, revendaId, webhookToken },
 			});
 			return reply.status(201).send({
 				...produto,
@@ -66,6 +70,7 @@ export async function productRoutes(app: FastifyInstance) {
 							active: z.boolean(),
 							createdAt: z.string(),
 							updatedAt: z.string(),
+							webhookToken: z.string(),
 						}),
 					),
 				},
@@ -164,7 +169,7 @@ export async function productRoutes(app: FastifyInstance) {
 					data: { active },
 				});
 				return reply.send({ success: true });
-			} catch (e) {
+			} catch (_e) {
 				return reply
 					.status(404)
 					.send({ error: true, message: "Revenda não encontrada" });
@@ -201,6 +206,82 @@ export async function productRoutes(app: FastifyInstance) {
 			}
 			await prisma.produto.delete({ where: { id } });
 			return reply.send({ success: true });
+		},
+	);
+
+	// Regenerar token de webhook do produto
+	app.post(
+		"/api/produtos/:id/regenerate",
+		{
+			preHandler: [protectRoute, requireRole("revenda")],
+			schema: {
+				tags: ["products"],
+				summary: "Regenerar token de webhook do produto",
+				params: z.object({ id: z.string() }),
+				response: {
+					200: z.object({ webhookToken: z.string() }),
+					404: z.object({ error: z.boolean(), message: z.string() }),
+				},
+			},
+		},
+		async (request, reply) => {
+			const { id } = request.params as { id: string };
+			const { id: revendaId } = request.user as { id: string };
+
+			// Garante que o produto pertence à revenda logada
+			const produto = await prisma.produto.findFirst({
+				where: { id, revendaId },
+			});
+			if (!produto) {
+				return reply
+					.status(404)
+					.send({ error: true, message: "Produto não encontrado" });
+			}
+
+			const novoToken = randomUUID();
+			await prisma.produto.update({
+				where: { id },
+				data: { webhookToken: novoToken },
+			});
+
+			return reply.send({ webhookToken: novoToken });
+		},
+	);
+
+	// Obter configuração de webhook do produto
+	app.get(
+		"/api/produtos/:id/webhook-config",
+		{
+			preHandler: [protectRoute, requireRole("revenda")],
+			schema: {
+				tags: ["products"],
+				summary: "Obter configuração de webhook do produto",
+				params: z.object({ id: z.string() }),
+				response: {
+					200: z.object({
+						webhookUrl: z.string(),
+						webhookToken: z.string(),
+					}),
+					404: z.object({ error: z.boolean(), message: z.string() }),
+				},
+			},
+		},
+		async (request, reply) => { 
+			const { id } = request.params as { id: string };
+			const { id: revendaId } = request.user as { id: string };
+
+			// Garante que o produto pertence à revenda logada
+			const produto = await prisma.produto.findFirst({
+				where: { id, revendaId },
+			});
+			if (!produto) {
+				return reply
+					.status(404)
+					.send({ error: true, message: "Produto não encontrado" });
+			}
+
+			const webhookUrl = `${ENV.EXTERNAL_API_URL}/api/webhooks/asaas`;
+			return reply.send({ webhookUrl, webhookToken: produto.webhookToken });
 		},
 	);
 }
