@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify";
-import { webhookQueue, webhookDeadLetterQueue } from "../../queues";
 import type { TestQueuePayload } from "./type";
 import { z } from "zod";
+import { webhookDeadLetterQueue, webhookQueue } from "@/queues";
 
 const testQueueBodySchema = z
 	.object({

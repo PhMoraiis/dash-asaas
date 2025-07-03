@@ -12,12 +12,14 @@ import { registerLoggingHooks } from "../middlewares/logging";
 import { registerErrorHandler } from "../middlewares/errorHandler";
 import cookie from "@fastify/cookie";
 import fastifyJwt from "@fastify/jwt";
-import { queueJobsRoutes } from "../routes/QueueJobs";
-import { authRoutes } from "../routes/Auth";
-import { forgotRoutes } from "../routes/PasswordForgot";
-import { revendasRoutes } from "@/routes/(admin)/ManageRevendas";
-import { adminRoutes } from "@/routes/(admin)/ManageAdmin";
-import { productRoutes } from "@/routes/(revenda)/ManageProduct";
+import { queueJobsRoutes } from "../routes/(private)/QueueJobs";
+import { authRoutes } from "../routes/(public)/Auth";
+import { forgotRoutes } from "../routes/(public)/PasswordForgot";
+import { revendasRoutes } from "@/routes/(private)/(admin)/ManageRevendas";
+import { adminRoutes } from "@/routes/(private)/(admin)/ManageAdmin";
+import { productRoutes } from "@/routes/(private)/(revenda)/ManageProduct";
+import { webhookConfigRoutes } from "@/routes/(private)/Webhooks/config";
+import { webhooksPublicRoutes } from "@/routes/(public)/Webhooks";
 
 // Validator and Serializer Compilers ZOD
 const app = Fastify().withTypeProvider<ZodTypeProvider>();
@@ -98,6 +100,10 @@ app.register(revendasRoutes);
 app.register(adminRoutes);
 // Rotas de produtos (revenda)
 app.register(productRoutes);
+// Rotas de configuração de webhook
+app.register(webhookConfigRoutes);
+// Rotas de Webhooks (públicas)
+app.register(webhooksPublicRoutes);
 
 // Iniciar servidor
 async function start() {

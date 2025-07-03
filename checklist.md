@@ -113,12 +113,21 @@
 
 ### 5.1 Backend - Endpoints
 
-- [ ] **GET** `/api/revenda/webhook-config` - Obter configuração do webhook (URL e token)
-- [ ] **POST** `/api/revenda/webhook-token` - Gerar novo token
-- [ ] **POST** `/api/webhooks/asaas` - Receber webhooks com token no header (validar e enfileirar)
-- [ ] **POST** `/api/webhooks/asaas/:revendaId` - Receber webhooks por ID (outra forma de identificação)
+- [x] **GET** `/api/revenda/webhook-config` - Obter configuração do webhook (URL e token)
+- [x] **POST** `/api/revenda/webhook-token` - Gerar novo token
+- [x] **POST** `/api/webhooks/asaas` - Receber webhooks com token no header (validar e enfileirar)
 
-### 5.2 Frontend - Interface de Configuração de Webhooks
+### 5.2 Testes/Aprimoramentos - Webhooks
+
+- [x] Export localhost utilizando NGROK ou Cloudflare Tunnel
+- [x] Configurar endpoint no painel do Asaas (Sandbox)
+- [x] Validar entrega de eventos e processamento no Asaas
+- [x] Salvar webhook no banco
+- [x] Implementar idempotência (garantir que o mesmo evento não seja processado duas vezes).
+- [x] Implementar logs detalhados para cada recebimento de webhook
+- [x] Monitorar falhas e tente reprocessar se necessário
+
+### 5.3 Frontend - Interface de Configuração de Webhooks
 
 - [ ] Página de configuração de webhook
 - [ ] Exibir URL única do webhook e token de autenticação
@@ -131,14 +140,14 @@
 
 ### 6.1 Backend - Endpoints
 
-- [ ] **GET** `/api/webhooks` - Listar todos os webhooks com filtros
+- [ ] **GET** `/api/webhooks` - Listar todos os webhooks
 - [ ] **GET** `/api/webhooks/:id` - Detalhes do webhook
 - [ ] **PUT** `/api/webhooks/:id/reprocess` - Reprocessar webhook
 - [ ] **GET** `/api/stats` - Estatísticas para o dashboard
 
 ### 6.2 Frontend - Interfaces
 
-- [ ] **Página de Webhooks:** Listar, filtrar, buscar, ver detalhes (JSON viewer) e reprocessar webhooks.
+- [ ] **Página de Webhooks:** Listar, filtrar, buscar, ver detalhes, listar webhooks recebidos, status, erros, etc. (JSON viewer) e reprocessar webhooks.
 - [ ] **Dashboard Principal:** Página inicial com estatísticas, gráficos e lista de webhooks recentes.
 - [ ] Visualizar webhooks por produto na página de Produtos
 - [ ] Visualizar produtos e status de webhooks por revenda na página de Admin
