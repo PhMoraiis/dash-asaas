@@ -1,0 +1,622 @@
+{
+	"meta": {
+		"format": "httpie",
+		"version": "1.0.0",
+		"contentType": "collection",
+		"schema": "https://schema.httpie.io/1.0.0.json",
+		"docs": "https://httpie.io/r/help/export-from-httpie",
+		"source": "HTTPie Desktop 2025.2.0"
+	},
+	"entry": {
+		"name": "Webhooks",
+		"icon": {
+			"name": "diamond",
+			"color": "orange"
+		},
+		"auth": {
+			"type": "bearer",
+			"credentials": {
+				"username": "",
+				"password": ""
+			},
+			"target": "headers"
+		},
+		"requests": [
+			{
+				"name": "Queue Test",
+				"url": "http://localhost:3333/test-queue",
+				"method": "POST",
+				"headers": [],
+				"queryParams": [],
+				"pathParams": [],
+				"auth": {
+					"type": "inherited"
+				},
+				"body": {
+					"type": "text",
+					"file": {
+						"name": ""
+					},
+					"text": {
+						"value": "{\n  \"nome\": \"Teste Retry\",\n  \"forcarErro\": true,\n  \"attempts\": 3,\n  \"backoff\": {\n    \"type\": \"exponencial\",\n    \"delay\": 1000\n  }\n}",
+						"format": "application/json"
+					},
+					"form": {
+						"isMultipart": false,
+						"fields": []
+					},
+					"graphql": {
+						"query": "",
+						"variables": ""
+					}
+				}
+			},
+			{
+				"name": "Dead Letter Jobs",
+				"url": "http://localhost:3333/dead-letter-jobs",
+				"method": "GET",
+				"headers": [],
+				"queryParams": [],
+				"pathParams": [],
+				"auth": {
+					"type": "inherited"
+				},
+				"body": {
+					"type": "none",
+					"file": {
+						"name": ""
+					},
+					"text": {
+						"value": "",
+						"format": "application/json"
+					},
+					"form": {
+						"isMultipart": false,
+						"fields": []
+					},
+					"graphql": {
+						"query": "",
+						"variables": ""
+					}
+				}
+			},
+			{
+				"name": "Dead Letter Jobs Delete",
+				"url": "http://localhost:3333/dead-letter-jobs/:id",
+				"method": "DELETE",
+				"headers": [],
+				"queryParams": [],
+				"pathParams": [
+					{
+						"name": "id",
+						"value": "",
+						"enabled": true
+					}
+				],
+				"auth": {
+					"type": "inherited"
+				},
+				"body": {
+					"type": "none",
+					"file": {
+						"name": ""
+					},
+					"text": {
+						"value": "",
+						"format": "application/json"
+					},
+					"form": {
+						"isMultipart": false,
+						"fields": []
+					},
+					"graphql": {
+						"query": "",
+						"variables": ""
+					}
+				}
+			},
+			{
+				"name": "Reprocess Job",
+				"url": "http://localhost:3333/dead-letter-jobs/:id/reprocess",
+				"method": "POST",
+				"headers": [],
+				"queryParams": [],
+				"pathParams": [
+					{
+						"name": "id",
+						"value": "",
+						"enabled": true
+					}
+				],
+				"auth": {
+					"type": "inherited"
+				},
+				"body": {
+					"type": "none",
+					"file": {
+						"name": ""
+					},
+					"text": {
+						"value": "",
+						"format": "application/json"
+					},
+					"form": {
+						"isMultipart": false,
+						"fields": []
+					},
+					"graphql": {
+						"query": "",
+						"variables": ""
+					}
+				}
+			},
+			{
+				"name": "Reprocess All Jobs",
+				"url": "http://localhost:3333/dead-letter-jobs/reprocess-all",
+				"method": "POST",
+				"headers": [],
+				"queryParams": [],
+				"pathParams": [],
+				"auth": {
+					"type": "inherited"
+				},
+				"body": {
+					"type": "none",
+					"file": {
+						"name": ""
+					},
+					"text": {
+						"value": "",
+						"format": "application/json"
+					},
+					"form": {
+						"isMultipart": false,
+						"fields": []
+					},
+					"graphql": {
+						"query": "",
+						"variables": ""
+					}
+				}
+			},
+			{
+				"name": "Create ADMIN",
+				"url": "http://localhost:3333/__secret-create-admin",
+				"method": "POST",
+				"headers": [],
+				"queryParams": [],
+				"pathParams": [],
+				"auth": {
+					"type": "inherited"
+				},
+				"body": {
+					"type": "text",
+					"file": {
+						"name": ""
+					},
+					"text": {
+						"value": "{\n  \"name\": \"Philipe Morais\",\n  \"email\": \"admin@test.com\",\n  \"password\": \"Adm767510!@@\"\n}",
+						"format": "application/json"
+					},
+					"form": {
+						"isMultipart": false,
+						"fields": []
+					},
+					"graphql": {
+						"query": "",
+						"variables": ""
+					}
+				}
+			},
+			{
+				"name": "Get Revendas",
+				"url": "http://localhost:3333/api/admin/revendas",
+				"method": "GET",
+				"headers": [
+					{
+						"name": "Cookie",
+						"value": "auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtY2p1ZDFnczAwMDFnNW9nYTJpeW16NDEiLCJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwicm9sZSI6ImFkbWluIiwic2x1ZyI6InBoaWxpcGUtbW9yYWlzLTIiLCJpYXQiOjE3NTEzMzk4Nzd9.jJSOIefbALhi75Xmm0hpC9xnMhBHxHBSoIhDDOTTgSA; refresh_token=008d69c1924abb1b965f7997236fd87e113900609938af28d540355958f1b0783e9f12e83236e2eb",
+						"enabled": true
+					}
+				],
+				"queryParams": [],
+				"pathParams": [],
+				"auth": {
+					"type": "inherited"
+				},
+				"body": {
+					"type": "none",
+					"file": {
+						"name": ""
+					},
+					"text": {
+						"value": "",
+						"format": "application/json"
+					},
+					"form": {
+						"isMultipart": false,
+						"fields": []
+					},
+					"graphql": {
+						"query": "",
+						"variables": ""
+					}
+				}
+			},
+			{
+				"name": "Get Admins",
+				"url": "http://localhost:3333/api/admin/adm",
+				"method": "GET",
+				"headers": [
+					{
+						"name": "Cookie",
+						"value": "auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtY2p1ZDFnczAwMDFnNW9nYTJpeW16NDEiLCJlbWFpbCI6ImFkbWluQHRlc3QuY29tIiwicm9sZSI6ImFkbWluIiwic2x1ZyI6InBoaWxpcGUtbW9yYWlzLTIiLCJpYXQiOjE3NTEzMzk4Nzd9.jJSOIefbALhi75Xmm0hpC9xnMhBHxHBSoIhDDOTTgSA; refresh_token=008d69c1924abb1b965f7997236fd87e113900609938af28d540355958f1b0783e9f12e83236e2eb",
+						"enabled": true
+					}
+				],
+				"queryParams": [],
+				"pathParams": [],
+				"auth": {
+					"type": "inherited"
+				},
+				"body": {
+					"type": "none",
+					"file": {
+						"name": ""
+					},
+					"text": {
+						"value": "",
+						"format": "application/json"
+					},
+					"form": {
+						"isMultipart": false,
+						"fields": []
+					},
+					"graphql": {
+						"query": "",
+						"variables": ""
+					}
+				}
+			},
+			{
+				"name": "Logout",
+				"url": "http://localhost:3333/api/logout",
+				"method": "POST",
+				"headers": [],
+				"queryParams": [],
+				"pathParams": [],
+				"auth": {
+					"type": "inherited"
+				},
+				"body": {
+					"type": "none",
+					"file": {
+						"name": ""
+					},
+					"text": {
+						"value": "",
+						"format": "application/json"
+					},
+					"form": {
+						"isMultipart": false,
+						"fields": []
+					},
+					"graphql": {
+						"query": "",
+						"variables": ""
+					}
+				}
+			},
+			{
+				"name": "Login",
+				"url": "http://localhost:3333/api/login",
+				"method": "POST",
+				"headers": [
+					{
+						"name": "Cookie",
+						"value": "",
+						"enabled": false
+					}
+				],
+				"queryParams": [],
+				"pathParams": [],
+				"auth": {
+					"type": "inherited"
+				},
+				"body": {
+					"type": "text",
+					"file": {
+						"name": ""
+					},
+					"text": {
+						"value": "{\n  \"email\": \"test2@test.com\",\n  \"password\": \"Vis767510!!!\"\n}",
+						"format": "application/json"
+					},
+					"form": {
+						"isMultipart": false,
+						"fields": []
+					},
+					"graphql": {
+						"query": "",
+						"variables": ""
+					}
+				}
+			},
+			{
+				"name": "Get Products",
+				"url": "http://localhost:3333/api/products",
+				"method": "GET",
+				"headers": [
+					{
+						"name": "Cookie",
+						"value": "auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtY2t1bDVmbjAwMDBnNWN2a2twOXc5NWMiLCJlbWFpbCI6InRlc3QyQHRlc3QuY29tIiwicm9sZSI6InJldmVuZGEiLCJzbHVnIjoidGVzdGUtbW9yYWlzIiwiaWF0IjoxNzUxNDI2MzA0fQ.iQMEC8z7drlo6G_vdpdQWnohVItWrTt3DOc8AM7tw9w",
+						"enabled": true
+					}
+				],
+				"queryParams": [],
+				"pathParams": [],
+				"auth": {
+					"type": "inherited"
+				},
+				"body": {
+					"type": "none",
+					"file": {
+						"name": ""
+					},
+					"text": {
+						"value": "",
+						"format": "application/json"
+					},
+					"form": {
+						"isMultipart": false,
+						"fields": []
+					},
+					"graphql": {
+						"query": "",
+						"variables": ""
+					}
+				}
+			},
+			{
+				"name": "POST Products",
+				"url": "http://localhost:3333/api/products",
+				"method": "POST",
+				"headers": [
+					{
+						"name": "Cookie",
+						"value": "auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtY2t1bDVmbjAwMDBnNWN2a2twOXc5NWMiLCJlbWFpbCI6InRlc3QyQHRlc3QuY29tIiwicm9sZSI6InJldmVuZGEiLCJzbHVnIjoidGVzdGUtbW9yYWlzIiwiaWF0IjoxNzUxNDI2MzA0fQ.iQMEC8z7drlo6G_vdpdQWnohVItWrTt3DOc8AM7tw9w",
+						"enabled": true
+					}
+				],
+				"queryParams": [],
+				"pathParams": [],
+				"auth": {
+					"type": "inherited"
+				},
+				"body": {
+					"type": "text",
+					"file": {
+						"name": ""
+					},
+					"text": {
+						"value": "{\n  \"name\": \"Matcher\",\n  \"description\": \"Aplicação de gerenciamento de torneios.\"\n}",
+						"format": "application/json"
+					},
+					"form": {
+						"isMultipart": false,
+						"fields": []
+					},
+					"graphql": {
+						"query": "",
+						"variables": ""
+					}
+				}
+			},
+			{
+				"name": "PATCH Products",
+				"url": "http://localhost:3333/api/products/:id",
+				"method": "PATCH",
+				"headers": [
+					{
+						"name": "Cookie",
+						"value": "auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtY2t1bDVmbjAwMDBnNWN2a2twOXc5NWMiLCJlbWFpbCI6InRlc3QyQHRlc3QuY29tIiwicm9sZSI6InJldmVuZGEiLCJzbHVnIjoidGVzdGUtbW9yYWlzIiwiaWF0IjoxNzUxNDI2MzA0fQ.iQMEC8z7drlo6G_vdpdQWnohVItWrTt3DOc8AM7tw9w",
+						"enabled": true
+					}
+				],
+				"queryParams": [],
+				"pathParams": [
+					{
+						"name": "id",
+						"value": "",
+						"enabled": true
+					}
+				],
+				"auth": {
+					"type": "inherited"
+				},
+				"body": {
+					"type": "text",
+					"file": {
+						"name": ""
+					},
+					"text": {
+						"value": "{\n  \"name\": \"Matcher\",\n  \"description\": \"Aplicação de chaveamento de torneios.\",\n  \"active\": true\n}",
+						"format": "application/json"
+					},
+					"form": {
+						"isMultipart": false,
+						"fields": []
+					},
+					"graphql": {
+						"query": "",
+						"variables": ""
+					}
+				}
+			},
+			{
+				"name": "DELETE Products",
+				"url": "http://localhost:3333/api/products/:id",
+				"method": "DELETE",
+				"headers": [
+					{
+						"name": "Cookie",
+						"value": "auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtY2t1bDVmbjAwMDBnNWN2a2twOXc5NWMiLCJlbWFpbCI6InRlc3QyQHRlc3QuY29tIiwicm9sZSI6InJldmVuZGEiLCJzbHVnIjoidGVzdGUtbW9yYWlzIiwiaWF0IjoxNzUxNDI2MzA0fQ.iQMEC8z7drlo6G_vdpdQWnohVItWrTt3DOc8AM7tw9w",
+						"enabled": true
+					}
+				],
+				"queryParams": [],
+				"pathParams": [
+					{
+						"name": "id",
+						"value": "",
+						"enabled": true
+					}
+				],
+				"auth": {
+					"type": "inherited"
+				},
+				"body": {
+					"type": "none",
+					"file": {
+						"name": ""
+					},
+					"text": {
+						"value": "",
+						"format": "application/json"
+					},
+					"form": {
+						"isMultipart": false,
+						"fields": []
+					},
+					"graphql": {
+						"query": "",
+						"variables": ""
+					}
+				}
+			},
+			{
+				"name": "Regenerate Token Webhook",
+				"url": "http://localhost:3333/api/produtos/:id/regenerate",
+				"method": "POST",
+				"headers": [
+					{
+						"name": "Cookie",
+						"value": "auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtY2t1bDVmbjAwMDBnNWN2a2twOXc5NWMiLCJlbWFpbCI6InRlc3QyQHRlc3QuY29tIiwicm9sZSI6InJldmVuZGEiLCJzbHVnIjoidGVzdGUtbW9yYWlzIiwiaWF0IjoxNzUxNDI2MzA0fQ.iQMEC8z7drlo6G_vdpdQWnohVItWrTt3DOc8AM7tw9w",
+						"enabled": true
+					}
+				],
+				"queryParams": [],
+				"pathParams": [
+					{
+						"name": "id",
+						"value": "cmcnni7400001g5k0zr7a5rse",
+						"enabled": true
+					}
+				],
+				"auth": {
+					"type": "inherited"
+				},
+				"body": {
+					"type": "none",
+					"file": {
+						"name": ""
+					},
+					"text": {
+						"value": "",
+						"format": "application/json"
+					},
+					"form": {
+						"isMultipart": false,
+						"fields": []
+					},
+					"graphql": {
+						"query": "",
+						"variables": ""
+					}
+				}
+			},
+			{
+				"name": "Receive Token Webhook",
+				"url": "http://localhost:3333/api/webhooks/asaas",
+				"method": "POST",
+				"headers": [
+					{
+						"name": "asaas-access-token",
+						"value": "64726b56-2d51-4cef-9342-8e7cd21c9022",
+						"enabled": true
+					}
+				],
+				"queryParams": [
+					{
+						"name": "asaas-acess-token",
+						"value": "64726b56-2d51-4cef-9342-8e7cd21c9022",
+						"enabled": false
+					}
+				],
+				"pathParams": [],
+				"auth": {
+					"type": "inherited"
+				},
+				"body": {
+					"type": "text",
+					"file": {
+						"name": ""
+					},
+					"text": {
+						"value": "{\n  \"event\": \"PAYMENT_RECEIVED\",\n  \"payment\": {\n    \"id\": \"pay_123456789\",\n    \"customer\": \"cus_987654321\",\n    \"value\": 150.00,\n    \"dueDate\": \"2024-07-10\",\n    \"paymentDate\": \"2024-07-01\",\n    \"status\": \"RECEIVED\"\n  }\n}",
+						"format": "application/json"
+					},
+					"form": {
+						"isMultipart": false,
+						"fields": []
+					},
+					"graphql": {
+						"query": "",
+						"variables": ""
+					}
+				}
+			},
+			{
+				"name": "GET Webhook Config",
+				"url": "http://localhost:3333/api/produtos/:id/webhook-config",
+				"method": "GET",
+				"headers": [
+					{
+						"name": "Cookie",
+						"value": "auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtY2t1bDVmbjAwMDBnNWN2a2twOXc5NWMiLCJlbWFpbCI6InRlc3QyQHRlc3QuY29tIiwicm9sZSI6InJldmVuZGEiLCJzbHVnIjoidGVzdGUtbW9yYWlzIiwiaWF0IjoxNzUxNDI2MzA0fQ.iQMEC8z7drlo6G_vdpdQWnohVItWrTt3DOc8AM7tw9w",
+						"enabled": true
+					}
+				],
+				"queryParams": [],
+				"pathParams": [
+					{
+						"name": "id",
+						"value": "cmcnni7400001g5k0zr7a5rse",
+						"enabled": true
+					}
+				],
+				"auth": {
+					"type": "inherited"
+				},
+				"body": {
+					"type": "none",
+					"file": {
+						"name": ""
+					},
+					"text": {
+						"value": "",
+						"format": "application/json"
+					},
+					"form": {
+						"isMultipart": false,
+						"fields": []
+					},
+					"graphql": {
+						"query": "",
+						"variables": ""
+					}
+				}
+			}
+		]
+	}
+}
