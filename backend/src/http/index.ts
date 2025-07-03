@@ -88,6 +88,12 @@ app.register(fastifyJwt, {
 	},
 });
 
+app.get("/", async (_request, reply) => {
+	reply.send({
+		message: "Welcome to the Dashboard Webhooks ASAAS API",
+		version: ENV.API_VERSION,
+	});
+});
 // Rotas de queueJobs
 app.register(queueJobsRoutes);
 // Rotas de autenticação
