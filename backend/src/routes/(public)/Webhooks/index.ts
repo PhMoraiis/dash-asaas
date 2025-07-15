@@ -1,7 +1,7 @@
-import { prisma } from "@/database/client";
-import { webhookQueue } from "@/queues";
 import type { FastifyInstance } from "fastify";
 import { z } from "zod";
+import { prisma } from "@/database/client";
+import { webhookQueue } from "@/queues";
 
 export async function webhooksPublicRoutes(app: FastifyInstance) {
 	// Endpoint público: Receber webhooks do Asaas
@@ -19,7 +19,7 @@ export async function webhooksPublicRoutes(app: FastifyInstance) {
 			},
 		},
 		async (request, reply) => {
-			// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+			// biome-ignore lint/suspicious/noExplicitAny: ignore
 			const body = request.body as any;
 			console.info(
 				`[WEBHOOK] Recebido: id=${body.id} event=${body.event} revenda=${body.revendaId}`,

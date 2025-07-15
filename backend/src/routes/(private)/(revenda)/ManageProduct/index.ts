@@ -266,7 +266,7 @@ export async function productRoutes(app: FastifyInstance) {
 				},
 			},
 		},
-		async (request, reply) => { 
+		async (request, reply) => {
 			const { id } = request.params as { id: string };
 			const { id: revendaId } = request.user as { id: string };
 
@@ -282,6 +282,47 @@ export async function productRoutes(app: FastifyInstance) {
 
 			const webhookUrl = `${ENV.EXTERNAL_API_URL}/api/webhooks/asaas`;
 			return reply.send({ webhookUrl, webhookToken: produto.webhookToken });
+		},
+	);
+
+	// Buscar detalhes de um produto específico da revenda logada
+	app.get(
+		"/api/products/:id",
+		{
+			preHandler: [protectRoute, requireRole("revenda")],
+			schema: {
+				tags: ["products"],
+				summary: "Buscar detalhes de um produto da revenda logada",
+				params: z.object({ id: z.string() }),
+				response: {
+					200: createProductSchema.extend({
+						id: z.string(),
+						revendaId: z.string(),
+						active: z.boolean(),
+						createdAt: z.string(),
+						updatedAt: z.string(),
+						webhookToken: z.string(),
+					}),
+					404: z.object({ error: z.boolean(), message: z.string() }),
+				},
+			},
+		},
+		async (request, reply) => {
+			const { id: revendaId } = request.user as { id: string };
+			const { id } = request.params as { id: string };
+			const produto = await prisma.produto.findFirst({
+				where: { id, revendaId },
+			});
+			if (!produto) {
+				return reply
+					.status(404)
+					.send({ error: true, message: "Produto não encontrado" });
+			}
+			return reply.send({
+				...produto,
+				createdAt: produto.createdAt.toISOString(),
+				updatedAt: produto.updatedAt.toISOString(),
+			});
 		},
 	);
 }

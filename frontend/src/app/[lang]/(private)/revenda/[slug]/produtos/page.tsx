@@ -2,7 +2,7 @@
 
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { z } from "zod";
-import { useId, useMemo, useRef, useState } from "react";
+import { useId, useMemo, useRef } from "react";
 import {
 	flexRender,
 	getCoreRowModel,
@@ -31,6 +31,10 @@ import {
 	ListFilterIcon,
 	PlusIcon,
 	RefreshCwIcon,
+	EyeIcon,
+	EyeOffIcon,
+	ClipboardIcon,
+	CheckIcon,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -75,8 +79,9 @@ import { useQuery } from "@tanstack/react-query";
 import { ProductsRowActions } from "./_components/ProductsRowActions";
 import { CreateProductModal } from "./_components/create-product-modal";
 import { EditProductModal } from "./_components/edit-product-modal";
-import { useRouter, useParams } from "next/navigation";
 import { ArrowSquareOutIcon } from "@phosphor-icons/react/dist/ssr";
+import { useState } from "react";
+import { ProductDetailModal } from "./_components/product-detail-modal";
 
 // Esquema do produto
 const productSchema = z.object({
@@ -86,7 +91,7 @@ const productSchema = z.object({
 	active: z.boolean(),
 	createdAt: z.string(),
 	updatedAt: z.string(),
-	webhooks: z.array(z.string()).optional(),
+	webhookToken: z.string(),
 });
 
 type Product = z.infer<typeof productSchema>;
@@ -97,13 +102,13 @@ export type Item = {
 	description?: string;
 	status: "Ativo" | "Inativo";
 	active: boolean;
-	webhooks: string[];
+	webhookToken: string;
 	createdAt: string;
 	updatedAt: string;
 };
 
 // Custom filter function for multi-column searching
-const multiColumnFilterFn: FilterFn<Item> = (row, columnId, filterValue) => {
+const multiColumnFilterFn: FilterFn<Item> = (row, _columnId, filterValue) => {
 	const searchableRowContent =
 		`${row.original.name} ${row.original.description}`.toLowerCase();
 	const searchTerm = (filterValue ?? "").toLowerCase();
@@ -120,10 +125,50 @@ const statusFilterFn: FilterFn<Item> = (
 	return filterValue.includes(status);
 };
 
+function TokenCell({ token }: { token?: string }) {
+	const [show, setShow] = useState(false);
+	const [copied, setCopied] = useState(false);
+
+	const handleCopy = async () => {
+		if (!token) return;
+		await navigator.clipboard.writeText(token);
+		setCopied(true);
+		setTimeout(() => setCopied(false), 1500);
+	};
+
+	if (!token) {
+		return <span className="text-xs text-muted-foreground">Nenhum</span>;
+	}
+
+	return (
+		<div className="flex items-center">
+			<span className="font-mono text-xs">
+				{show ? token : `${token.slice(0, 4)}...`}
+			</span>
+			<Button size="icon" variant="ghost" onClick={() => setShow((v) => !v)}>
+				{show ? <EyeOffIcon size={16} /> : <EyeIcon size={16} />}
+			</Button>
+			<Button size="icon" variant="ghost" onClick={handleCopy}>
+				{copied ? (
+					<CheckIcon size={16} className="text-emerald-500" />
+				) : (
+					<ClipboardIcon size={16} />
+				)}
+			</Button>
+		</div>
+	);
+}
+
 export default function ProductsPage() {
 	const [openCreateModal, setOpenCreateModal] = useState(false);
 	const [openEditModal, setOpenEditModal] = useState(false);
 	const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+	const [openDetailModal, setOpenDetailModal] = useState(false);
+	const [selectedProductId, setSelectedProductId] = useState<string | null>(
+		null,
+	);
+	const [_showToken, _setShowTokenn] = useState(false);
+	const [_copied, _setCopiedd] = useState(false);
 
 	const id = useId();
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -139,11 +184,8 @@ export default function ProductsPage() {
 			desc: false,
 		},
 	]);
-
-	const router = useRouter();
-	const params = useParams();
-	const lang = params.lang;
-	const slug = params.slug;
+	const [_show, _setShoww] = useState(false);
+	const [_setCopied] = useState(false);
 
 	// Função para buscar produtos da revenda logada
 	const fetchProducts = async () => {
@@ -155,7 +197,6 @@ export default function ProductsPage() {
 	const {
 		data: productsData,
 		isLoading,
-		error: queryError,
 		refetch,
 	} = useQuery({
 		queryKey: ["products"],
@@ -165,13 +206,13 @@ export default function ProductsPage() {
 
 	const data: Item[] = useMemo(
 		() =>
-			productsData?.map((p: Product & { webhooks?: string[] }) => ({
+			productsData?.map((p: Product) => ({
 				id: p.id,
 				name: p.name,
 				description: p.description,
 				active: p.active,
 				status: p.active ? "Ativo" : "Inativo",
-				webhooks: p.webhooks ?? [],
+				webhookToken: p.webhookToken,
 				createdAt: p.createdAt,
 				updatedAt: p.updatedAt,
 			})) || [],
@@ -196,22 +237,10 @@ export default function ProductsPage() {
 			filterFn: multiColumnFilterFn,
 		},
 		{
-			header: "Webhooks",
-			accessorKey: "webhooks",
+			header: "Webhook Token",
+			accessorKey: "webhookToken",
 			size: 200,
-			cell: ({ row }) => (
-				<div className="flex flex-wrap gap-1">
-					{row.original.webhooks.length > 0 ? (
-						row.original.webhooks.map((wh) => (
-							<Badge key={wh} variant="secondary">
-								{wh}
-							</Badge>
-						))
-					) : (
-						<span className="text-xs text-muted-foreground">Nenhum</span>
-					)}
-				</div>
-			),
+			cell: ({ row }) => <TokenCell token={row.original.webhookToken} />,
 		},
 		{
 			header: "Status",
@@ -251,9 +280,7 @@ export default function ProductsPage() {
 					variant="outline"
 					size="sm"
 					className="cursor-pointer flex items-center justify-center"
-					onClick={() => {
-						router.push(`/${lang}/revenda/${slug}/produtos/${row.original.id}`);
-					}}
+					onClick={() => handleOpenDetail(row.original.id)}
 				>
 					Ver mais <ArrowSquareOutIcon />
 				</Button>
@@ -297,7 +324,7 @@ export default function ProductsPage() {
 	});
 
 	// Get unique status values
-	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+	// biome-ignore lint/correctness/useExhaustiveDependencies: ignore
 	const uniqueStatusValues = useMemo(() => {
 		const statusColumn = table.getColumn("status");
 		if (!statusColumn) return [];
@@ -306,14 +333,14 @@ export default function ProductsPage() {
 	}, [table.getColumn("status")?.getFacetedUniqueValues()]);
 
 	// Get counts for each status
-	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+	// biome-ignore lint/correctness/useExhaustiveDependencies: ignore
 	const statusCounts = useMemo(() => {
 		const statusColumn = table.getColumn("status");
 		if (!statusColumn) return new Map();
 		return statusColumn.getFacetedUniqueValues();
 	}, [table.getColumn("status")?.getFacetedUniqueValues()]);
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+	// biome-ignore lint/correctness/useExhaustiveDependencies: ignore
 	const selectedStatuses = useMemo(() => {
 		const filterValue = table.getColumn("status")?.getFilterValue() as string[];
 		return filterValue ?? [];
@@ -343,6 +370,11 @@ export default function ProductsPage() {
 			setSelectedProduct(found);
 			setOpenEditModal(true);
 		}
+	};
+
+	const handleOpenDetail = (productId: string) => {
+		setSelectedProductId(productId);
+		setOpenDetailModal(true);
 	};
 
 	// Função para ser passada para modais e ações que precisam atualizar a lista
@@ -519,6 +551,7 @@ export default function ProductsPage() {
 											className="h-11"
 										>
 											{header.isPlaceholder ? null : header.column.getCanSort() ? (
+												// biome-ignore lint/a11y/noStaticElementInteractions: ignore
 												<div
 													className={cn(
 														header.column.getCanSort() &&
@@ -743,6 +776,12 @@ export default function ProductsPage() {
 					}}
 				/>
 			)}
+			<ProductDetailModal
+				open={openDetailModal}
+				onOpenChange={setOpenDetailModal}
+				productId={selectedProductId}
+				onTokenRegenerated={refetch}
+			/>
 		</div>
 	);
 }
