@@ -18,7 +18,6 @@ import { forgotRoutes } from "../routes/(public)/PasswordForgot";
 import { revendasRoutes } from "@/routes/(private)/(admin)/ManageRevendas";
 import { adminRoutes } from "@/routes/(private)/(admin)/ManageAdmin";
 import { productRoutes } from "@/routes/(private)/(revenda)/ManageProduct";
-import { webhookConfigRoutes } from "@/routes/(private)/Webhooks/config";
 import { webhooksPublicRoutes } from "@/routes/(public)/Webhooks";
 
 // Validator and Serializer Compilers ZOD
@@ -106,8 +105,6 @@ app.register(revendasRoutes);
 app.register(adminRoutes);
 // Rotas de produtos (revenda)
 app.register(productRoutes);
-// Rotas de configuração de webhook
-app.register(webhookConfigRoutes);
 // Rotas de Webhooks (públicas)
 app.register(webhooksPublicRoutes);
 
