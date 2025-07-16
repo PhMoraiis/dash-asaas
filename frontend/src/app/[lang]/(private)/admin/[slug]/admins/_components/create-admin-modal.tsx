@@ -88,7 +88,7 @@ export function CreateAdminModal({
 				setShowPasswordModal(true);
 			}
 		},
-		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+		// biome-ignore lint/suspicious/noExplicitAny: ignore
 		onError: (error: any) => {
 			if (error?.message?.includes("já existe")) {
 				toast.error("Já existe um administrador com este e-mail.");

@@ -13,10 +13,7 @@ import { Label } from "@/components/ui/label";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-	CircleNotchIcon,
-	PlusIcon,
-} from "@phosphor-icons/react/dist/ssr";
+import { CircleNotchIcon, PlusIcon } from "@phosphor-icons/react/dist/ssr";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { toast } from "sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -61,7 +58,7 @@ export function CreateProductModal({
 			}
 			return res.json();
 		},
-		onSuccess: (data) => {
+		onSuccess: () => {
 			toast.success("Produto criada com sucesso!");
 			queryClient.invalidateQueries({ queryKey: ["products"] });
 			onOpenChange(false);

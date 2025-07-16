@@ -83,7 +83,8 @@ export default function ForgotPasswordPage() {
 										verifique sua caixa de entrada.
 									</p>
 								</div>
-								{/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
+								{/* biome-ignore lint/a11y/useKeyWithClickEvents: ignore */}
+								{/** biome-ignore lint/a11y/noStaticElementInteractions: ignore */}
 								<span
 									className="text-primary cursor-pointer mt-4 flex items-center gap-2"
 									onClick={() => router.push("/login")}

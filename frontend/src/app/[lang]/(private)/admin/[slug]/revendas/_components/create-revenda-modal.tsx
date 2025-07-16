@@ -91,7 +91,7 @@ export function CreateRevendaModal({
 				setShowPasswordModal(true);
 			}
 		},
-		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+		// biome-ignore lint/suspicious/noExplicitAny: ignore
 		onError: (error: any) => {
 			if (error?.message?.includes("já existe")) {
 				toast.error("Já existe uma revenda com este e-mail.");

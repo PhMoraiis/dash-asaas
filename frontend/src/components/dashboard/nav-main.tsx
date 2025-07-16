@@ -7,7 +7,7 @@ import {
 	SidebarGroupContent,
 	SidebarMenu,
 } from "@/components/ui/sidebar";
-import { CaretDownIcon, PlusIcon } from "@phosphor-icons/react/dist/ssr";
+import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr";
 import {
 	DropdownMenu,
 	DropdownMenuTrigger,
@@ -18,6 +18,8 @@ import {
 import { useState } from "react";
 import { CreateRevendaModal } from "../../app/[lang]/(private)/admin/[slug]/revendas/_components/create-revenda-modal";
 import { CreateAdminModal } from "../../app/[lang]/(private)/admin/[slug]/admins/_components/create-admin-modal";
+import { CreateProductModal } from "../../app/[lang]/(private)/revenda/[slug]/produtos/_components/create-product-modal";
+import { useAuthStore } from "@/stores/auth-store";
 
 export function NavMain({
 	items,
@@ -25,7 +27,7 @@ export function NavMain({
 	items: {
 		title: string;
 		url: string;
-		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+		// biome-ignore lint/suspicious/noExplicitAny: ignore
 		icon?: React.ComponentType<any>;
 	}[];
 }) {
@@ -33,6 +35,8 @@ export function NavMain({
 	const pathname = usePathname();
 	const [openRevenda, setOpenRevenda] = useState(false);
 	const [openAdmin, setOpenAdmin] = useState(false);
+	const [openProduct, setOpenProduct] = useState(false);
+	const user = useAuthStore((s) => s.user);
 
 	return (
 		<SidebarGroup>
@@ -45,16 +49,29 @@ export function NavMain({
 						</Button>
 					</DropdownMenuTrigger>
 					<DropdownMenuContent>
-						<DropdownMenuItem onSelect={() => setOpenRevenda(true)}>
-							Cadastrar Revenda
-						</DropdownMenuItem>
-						<DropdownMenuItem onSelect={() => setOpenAdmin(true)}>
-							Cadastrar Administrador
-						</DropdownMenuItem>
+						{user?.role === "admin" ? (
+							<>
+								<DropdownMenuItem onSelect={() => setOpenRevenda(true)}>
+									Cadastrar Revenda
+								</DropdownMenuItem>
+								<DropdownMenuItem onSelect={() => setOpenAdmin(true)}>
+									Cadastrar Administrador
+								</DropdownMenuItem>
+							</>
+						) : (
+							<DropdownMenuItem
+								onSelect={() => {
+									setOpenProduct(true);
+								}}
+							>
+								Cadastrar Produto
+							</DropdownMenuItem>
+						)}
 					</DropdownMenuContent>
 				</DropdownMenu>
 				<CreateRevendaModal open={openRevenda} onOpenChange={setOpenRevenda} />
 				<CreateAdminModal open={openAdmin} onOpenChange={setOpenAdmin} />
+				<CreateProductModal open={openProduct} onOpenChange={setOpenProduct} />
 				<SidebarMenu className="flex space-y-2">
 					{items.map((item) => (
 						<Button

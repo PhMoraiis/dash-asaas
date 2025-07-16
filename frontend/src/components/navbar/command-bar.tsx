@@ -22,7 +22,7 @@ export function CommandBar() {
 		setOpen((open) => !open);
 	};
 
-	const handleCloseCommandBar = () => {
+	const _handleCloseCommandBar = () => {
 		setOpen(false);
 	};
 
@@ -43,7 +43,7 @@ export function CommandBar() {
 
 	return (
 		<div className="flex justify-between items-center w-full">
-			{/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
+			{/* biome-ignore lint/a11y/useKeyWithClickEvents: ignore */}
 			<div
 				onClick={handleOpenCommandBar}
 				className="bg-secondary hover:bg-border dark:bg-accent dark:text-popover-foreground dark:hover:bg-border hover:text-accent-foreground shadow-xs w-full justify-center items-center cursor-pointer transition-colors duration-300 ease-in h-10 rounded-md inline-flex gap-2 whitespace-nowrap"

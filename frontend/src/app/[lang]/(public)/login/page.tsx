@@ -108,38 +108,42 @@ export default function LoginPage() {
 					<CardContent className="space-y-4">
 						<form id="login" onSubmit={handleSubmit(onSubmit)}>
 							<div className="space-y-2">
-								<Label htmlFor="email" className="text-md font-semibold">
-									Email
-								</Label>
-								<Input
-									id="email"
-									placeholder="ada.lovelace@example.com"
-									type="email"
-									autoFocus
-									autoComplete="email"
-									{...register("email", { required: "Email obrigatório" })}
-									aria-invalid={!!errors.email}
-								/>
-								{errors.email && (
-									<span className="text-red-500 text-xs">
-										{errors.email.message as string}
-									</span>
-								)}
-								<Label htmlFor="password" className="text-md font-semibold">
-									Senha
-								</Label>
-								<Input
-									id="password"
-									placeholder="************"
-									type="password"
-									{...register("password", { required: "Senha obrigatória" })}
-									aria-invalid={!!errors.password}
-								/>
-								{errors.password && (
-									<span className="text-red-500 text-xs">
-										{errors.password.message as string}
-									</span>
-								)}
+								<div>
+									<Label htmlFor="email" className="text-md font-semibold">
+										Email
+									</Label>
+									<Input
+										id="email"
+										placeholder="ada.lovelace@example.com"
+										type="email"
+										autoFocus
+										autoComplete="email"
+										{...register("email", { required: "Email obrigatório" })}
+										aria-invalid={!!errors.email}
+									/>
+									{errors.email && (
+										<span className="text-red-500 text-xs">
+											{errors.email.message as string}
+										</span>
+									)}
+								</div>
+								<div>
+									<Label htmlFor="password" className="text-md font-semibold">
+										Senha
+									</Label>
+									<Input
+										id="password"
+										placeholder="************"
+										type="password"
+										{...register("password", { required: "Senha obrigatória" })}
+										aria-invalid={!!errors.password}
+									/>
+									{errors.password && (
+										<span className="text-red-500 text-xs">
+											{errors.password.message as string}
+										</span>
+									)}
+								</div>
 							</div>
 							{error && (
 								<div className="text-red-500 text-sm mt-2">{error}</div>

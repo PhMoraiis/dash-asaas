@@ -81,7 +81,7 @@ export function EditProductModal({
 			onOpenChange(false);
 			reset();
 		},
-		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+		// biome-ignore lint/suspicious/noExplicitAny: ignore
 		onError: (error: any) => {
 			toast.error(error?.message || "Erro ao editar produto.");
 		},

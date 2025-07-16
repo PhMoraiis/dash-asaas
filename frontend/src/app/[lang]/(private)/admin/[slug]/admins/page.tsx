@@ -101,7 +101,7 @@ export type Item = {
 };
 
 // Custom filter function for multi-column searching
-const multiColumnFilterFn: FilterFn<Item> = (row, columnId, filterValue) => {
+const multiColumnFilterFn: FilterFn<Item> = (row, _columnId, filterValue) => {
 	const searchableRowContent =
 		`${row.original.name} ${row.original.email}`.toLowerCase();
 	const searchTerm = (filterValue ?? "").toLowerCase();
@@ -147,7 +147,6 @@ export default function AdminDashboardPage() {
 	const {
 		data: adminsData,
 		isLoading,
-		error: queryError,
 		refetch,
 	} = useQuery({
 		queryKey: ["admins"],
@@ -157,7 +156,7 @@ export default function AdminDashboardPage() {
 
 	const data: Item[] = useMemo(
 		() =>
-			// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+			// biome-ignore lint/suspicious/noExplicitAny: ignore
 			adminsData?.map((r: any) => ({
 				id: r.id,
 				name: r.name,
@@ -238,7 +237,7 @@ export default function AdminDashboardPage() {
 	});
 
 	// Get unique status values
-	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+	// biome-ignore lint/correctness/useExhaustiveDependencies: ignore
 	const uniqueStatusValues = useMemo(() => {
 		const statusColumn = table.getColumn("status");
 		if (!statusColumn) return [];
@@ -247,14 +246,14 @@ export default function AdminDashboardPage() {
 	}, [table.getColumn("status")?.getFacetedUniqueValues()]);
 
 	// Get counts for each status
-	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+	// biome-ignore lint/correctness/useExhaustiveDependencies: ignore
 	const statusCounts = useMemo(() => {
 		const statusColumn = table.getColumn("status");
 		if (!statusColumn) return new Map();
 		return statusColumn.getFacetedUniqueValues();
 	}, [table.getColumn("status")?.getFacetedUniqueValues()]);
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+	// biome-ignore lint/correctness/useExhaustiveDependencies: ignore
 	const selectedStatuses = useMemo(() => {
 		const filterValue = table.getColumn("status")?.getFilterValue() as string[];
 		return filterValue ?? [];
@@ -279,7 +278,7 @@ export default function AdminDashboardPage() {
 	};
 
 	const handleEditAdmin = (administrador: Item) => {
-		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+		// biome-ignore lint/suspicious/noExplicitAny: ignore
 		const found = adminsData?.find((r: any) => r.id === administrador.id);
 		if (found) {
 			setSelectedAdmin(found);
@@ -312,9 +311,9 @@ export default function AdminDashboardPage() {
 							onChange={(e) =>
 								table.getColumn("name")?.setFilterValue(e.target.value)
 							}
-							placeholder="Filter by name or email..."
+							placeholder="Filtrar por nome ou email..."
 							type="text"
-							aria-label="Filter by name or email"
+							aria-label="Filtrar por nome ou email"
 						/>
 						<div className="text-muted-foreground/80 pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 peer-disabled:opacity-50">
 							<ListFilterIcon size={16} aria-hidden="true" />
@@ -391,7 +390,7 @@ export default function AdminDashboardPage() {
 									size={16}
 									aria-hidden="true"
 								/>
-								View
+								Visualizar
 							</Button>
 						</DropdownMenuTrigger>
 						<DropdownMenuContent align="end">
@@ -461,6 +460,7 @@ export default function AdminDashboardPage() {
 											className="h-11"
 										>
 											{header.isPlaceholder ? null : header.column.getCanSort() ? (
+												// biome-ignore lint/a11y/noStaticElementInteractions: ignore
 												<div
 													className={cn(
 														header.column.getCanSort() &&

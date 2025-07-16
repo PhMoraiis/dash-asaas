@@ -3,7 +3,7 @@
 import {
 	CheckerboardIcon,
 	IdentificationBadgeIcon,
-	FolderUserIcon,
+	UserIcon,
 } from "@phosphor-icons/react/dist/ssr";
 import { NavMain } from "@/components/dashboard/nav-main";
 import {
@@ -30,31 +30,26 @@ export default function AppSidebar(props: ComponentProps<typeof Sidebar>) {
 			user?.role === "admin"
 				? [
 						{
-							title: "Dashboard",
-							url: `/${lang}/admin/${slug}/dashboard`,
-							icon: CheckerboardIcon,
+							title: "Administradores",
+							url: `/${lang}/admin/${slug}/admins`,
+							icon: IdentificationBadgeIcon,
 						},
 						{
 							title: "Revendas",
 							url: `/${lang}/admin/${slug}/revendas`,
-							icon: FolderUserIcon,
-						},
-						{
-							title: "Administradores",
-							url: `/${lang}/admin/${slug}/admins`,
-							icon: IdentificationBadgeIcon,
+							icon: UserIcon,
 						},
 					]
 				: [
 						{
 							title: "Dashboard",
 							url: `/${lang}/revenda/${slug}/dashboard`,
-							icon: CheckerboardIcon,																				
+							icon: CheckerboardIcon,
 						},
 						{
 							title: "Produtos",
 							url: `/${lang}/revenda/${slug}/produtos`,
-							icon: FolderUserIcon,
+							icon: UserIcon,
 						},
 						{
 							title: "Webhooks",

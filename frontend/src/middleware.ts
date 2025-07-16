@@ -61,7 +61,7 @@ export async function middleware(request: NextRequest) {
 		const token = request.cookies.get("auth_token")?.value;
 		if (token) {
 			try {
-				// biome-ignore lint/style/noNonNullAssertion: <explanation>
+				// biome-ignore lint/style/noNonNullAssertion: ignore
 				const jwtSecret = process.env.NEXT_PUBLIC_JWT_SECRET!;
 				const { payload } = await jwtVerify(
 					token,
@@ -71,7 +71,7 @@ export async function middleware(request: NextRequest) {
 				const slug = payload.slug as string;
 				if (role === "admin") {
 					return NextResponse.redirect(
-						new URL(`/${locale}/admin/${slug}/dashboard`, request.url),
+						new URL(`/${locale}/admin/${slug}/admins`, request.url),
 					);
 				}
 				if (role === "revenda") {
@@ -79,7 +79,7 @@ export async function middleware(request: NextRequest) {
 						new URL(`/${locale}/revenda/${slug}/dashboard`, request.url),
 					);
 				}
-			} catch (e) {}
+			} catch (_e) {}
 		}
 		return NextResponse.next();
 	}
@@ -104,7 +104,7 @@ export async function middleware(request: NextRequest) {
 		);
 		role = payload.role as string;
 		slug = payload.slug as string;
-	} catch (e) {
+	} catch (_e) {
 		return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
 	}
 

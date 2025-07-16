@@ -402,9 +402,9 @@ export default function ProductsPage() {
 							onChange={(e) =>
 								table.getColumn("name")?.setFilterValue(e.target.value)
 							}
-							placeholder="Filter by name..."
+							placeholder="Filtrar por nome..."
 							type="text"
-							aria-label="Filter by name"
+							aria-label="Filtrar por nome"
 						/>
 						<div className="text-muted-foreground/80 pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 peer-disabled:opacity-50">
 							<ListFilterIcon size={16} aria-hidden="true" />
@@ -481,7 +481,7 @@ export default function ProductsPage() {
 									size={16}
 									aria-hidden="true"
 								/>
-								View
+								Visualizar
 							</Button>
 						</DropdownMenuTrigger>
 						<DropdownMenuContent align="end">
@@ -631,7 +631,7 @@ export default function ProductsPage() {
 									colSpan={columns.length}
 									className="h-24 text-center"
 								>
-									No results.
+									Nenhum resultado.
 								</TableCell>
 							</TableRow>
 						)}
