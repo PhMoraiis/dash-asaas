@@ -68,7 +68,7 @@ export async function webhooksPublicRoutes(app: FastifyInstance) {
 					revendaId: revenda.id,
 					produtoId: produto.id,
 					externalId: body.payment?.id ?? null,
-					status: "PENDING",
+					status: body.payment?.status,
 				},
 			});
 			console.log("Webhook salvo no banco:", asaasEventId);

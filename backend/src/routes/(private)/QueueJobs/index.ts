@@ -68,7 +68,7 @@ export async function queueJobsRoutes(app: FastifyInstance) {
 				},
 			},
 		},
-		async (request, reply) => {
+		async (_request, reply) => {
 			const jobs = await webhookDeadLetterQueue.getJobs([
 				"waiting",
 				"active",
@@ -152,7 +152,7 @@ export async function queueJobsRoutes(app: FastifyInstance) {
 				},
 			},
 		},
-		async (request, reply) => {
+		async (_request, reply) => {
 			const jobs = await webhookDeadLetterQueue.getJobs([
 				"waiting",
 				"active",

@@ -19,6 +19,7 @@ import { revendasRoutes } from "@/routes/(private)/(admin)/ManageRevendas";
 import { adminRoutes } from "@/routes/(private)/(admin)/ManageAdmin";
 import { productRoutes } from "@/routes/(private)/(revenda)/ManageProduct";
 import { webhooksPublicRoutes } from "@/routes/(public)/Webhooks";
+import { webhooksRoutes } from "@/routes/(private)/(revenda)/Webhooks";
 
 // Validator and Serializer Compilers ZOD
 const app = Fastify().withTypeProvider<ZodTypeProvider>();
@@ -107,6 +108,8 @@ app.register(adminRoutes);
 app.register(productRoutes);
 // Rotas de Webhooks (públicas)
 app.register(webhooksPublicRoutes);
+// Rotas de Webhooks (privadas)
+app.register(webhooksRoutes);
 
 // Iniciar servidor
 async function start() {

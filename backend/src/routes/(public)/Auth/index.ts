@@ -317,7 +317,7 @@ export async function authRoutes(app: FastifyInstance) {
 				id: string;
 				role: "admin" | "revenda";
 			};
-			// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+			// biome-ignore lint/suspicious/noExplicitAny: ignore
 			let user: any;
 			if (role === "admin") {
 				user = await prisma.admin.findUnique({ where: { id } });
@@ -376,7 +376,7 @@ export async function authRoutes(app: FastifyInstance) {
 				currentPassword: string;
 				newPassword: string;
 			};
-			// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+			// biome-ignore lint/suspicious/noExplicitAny: ignore
 			let user: any;
 			if (role === "admin") {
 				user = await prisma.admin.findUnique({ where: { id } });

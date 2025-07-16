@@ -6,10 +6,10 @@ type ModelType = "admin" | "revenda";
 const STOPWORDS = ["de", "da", "do", "dos", "das", "e"];
 
 function removeStopwords(name: string) {
-  return name
-  .split(" ")
-  .filter((word) => !STOPWORDS.includes(word.toLowerCase()))
-  .join(" ");
+	return name
+		.split(" ")
+		.filter((word) => !STOPWORDS.includes(word.toLowerCase()))
+		.join(" ");
 }
 
 // Função para gerar slug único
@@ -23,7 +23,7 @@ export async function generateUniqueSlug(
 	let count = 2;
 
 	// Verifica se já existe
-	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+	// biome-ignore lint/suspicious/noExplicitAny: ignore
 	let existe: any;
 	do {
 		existe = await (model === "admin"
