@@ -44,7 +44,8 @@ export function CommandBar() {
 	return (
 		<div className="flex justify-between items-center w-full">
 			{/* biome-ignore lint/a11y/useKeyWithClickEvents: ignore */}
-			<div
+			{/** biome-ignore lint/a11y/noStaticElementInteractions: ignore */}
+<div
 				onClick={handleOpenCommandBar}
 				className="bg-secondary hover:bg-border dark:bg-accent dark:text-popover-foreground dark:hover:bg-border hover:text-accent-foreground shadow-xs w-full justify-center items-center cursor-pointer transition-colors duration-300 ease-in h-10 rounded-md inline-flex gap-2 whitespace-nowrap"
 			>

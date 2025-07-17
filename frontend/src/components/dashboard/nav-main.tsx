@@ -20,6 +20,7 @@ import { CreateRevendaModal } from "../../app/[lang]/(private)/admin/[slug]/reve
 import { CreateAdminModal } from "../../app/[lang]/(private)/admin/[slug]/admins/_components/create-admin-modal";
 import { CreateProductModal } from "../../app/[lang]/(private)/revenda/[slug]/produtos/_components/create-product-modal";
 import { useAuthStore } from "@/stores/auth-store";
+import { useDictionary } from "@/hooks/use-dictionary";
 
 export function NavMain({
 	items,
@@ -37,6 +38,7 @@ export function NavMain({
 	const [openAdmin, setOpenAdmin] = useState(false);
 	const [openProduct, setOpenProduct] = useState(false);
 	const user = useAuthStore((s) => s.user);
+	const dict = useDictionary();
 
 	return (
 		<SidebarGroup>
@@ -44,7 +46,7 @@ export function NavMain({
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
 						<Button className="justify-center items-center text-md cursor-pointer">
-							<span>Menu de Cadastros</span>
+							<span>{dict.sidebar.menu}</span>
 							<CaretDownIcon size={24} />
 						</Button>
 					</DropdownMenuTrigger>
@@ -52,10 +54,10 @@ export function NavMain({
 						{user?.role === "admin" ? (
 							<>
 								<DropdownMenuItem onSelect={() => setOpenRevenda(true)}>
-									Cadastrar Revenda
+									{dict.sidebar.addReseller}
 								</DropdownMenuItem>
 								<DropdownMenuItem onSelect={() => setOpenAdmin(true)}>
-									Cadastrar Administrador
+									{dict.sidebar.addAdmin}
 								</DropdownMenuItem>
 							</>
 						) : (
@@ -64,7 +66,7 @@ export function NavMain({
 									setOpenProduct(true);
 								}}
 							>
-								Cadastrar Produto
+								{dict.sidebar.addProduct}
 							</DropdownMenuItem>
 						)}
 					</DropdownMenuContent>

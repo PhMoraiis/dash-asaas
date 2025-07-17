@@ -1,5 +1,240 @@
 {
-  "products": {
-    "cart": "Add to Cart"
-  }
+	"common": {
+		"edit": "Edit",
+		"delete": "Delete",
+		"cancel": "Cancel",
+		"confirm": "Confirm",
+		"close": "Close",
+		"actions": "Actions",
+		"save": "Save",
+		"add": "Add",
+		"search": "Search here...",
+		"noResults": "No results.",
+		"loading": "Loading...",
+		"details": "Details",
+		"yes": "Yes",
+		"no": "No",
+		"activate": "Activate",
+		"deactivate": "Deactivate",
+		"name": "Name"
+	},
+	"sidebar": {
+		"administrators": "Administrators",
+		"resellers": "Resellers",
+		"dashboard": "Dashboard",
+		"products": "Products",
+		"webhooks": "Webhooks",
+		"menu": "Register Menu",
+		"addReseller": "Register Reseller",
+		"addAdmin": "Register Administrator",
+		"addProduct": "Register Product",
+		"signOut": "Sign Out"
+	},
+	"userMenu": {
+		"help": "Help",
+		"docs": "Docs",
+		"logout": "Sign Out"
+	},
+	"rowActions": {
+		"confirmTitle": "Are you sure?",
+		"confirmActivate": "This action will reactivate the item.",
+		"confirmDeactivate": "This action will permanently deactivate the item.",
+		"confirmDeleteTitle": "Delete item?",
+		"confirmDelete": "This action is irreversible and will permanently delete from the system.",
+		"toastActived": "Reactivated successfully.",
+		"toastDeactivated": "Deactivated successfully.",
+		"toastDeleted": "Deleted successfully.",
+		"toastError": "An error occurred while processing the action."
+	},
+	"greetings": {
+		"welcomeBack": "Welcome back, {name}!",
+		"goodMorning": "Good morning, {name}!",
+		"goodAfternoon": "Good afternoon, {name}!",
+		"goodNight": "Good night, {name}!"
+	},
+	"table": {
+		"view": "View",
+		"rowsPerPage": "Rows per page",
+		"filters": "Filters",
+		"toggleColumns": "Toggle columns",
+		"noResults": "No results found.",
+		"status": "Status",
+		"active": "Active",
+		"inactive": "Inactive",
+		"deleted": "Exclude"
+	},
+	"auth": {
+		"loginTitle": "Welcome to Dashboard Hook",
+		"loginSubtitle": "Sign in to access the control panel.",
+		"email": "Email",
+		"password": "Password",
+		"signIn": "Sign In",
+		"forgotPassword": "Forgot your password?",
+		"forgotPasswordLink": "Click here",
+		"terms": "By signing in, you agree to our",
+		"and": "and",
+		"termsOfService": "Terms of Service",
+		"privacyPolicy": "Privacy Policy",
+		"home": "Home",
+		"emailRequired": "Email required",
+		"passwordRequired": "Password required",
+		"loginError": "Login error",
+		"loginInvalid": "Invalid login"
+	},
+	"password": {
+		"changeTitle": "Change your password",
+		"changeSubtitle": "For your security, set a new password to access the system.",
+		"currentPassword": "Current password",
+		"newPassword": "New password",
+		"confirmNewPassword": "Confirm new password",
+		"change": "Change password",
+		"success": "Password changed successfully! Redirecting...",
+		"error": "Error changing password.",
+		"passwordsDontMatch": "Passwords do not match.",
+		"passwordMinLength": "The new password must be at least 12 characters.",
+		"passwordPattern": "The password must contain uppercase, lowercase, number and symbol (@$!%*?&#)."
+	},
+	"reset": {
+		"title": "Reset your password",
+		"subtitle": "Please enter your new password below. The password must be at least 12 characters.",
+		"newPassword": "New password",
+		"confirmPassword": "Confirm your password",
+		"reset": "Reset password",
+		"resetting": "Resetting...",
+		"success": "Your password has been reset successfully.",
+		"passwordsDontMatch": "Passwords do not match.",
+		"passwordMinLength": "The password must be at least 12 characters.",
+		"error": "Could not reset password."
+	},
+	"forgot": {
+		"title": "Password recovery",
+		"subtitle": "Enter your email to receive a password recovery link.",
+		"email": "Email",
+		"sendLink": "Send reset link",
+		"sending": "Sending...",
+		"success": "A recovery link has been sent to your email, check your inbox.",
+		"backToLogin": "Return to Login",
+		"back": "Back",
+		"invalidEmail": "Invalid email"
+	},
+	"createAdminModal": {
+		"toastSuccess": "Administrator created successfully.",
+		"toastError": "Error creating administrator.",
+		"toastExists": "An administrator with this email already exists.",
+		"title": "Register new Administrator",
+		"description": "Fill in the fields below to register a new administrator.",
+		"buttonAdd": "Create Administrator",
+		"passwordGenerated": "Password generated for the new administrator",
+		"descriptionPassword": "Copy and send the password below to the responsible person. It will be requested on first access.",
+		"observationPassword": "OBS: The password is generated automatically and cannot be recovered."
+	},
+	"editAdminModal": {
+		"toastSuccess": "Administrator edited successfully!",
+		"toastError": "Error editing administrator.",
+		"title": "Edit Administrator",
+		"description": "Update the fields below to edit the administrator."
+	},
+	"adminTable": {
+		"filter": "Filter by name or email",
+		"add": "Add Administrator"
+	},
+	"createResellerModal": {
+		"toastSuccess": "Reseller created successfully.",
+		"toastError": "Error creating reseller.",
+		"toastExists": "A reseller with this email already exists.",
+		"title": "Register new Reseller",
+		"description": "Fill in the fields below to register a new reseller.",
+		"buttonAdd": "Create Reseller",
+		"passwordGenerated": "Password generated for the new reseller",
+		"descriptionPassword": "Copy and send the password below to the responsible person. It will be requested on first access.",
+		"observationPassword": "OBS: The password is generated automatically and cannot be recovered."
+	},
+	"editResellerModal": {
+		"toastSuccess": "Reseller edited successfully!",
+		"toastError": "Error editing reseller.",
+		"title": "Edit Reseller",
+		"description": "Update the fields below to edit the reseller."
+	},
+	"resellerTable": {
+		"filter": "Filter by name or email",
+		"add": "Add Reseller"
+	},
+	"resellerDashboard": {
+		"labelFaturado": "Billed",
+		"labelPago": "Paid",
+		"labelLiquido": "Net",
+		"firstChartTitle": "Unique Customers and Sales of the Day",
+		"firstChartDescription": "Unique customers and sales for today",
+		"firstChartLabel": "Customers",
+		"secondChartTitle": "Monthly Revenue",
+		"secondChartDescription": "Billed, Paid, and Net by day"
+	},
+	"createProductModal": {
+		"toastSuccess": "Product created successfully.",
+		"title": "Create Product",
+		"description": "Fill in the fields below to create a new product.",
+		"descriptionLabel": "Description",
+		"addProduct": "Create Product"
+	},
+	"editProductModal": {
+		"toastSuccess": "Product edited successfully.",
+		"toastError": "Error editing product.",
+		"title": "Edit Product",
+		"description": "Update the fields below to edit the product."
+	},
+	"detailsProductModal": {
+		"toastSuccesTOKEN": "Token copied!",
+		"toastSuccessURL": "URL copied!",
+		"tokenSuccessRegen": "Token regenerated successfully!",
+		"title": "Product Details",
+		"errorLoading": "Error loading product.",
+		"productNotFound": "Product not found.",
+		"name": "Name: ",
+		"description": "Description: ",
+		"status": "Status: ",
+		"createdAt": "Created at: ",
+		"updatedAt": "Updated at: ",
+		"titleConfig": "Webhook Configuration in Asaas",
+		"token": "Product Token: ",
+		"regen": "Regenerate Token ",
+		"url": "URL Endpoint: ",
+		"paragraph1": "How to register the webhook in Asaas:",
+		"paragraph2": "Access the Asaas dashboard and go to ",
+		"paragraph3": "Settings > Webhooks",
+		"paragraph4": "Click on",
+		"paragraph5": "Add Webhook",
+		"paragraph6": "Enter the",
+		"paragraph7": "Endpoint URL",
+		"paragraph8": "above.",
+		"paragraph9": "Add the ",
+		"paragraph10": "Product Token",
+		"paragraph11": "in the ",
+		"paragraph12": "header field.",
+		"paragraph13": "Select the events you want to receive.",
+		"paragraph14": "Save the configuration.",
+		"paragraph15": "Whenever Asaas triggers an event, it will send it to the endpoint above using the product token for authentication."
+	},
+	"productTable": {
+		"descriptionLabel": "Description",
+		"createdAt": "Created At",
+		"details": "Details",
+		"filter": "Filter by name",
+		"add": "Add Product",
+		"see": "See more"
+	},
+	"detailsWebhookModal": {
+		"toastSuccess": "Payload copied!",
+		"title": "Webhook Details",
+		"event": "Event:",
+		"product": "Product:",
+		"received": "Received at:",
+		"payloadReceived": "Received Payload"
+	},
+	"webhookTable": {
+		"event": "Event",
+		"product": "Product",
+		"createdAt": "Received at",
+		"details": "Details",
+		"events": "Events"
+	}
 }

@@ -76,6 +76,7 @@ import { EditRevendaModal } from "@/app/[lang]/(private)/admin/[slug]/revendas/_
 
 import { useQuery } from "@tanstack/react-query";
 import { RevendaRowActions } from "./_components/RevendaRowActions";
+import { useDictionary } from "@/hooks/use-dictionary";
 
 const revendaSchema = z.object({
 	id: z.string(),
@@ -138,9 +139,12 @@ export default function AdminRevendasPage() {
 			desc: false,
 		},
 	]);
+	const dict = useDictionary();
 
 	const fetchRevendas = async () => {
-		const res = await fetchWithAuth("http://localhost:3333/api/admin/revendas");
+		const res = await fetchWithAuth(
+			`${process.env.NEXT_PUBLIC_API_URL}/api/admin/revendas`,
+		);
 		if (!res.ok) throw new Error("Erro ao buscar revendas");
 		return res.json();
 	};
@@ -163,14 +167,14 @@ export default function AdminRevendasPage() {
 				name: r.name,
 				email: r.email,
 				slug: formatSlug(r.slug),
-				status: r.active ? "Ativo" : "Inativo",
+				status: r.active ? `${dict.table.active}` : `${dict.table.inactive}`,
 			})) || [],
-		[revendasData],
+		[revendasData, dict.table.inactive, dict.table.active],
 	);
 
 	const columns: ColumnDef<Item>[] = [
 		{
-			header: "Name",
+			header: `${dict.common.name}`,
 			accessorKey: "name",
 			cell: ({ row }) => (
 				<div className="font-medium">{row.getValue("name")}</div>
@@ -316,9 +320,9 @@ export default function AdminRevendasPage() {
 							onChange={(e) =>
 								table.getColumn("name")?.setFilterValue(e.target.value)
 							}
-							placeholder="Filtrar por nome ou email..."
+							placeholder={dict.resellerTable.filter}
 							type="text"
-							aria-label="Filtrar por nome ou email"
+							aria-label={dict.resellerTable.filter}
 						/>
 						<div className="text-muted-foreground/80 pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 peer-disabled:opacity-50">
 							<ListFilterIcon size={16} aria-hidden="true" />
@@ -359,7 +363,7 @@ export default function AdminRevendasPage() {
 						<PopoverContent className="w-auto min-w-36 p-3" align="start">
 							<div className="space-y-3">
 								<div className="text-muted-foreground text-xs font-medium">
-									Filters
+									{dict.table.filters}
 								</div>
 								<div className="space-y-3">
 									{uniqueStatusValues.map((value, i) => (
@@ -395,11 +399,11 @@ export default function AdminRevendasPage() {
 									size={16}
 									aria-hidden="true"
 								/>
-								Visualizar
+								{dict.table.view}
 							</Button>
 						</DropdownMenuTrigger>
 						<DropdownMenuContent align="end">
-							<DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
+							<DropdownMenuLabel>{dict.table.toggleColumns}</DropdownMenuLabel>
 							{table
 								.getAllColumns()
 								.filter((column) => column.getCanHide())
@@ -446,7 +450,7 @@ export default function AdminRevendasPage() {
 							size={16}
 							aria-hidden="true"
 						/>
-						Adicionar Revenda
+						{dict.resellerTable.add}
 					</Button>
 				</div>
 			</div>
@@ -545,7 +549,7 @@ export default function AdminRevendasPage() {
 									colSpan={columns.length}
 									className="h-24 text-center"
 								>
-									No results.
+									{dict.table.noResults}
 								</TableCell>
 							</TableRow>
 						)}
@@ -558,7 +562,7 @@ export default function AdminRevendasPage() {
 				{/* Results per page */}
 				<div className="flex items-center gap-3">
 					<Label htmlFor={id} className="max-sm:sr-only">
-						Rows per page
+						{dict.table.rowsPerPage}
 					</Label>
 					<Select
 						value={table.getState().pagination.pageSize.toString()}

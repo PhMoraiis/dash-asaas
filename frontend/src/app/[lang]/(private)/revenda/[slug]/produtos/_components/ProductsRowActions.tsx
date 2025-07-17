@@ -2,7 +2,7 @@
 
 import { RowActions } from "@/components/dashboard/RowActions";
 import type { Row } from "@tanstack/react-table";
-import type { Item } from "./page";
+import type { Item } from "../page";
 
 export function ProductsRowActions({
 	row,
@@ -18,20 +18,13 @@ export function ProductsRowActions({
 			row={row}
 			onEdit={onEdit}
 			refetch={refetch}
-			statusEndpoint={(id) => `http://localhost:3333/api/products/${id}/status`}
-			deleteEndpoint={(id) => `http://localhost:3333/api/products/${id}/force`}
+			statusEndpoint={(id) =>
+				`${process.env.NEXT_PUBLIC_API_URL}/api/products/${id}/status`
+			}
+			deleteEndpoint={(id) =>
+				`${process.env.NEXT_PUBLIC_API_URL}/api/products/${id}/force`
+			}
 			isInactive={(item) => item.active === false}
-			actionLabels={{
-				activate: "Reativar",
-				deactivate: "Desativar",
-				delete: "Excluir",
-			}}
-			dialogMessages={{
-				activate: "Esta ação irá reativar o produto.",
-				deactivate: "Esta ação irá desativar o produto permanentemente.",
-				delete:
-					"Esta ação é irreversível e excluirá o produto permanentemente do sistema.",
-			}}
 			showDeleteWhenInactive={true}
 		/>
 	);

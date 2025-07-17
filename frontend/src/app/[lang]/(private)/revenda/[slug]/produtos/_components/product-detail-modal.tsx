@@ -17,6 +17,7 @@ import {
 	ClipboardIcon,
 	CheckIcon,
 } from "@phosphor-icons/react/dist/ssr";
+import { useDictionary } from "@/hooks/use-dictionary";
 
 // Defina o tipo Product aqui (ou importe de um arquivo compartilhado se preferir)
 type Product = {
@@ -43,9 +44,11 @@ export const ProductDetailModal = ({
 	const [webhookToken, setWebhookToken] = useState<string | null>(null);
 	const [copiedToken, setCopiedToken] = useState(false);
 	const [copiedUrl, setCopiedUrl] = useState(false);
+	const dict = useDictionary();
+
 	const fetchProduct = async (): Promise<Product> => {
 		const res = await fetchWithAuth(
-			`http://localhost:3333/api/products/${productId}`,
+			`${process.env.NEXT_PUBLIC_API_URL}/api/products/${productId}`,
 		);
 		if (!res.ok) throw new Error("Erro ao buscar produto");
 		return res.json();
@@ -61,24 +64,28 @@ export const ProductDetailModal = ({
 	}, [data]);
 
 	const product = data as Product | undefined;
-	const status = product ? (product.active ? "Ativo" : "Inativo") : "-";
-	const webhookUrl = `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3333"}/api/webhooks/asaas`;
+	const status = product
+		? product.active
+			? `${dict.table.active}`
+			: `${dict.table.inactive}`
+		: "-";
+	const webhookUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/webhooks/asaas`;
 	const handleCopyToken = async () => {
 		await navigator.clipboard.writeText(webhookToken || "");
 		setCopiedToken(true);
-		toast.success("Token copiado!");
+		toast.success(dict.detailsProductModal.toastSuccesTOKEN);
 		setTimeout(() => setCopiedToken(false), 1500);
 	};
 	const handleCopyUrl = async () => {
 		await navigator.clipboard.writeText(webhookUrl);
 		setCopiedUrl(true);
-		toast.success("URL copiada!");
+		toast.success(dict.detailsProductModal.toastSuccessURL);
 		setTimeout(() => setCopiedUrl(false), 1500);
 	};
 	const regenerateToken = useMutation({
 		mutationFn: async () => {
 			const res = await fetchWithAuth(
-				`http://localhost:3333/api/produtos/${productId}/regenerate`,
+				`${process.env.NEXT_PUBLIC_API_URL}/api/produtos/${productId}/regenerate`,
 				{ method: "POST" },
 			);
 			if (!res.ok) throw new Error("Erro ao regenerar token");
@@ -86,7 +93,7 @@ export const ProductDetailModal = ({
 		},
 		onSuccess: (data: Product) => {
 			setWebhookToken(data.webhookToken);
-			toast.success("Token regenerado com sucesso!");
+			toast.success(dict.detailsProductModal.tokenSuccessRegen);
 			if (onTokenRegenerated) onTokenRegenerated();
 		},
 	});
@@ -94,7 +101,7 @@ export const ProductDetailModal = ({
 		<Dialog open={open} onOpenChange={onOpenChange}>
 			<DialogContent className="min-w-4xl w-full p-6">
 				<DialogHeader>
-					<DialogTitle>Detalhes do Produto</DialogTitle>
+					<DialogTitle>{dict.detailsProductModal.title}</DialogTitle>
 				</DialogHeader>
 				{isLoading ? (
 					<div className="space-y-4">
@@ -111,29 +118,39 @@ export const ProductDetailModal = ({
 						<Skeleton className="h-20 w-full" />
 					</div>
 				) : error ? (
-					<div className="p-6 text-red-500">Erro ao carregar produto.</div>
+					<div className="p-6 text-red-500">
+						{dict.detailsProductModal.errorLoading}
+					</div>
 				) : !product ? (
-					<div className="p-6">Produto não encontrado.</div>
+					<div className="p-6">{dict.detailsProductModal.productNotFound}</div>
 				) : (
 					<div className="space-y-4">
 						<div>
-							<span className="font-semibold">Nome: </span>
+							<span className="font-semibold">
+								{dict.detailsProductModal.name}{" "}
+							</span>
 							{product.name}
 						</div>
 						<div>
-							<span className="font-semibold">Descrição: </span>
+							<span className="font-semibold">
+								{dict.detailsProductModal.description}{" "}
+							</span>
 							{product.description || (
 								<span className="text-muted-foreground">-</span>
 							)}
 						</div>
 						<div>
-							<span className="font-semibold">Status: </span>
+							<span className="font-semibold">
+								{dict.detailsProductModal.status}{" "}
+							</span>
 							<Badge variant={product.active ? "default" : "secondary"}>
 								{status}
 							</Badge>
 						</div>
 						<div>
-							<span className="font-semibold">Criado em: </span>
+							<span className="font-semibold">
+								{dict.detailsProductModal.createdAt}{" "}
+							</span>
 							{new Date(product.createdAt).toLocaleDateString("pt-BR", {
 								day: "2-digit",
 								month: "2-digit",
@@ -141,7 +158,9 @@ export const ProductDetailModal = ({
 							})}
 						</div>
 						<div>
-							<span className="font-semibold">Atualizado em: </span>
+							<span className="font-semibold">
+								{dict.detailsProductModal.updatedAt}{" "}
+							</span>
 							{new Date(product.updatedAt).toLocaleDateString("pt-BR", {
 								day: "2-digit",
 								month: "2-digit",
@@ -150,12 +169,14 @@ export const ProductDetailModal = ({
 						</div>
 						<hr className="my-4" />
 						<h2 className="text-lg font-semibold">
-							Configuração de Webhook no Asaas
+							{dict.detailsProductModal.titleConfig}
 						</h2>
 						<div className="flex flex-col gap-2">
 							<div className="flex items-center justify-between gap-2">
 								<div className="flex items-center gap-2">
-									<span className="font-semibold">Token do Produto:</span>
+									<span className="font-semibold">
+										{dict.detailsProductModal.token}
+									</span>
 									<Badge className="font-mono text-xs px-2 py-1 select-all max-w-full break-all">
 										{webhookToken}
 									</Badge>
@@ -170,7 +191,7 @@ export const ProductDetailModal = ({
 										{regenerateToken.isPending ? (
 											<CircleNotchIcon size={16} className="animate-spin" />
 										) : (
-											"Regenerar Token"
+											dict.detailsProductModal.regen
 										)}
 									</Button>
 									<Button size="sm" variant="outline" onClick={handleCopyToken}>
@@ -184,7 +205,9 @@ export const ProductDetailModal = ({
 							</div>
 							<div className="flex items-center justify-between gap-2">
 								<div className="flex items-center gap-2">
-									<span className="font-semibold">URL do Endpoint:</span>
+									<span className="font-semibold">
+										{dict.detailsProductModal.url}
+									</span>
 									<Badge className="font-mono text-xs px-2 py-1 select-all">
 										{webhookUrl}
 									</Badge>
@@ -202,29 +225,34 @@ export const ProductDetailModal = ({
 						</div>
 						<div className="bg-muted rounded-md p-4 mt-4">
 							<h3 className="font-semibold mb-2">
-								Como cadastrar o webhook no Asaas:
+								{dict.detailsProductModal.paragraph1}
 							</h3>
 							<ol className="list-decimal list-inside space-y-1 text-sm">
 								<li>
-									Acesse o painel do Asaas e vá em{" "}
-									<b>Configurações &gt; Webhooks</b>.
+									{dict.detailsProductModal.paragraph2}{" "}
+									<b>{dict.detailsProductModal.paragraph3}</b>.
 								</li>
 								<li>
-									Clique em <b>Adicionar Webhook</b>.
+									{dict.detailsProductModal.paragraph4}{" "}
+									<b>{dict.detailsProductModal.paragraph5}</b>.
 								</li>
 								<li>
-									Informe a <b>URL do Endpoint</b> acima.
+									{dict.detailsProductModal.paragraph6}{" "}
+									<b>{dict.detailsProductModal.paragraph7}</b>{" "}
+									{dict.detailsProductModal.paragraph8}
 								</li>
 								<li>
-									Adicione o <b>Token do Produto</b> no campo{" "}
-									<b>asaas-access-token</b> do header.
+									{dict.detailsProductModal.paragraph9}{" "}
+									<b>{dict.detailsProductModal.paragraph10}</b>{" "}
+									{dict.detailsProductModal.paragraph11}{" "}
+									<b>asaas-access-token</b>{" "}
+									{dict.detailsProductModal.paragraph12}
 								</li>
-								<li>Selecione os eventos que deseja receber.</li>
-								<li>Salve a configuração.</li>
+								<li>{dict.detailsProductModal.paragraph13}</li>
+								<li>{dict.detailsProductModal.paragraph14}</li>
 							</ol>
 							<p className="mt-2 text-xs text-muted-foreground">
-								Sempre que o Asaas disparar um evento, ele enviará para o
-								endpoint acima usando o token do produto como autenticação.
+								{dict.detailsProductModal.paragraph15}
 							</p>
 						</div>
 					</div>

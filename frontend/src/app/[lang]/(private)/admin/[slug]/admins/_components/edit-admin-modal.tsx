@@ -21,6 +21,7 @@ import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { toast } from "sonner";
 import { useEffect } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useDictionary } from "@/hooks/use-dictionary";
 
 const editAdminSchema = z.object({
 	name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
@@ -58,11 +59,12 @@ export function EditAdminModal({
 		},
 	});
 
+	const dict = useDictionary();
 	const queryClient = useQueryClient();
 	const editMutation = useMutation({
 		mutationFn: async (data: EditAdminForm) => {
 			const res = await fetchWithAuth(
-				`http://localhost:3333/api/admin/adm/${admin.id}`,
+				`${process.env.NEXT_PUBLIC_API_URL}/api/admin/adm/${admin.id}`,
 				{
 					method: "PATCH",
 					headers: { "Content-Type": "application/json" },
@@ -77,13 +79,12 @@ export function EditAdminModal({
 		},
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["admins"] });
-			toast.success("Administrador editado com sucesso!");
+			toast.success(dict.editAdminModal.toastSuccess);
 			onOpenChange(false);
 			reset();
 		},
-		// biome-ignore lint/suspicious/noExplicitAny: ignore
-		onError: (error: any) => {
-			toast.error(error?.message || "Erro ao editar administrador.");
+		onError: () => {
+			toast.error(dict.editAdminModal.toastError);
 		},
 	});
 
@@ -102,9 +103,9 @@ export function EditAdminModal({
 		<Dialog open={open} onOpenChange={onOpenChange}>
 			<DialogContent>
 				<DialogHeader>
-					<DialogTitle>Editar Administrador</DialogTitle>
+					<DialogTitle>{dict.editAdminModal.title}</DialogTitle>
 					<DialogDescription>
-						Altere os campos desejados e salve as alterações.
+						{dict.editAdminModal.description}
 					</DialogDescription>
 				</DialogHeader>
 				<form
@@ -112,7 +113,7 @@ export function EditAdminModal({
 					onSubmit={handleSubmit(onSubmit)}
 				>
 					<div className="space-y-2">
-						<Label htmlFor="name">Nome</Label>
+						<Label htmlFor="name">{dict.common.name}</Label>
 						<Input id="name" {...register("name")} />
 						{errors.name && (
 							<span className="text-red-500 text-xs">
@@ -132,7 +133,7 @@ export function EditAdminModal({
 					<DialogFooter>
 						<DialogClose asChild>
 							<Button type="button" variant="secondary">
-								Cancelar
+								{dict.common.cancel}
 							</Button>
 						</DialogClose>
 						<Button
@@ -145,7 +146,7 @@ export function EditAdminModal({
 							) : (
 								<div className="flex items-center justify-center">
 									<PencilSimpleIcon className="mr-2 h-4 w-4" />
-									Salvar Alterações
+									{dict.common.save}
 								</div>
 							)}
 						</Button>

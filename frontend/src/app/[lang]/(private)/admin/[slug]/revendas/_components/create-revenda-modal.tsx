@@ -32,6 +32,7 @@ import {
 	AlertDialogFooter,
 	AlertDialogAction,
 } from "@/components/ui/alert-dialog";
+import { useDictionary } from "@/hooks/use-dictionary";
 
 const createRevendaSchema = z.object({
 	name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
@@ -64,11 +65,12 @@ export function CreateRevendaModal({
 		null,
 	);
 	const [copySuccess, setCopySuccess] = useState(false);
+	const dict = useDictionary();
 
 	const createMutation = useMutation({
 		mutationFn: async (data: CreateRevendaForm) => {
 			const res = await fetchWithAuth(
-				"http://localhost:3333/api/admin/revendas",
+				`${process.env.NEXT_PUBLIC_API_URL}/api/admin/revendas`,
 				{
 					method: "POST",
 					headers: { "Content-Type": "application/json" },
@@ -82,7 +84,7 @@ export function CreateRevendaModal({
 			return res.json();
 		},
 		onSuccess: (data) => {
-			toast.success("Revenda criada com sucesso!");
+			toast.success(dict.createResellerModal.toastSuccess);
 			queryClient.invalidateQueries({ queryKey: ["revendas"] });
 			onOpenChange(false);
 			reset();
@@ -94,9 +96,9 @@ export function CreateRevendaModal({
 		// biome-ignore lint/suspicious/noExplicitAny: ignore
 		onError: (error: any) => {
 			if (error?.message?.includes("já existe")) {
-				toast.error("Já existe uma revenda com este e-mail.");
+				toast.error(dict.createResellerModal.toastExists);
 			} else {
-				toast.error(error?.message || "Erro ao criar revenda.");
+				toast.error(dict.createResellerModal.toastError);
 			}
 		},
 	});
@@ -118,9 +120,9 @@ export function CreateRevendaModal({
 			<Dialog open={open} onOpenChange={onOpenChange}>
 				<DialogContent>
 					<DialogHeader>
-						<DialogTitle>Cadastrar nova revenda</DialogTitle>
+						<DialogTitle>{dict.createResellerModal.title}</DialogTitle>
 						<DialogDescription>
-							Preencha os campos obrigatórios para criar uma nova revenda.
+							{dict.createResellerModal.description}
 						</DialogDescription>
 					</DialogHeader>
 					<form
@@ -128,7 +130,7 @@ export function CreateRevendaModal({
 						onSubmit={handleSubmit(onSubmit)}
 					>
 						<div className="space-y-2">
-							<Label htmlFor="name">Nome</Label>
+							<Label htmlFor="name">{dict.common.name}</Label>
 							<Input id="name" {...register("name")} />
 							{errors.name && (
 								<span className="text-red-500 text-xs">
@@ -148,7 +150,7 @@ export function CreateRevendaModal({
 						<DialogFooter>
 							<DialogClose asChild>
 								<Button type="button" variant="secondary">
-									Cancelar
+									{dict.common.cancel}
 								</Button>
 							</DialogClose>
 							<Button
@@ -161,7 +163,7 @@ export function CreateRevendaModal({
 								) : (
 									<div className="flex items-center justify-center">
 										<PlusIcon className="mr-2 h-4 w-4" />
-										Criar Revenda
+										{dict.createResellerModal.buttonAdd}
 									</div>
 								)}
 							</Button>
@@ -175,14 +177,13 @@ export function CreateRevendaModal({
 				<AlertDialogContent>
 					<AlertDialogHeader>
 						<AlertDialogTitle>
-							Senha gerada para a nova revenda
+							{dict.createResellerModal.passwordGenerated}
 						</AlertDialogTitle>
 						<AlertDialogDescription>
-							Copie e envie a senha abaixo para o responsável pela revenda. Ela
-							será solicitada no primeiro acesso.
+							{dict.createResellerModal.descriptionPassword}
 							<br />
 							<br />
-							OBS: A senha é gerada automaticamente e não pode ser recuperada.
+							{dict.createResellerModal.observationPassword}
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<div className="flex items-center justify-between gap-2 p-2 border rounded bg-muted font-mono select-all">
@@ -204,7 +205,7 @@ export function CreateRevendaModal({
 					</div>
 					<AlertDialogFooter>
 						<AlertDialogAction onClick={() => setShowPasswordModal(false)}>
-							Fechar
+							{dict.common.close}
 						</AlertDialogAction>
 					</AlertDialogFooter>
 				</AlertDialogContent>

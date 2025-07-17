@@ -32,6 +32,7 @@ import {
 	AlertDialogFooter,
 	AlertDialogAction,
 } from "@/components/ui/alert-dialog";
+import { useDictionary } from "@/hooks/use-dictionary";
 
 const createAdminSchema = z.object({
 	name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
@@ -64,22 +65,26 @@ export function CreateAdminModal({
 		null,
 	);
 	const [copySuccess, setCopySuccess] = useState(false);
+	const dict = useDictionary();
 
 	const createMutation = useMutation({
 		mutationFn: async (data: CreateAdminForm) => {
-			const res = await fetchWithAuth("http://localhost:3333/api/admin/adm", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(data),
-			});
+			const res = await fetchWithAuth(
+				`${process.env.NEXT_PUBLIC_API_URL}/api/admin/adm`,
+				{
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify(data),
+				},
+			);
 			if (!res.ok) {
 				const err = await res.json();
-				throw new Error(err?.message || "Erro ao criar revenda.");
+				throw new Error(err?.message || "Erro ao criar administrador.");
 			}
 			return res.json();
 		},
 		onSuccess: (data) => {
-			toast.success("Administrador criado com sucesso!");
+			toast.success(dict.createAdminModal.toastSuccess);
 			queryClient.invalidateQueries({ queryKey: ["admins"] });
 			onOpenChange(false);
 			reset();
@@ -91,9 +96,9 @@ export function CreateAdminModal({
 		// biome-ignore lint/suspicious/noExplicitAny: ignore
 		onError: (error: any) => {
 			if (error?.message?.includes("já existe")) {
-				toast.error("Já existe um administrador com este e-mail.");
+				toast.error(dict.createAdminModal.toastExists);
 			} else {
-				toast.error(error?.message || "Erro ao criar administrador.");
+				toast.error(dict.createAdminModal.toastError);
 			}
 		},
 	});
@@ -115,9 +120,9 @@ export function CreateAdminModal({
 			<Dialog open={open} onOpenChange={onOpenChange}>
 				<DialogContent>
 					<DialogHeader>
-						<DialogTitle>Cadastrar novo Administrador</DialogTitle>
+						<DialogTitle>{dict.createAdminModal.title}</DialogTitle>
 						<DialogDescription>
-							Preencha os campos obrigatórios para criar um novo administrador.
+							{dict.createAdminModal.description}
 						</DialogDescription>
 					</DialogHeader>
 					<form
@@ -125,7 +130,7 @@ export function CreateAdminModal({
 						onSubmit={handleSubmit(onSubmit)}
 					>
 						<div className="space-y-2">
-							<Label htmlFor="name">Nome</Label>
+							<Label htmlFor="name">{dict.common.name}</Label>
 							<Input id="name" {...register("name")} />
 							{errors.name && (
 								<span className="text-red-500 text-xs">
@@ -145,7 +150,7 @@ export function CreateAdminModal({
 						<DialogFooter>
 							<DialogClose asChild>
 								<Button type="button" variant="secondary">
-									Cancelar
+									{dict.common.cancel}
 								</Button>
 							</DialogClose>
 							<Button
@@ -158,7 +163,7 @@ export function CreateAdminModal({
 								) : (
 									<div className="flex items-center justify-center">
 										<PlusIcon className="mr-2 h-4 w-4" />
-										Criar Administrador
+										{dict.createAdminModal.buttonAdd}
 									</div>
 								)}
 							</Button>
@@ -172,14 +177,13 @@ export function CreateAdminModal({
 				<AlertDialogContent>
 					<AlertDialogHeader>
 						<AlertDialogTitle>
-							Senha gerada para o novo administrador
+							{dict.createAdminModal.passwordGenerated}
 						</AlertDialogTitle>
 						<AlertDialogDescription>
-							Copie e envie a senha abaixo para o responsável. Ela será
-							solicitada no primeiro acesso.
+							{dict.createAdminModal.descriptionPassword}
 							<br />
 							<br />
-							OBS: A senha é gerada automaticamente e não pode ser recuperada.
+							{dict.createAdminModal.observationPassword}
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<div className="flex items-center justify-between gap-2 p-2 border rounded bg-muted font-mono select-all">
@@ -201,7 +205,7 @@ export function CreateAdminModal({
 					</div>
 					<AlertDialogFooter>
 						<AlertDialogAction onClick={() => setShowPasswordModal(false)}>
-							Fechar
+							{dict.common.close}
 						</AlertDialogAction>
 					</AlertDialogFooter>
 				</AlertDialogContent>

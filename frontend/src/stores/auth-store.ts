@@ -22,18 +22,18 @@ interface AuthState {
 
 export const useAuthStore = create<AuthState>()(
 	persist(
-		(set, get) => ({
+		(set, _get) => ({
 			user: null,
 			isAuthenticated: false,
 			loading: false,
 			login: (user) => set({ user, isAuthenticated: true, loading: false }),
 			logout: async () => {
 				try {
-					await fetch("http://localhost:3333/api/logout", {
+					await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/logout`, {
 						method: "POST",
 						credentials: "include",
 					});
-				} catch (e) {
+				} catch (_e) {
 					// Tratar erros aqui, se necessário
 				}
 				set({ user: null, isAuthenticated: false, loading: false });
@@ -42,7 +42,9 @@ export const useAuthStore = create<AuthState>()(
 			checkAuth: async () => {
 				set({ loading: true });
 				try {
-					const res = await fetchWithAuth("http://localhost:3333/api/me");
+					const res = await fetchWithAuth(
+						`${process.env.NEXT_PUBLIC_API_URL}/api/me`,
+					);
 					if (!res.ok) throw new Error("Not authenticated");
 					const user = await res.json();
 					set({ user, isAuthenticated: true, loading: false });

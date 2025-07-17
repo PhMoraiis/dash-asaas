@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter, useParams } from "next/navigation";
+import { useRouter, useParams, usePathname } from "next/navigation";
 import { useAuthStore } from "@/stores/auth-store";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,6 +23,20 @@ import {
 	WebhooksLogoIcon,
 } from "@phosphor-icons/react/ssr";
 import { useForm } from "react-hook-form";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
+import Image from "next/image";
+import { useDictionary } from "@/hooks/use-dictionary";
+
+const languages = [
+	{ value: "en", label: "En", flag: "/eua.svg" },
+	{ value: "pt", label: "Pt", flag: "/br.svg" },
+];
 
 export default function LoginPage() {
 	const {
@@ -36,6 +50,7 @@ export default function LoginPage() {
 	const setUser = useAuthStore((s) => s.setUser);
 	const router = useRouter();
 	const params = useParams();
+	const pathname = usePathname();
 	const lang =
 		typeof params?.lang === "string"
 			? params.lang
@@ -43,11 +58,12 @@ export default function LoginPage() {
 				? params.lang[0]
 				: "pt";
 	const [error, setError] = useState("");
+	const dict = useDictionary();
 
 	async function onSubmit(values: { email: string; password: string }) {
 		setError("");
 		try {
-			const res = await fetch("http://localhost:3333/api/login", {
+			const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/login`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify(values),
@@ -69,7 +85,7 @@ export default function LoginPage() {
 				return;
 			}
 			if (user.role === "admin") {
-				router.push(`/${lang}/admin/${user.slug}/dashboard`);
+				router.push(`/${lang}/admin/${user.slug}/admins`);
 			} else {
 				router.push(`/${lang}/revenda/${user.slug}/dashboard`);
 			}
@@ -82,16 +98,57 @@ export default function LoginPage() {
 		}
 	}
 
+	// Atualiza o idioma na URL ao trocar o select
+	const handleChangeLang = (lang: string) => {
+		const segments = pathname.split("/");
+		if (segments[1] === "pt" || segments[1] === "en") {
+			segments[1] = lang;
+		} else {
+			segments.splice(1, 0, lang);
+		}
+		const newPath = segments.join("/");
+		router.push(newPath);
+	};
+
 	return (
 		<div className="min-h-screen relative">
-			<Button
-				onClick={() => router.push("/")}
-				variant="ghost"
-				className="cursor-pointer absolute top-4 left-4 rounded-2xl gap-2 hover:bg-border"
-				aria-label="Go to home page"
-			>
-				<ArrowLeftIcon /> Home
-			</Button>
+			<div className="flex items-center justify-between">
+				<div>
+					<Button
+						onClick={() => router.push("/")}
+						variant="ghost"
+						className="cursor-pointer absolute top-4 left-4 rounded-2xl gap-2 hover:bg-border"
+						aria-label="Go to home page"
+					>
+						<ArrowLeftIcon /> Home
+					</Button>
+				</div>
+				<div className="flex items-center justify-center p-4">
+					<Select value={lang} onValueChange={handleChangeLang}>
+						<SelectTrigger
+							className="[&>svg]:text-muted-foreground/80 hover:bg-accent hover:text-accent-foreground h-8 border-none px-2 shadow-none [&>svg]:shrink-0"
+							aria-label="Select language"
+						>
+							<SelectValue className="hidden sm:inline-flex" />
+						</SelectTrigger>
+						<SelectContent className="[&_*[role=option]]:ps-2 [&_*[role=option]]:pe-8 [&_*[role=option]>span]:start-auto [&_*[role=option]>span]:end-2 [&_*[role=option]>span]:flex [&_*[role=option]>span]:items-center [&_*[role=option]>span]:gap-2">
+							{languages.map((lang) => (
+								<SelectItem key={lang.value} value={lang.value}>
+									<span className="flex items-center gap-2">
+										<Image
+											src={lang.flag}
+											alt={lang.label}
+											width={20}
+											height={20}
+										/>
+										<span className="truncate">{lang.label}</span>
+									</span>
+								</SelectItem>
+							))}
+						</SelectContent>
+					</Select>
+				</div>
+			</div>
 			<div className="min-h-screen flex items-center justify-center bg-background">
 				<Card className="w-full max-w-md border-none shadow-none bg-background">
 					<CardHeader className="space-y-1">
@@ -99,10 +156,10 @@ export default function LoginPage() {
 							<WebhooksLogoIcon className="size-12 text-primary" />
 						</div>
 						<CardTitle className="text-3xl font-semibold">
-							Bem vindo ao Dashboard Hook
+							{dict.auth.loginTitle}
 						</CardTitle>
 						<CardDescription className="text-md">
-							Entre com sua conta para acessar o painel de controle.
+							{dict.auth.loginSubtitle}
 						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
@@ -129,7 +186,7 @@ export default function LoginPage() {
 								</div>
 								<div>
 									<Label htmlFor="password" className="text-md font-semibold">
-										Senha
+										{dict.auth.password}
 									</Label>
 									<Input
 										id="password"
@@ -158,18 +215,18 @@ export default function LoginPage() {
 								) : (
 									<div className="flex items-center justify-center">
 										<MagicWandIcon className="mr-2 h-4 w-4" />
-										Entrar
+										{dict.auth.signIn}
 									</div>
 								)}
 							</Button>
 							<div className="mt-4">
 								<p className="text-sm text-muted-foreground">
-									Esqueceu sua senha?{" "}
+									{dict.auth.forgotPassword}{" "}
 									<Link
 										className="text-primary hover:underline duration-200"
 										href="/forgot-password"
 									>
-										Clique aqui
+										{dict.auth.forgotPasswordLink}
 									</Link>
 								</p>
 							</div>
@@ -178,19 +235,19 @@ export default function LoginPage() {
 					</CardContent>
 					<CardFooter className="flex">
 						<p className="text-sm text-muted-foreground">
-							By signing in, you agree to our{" "}
+							{dict.auth.terms}{" "}
 							<Link
 								className="text-primary hover:underline duration-200"
 								href={"/terms"}
 							>
-								Terms of Service
+								{dict.auth.termsOfService}
 							</Link>{" "}
-							and{" "}
+							{dict.auth.and}{" "}
 							<Link
 								className="text-primary hover:underline duration-200"
 								href={"/privacy"}
 							>
-								Privacy Policy
+								{dict.auth.privacyPolicy}
 							</Link>
 							.
 						</p>

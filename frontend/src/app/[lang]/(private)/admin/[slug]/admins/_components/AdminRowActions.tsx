@@ -19,21 +19,12 @@ export function AdminRowActions({
 			onEdit={onEdit}
 			refetch={refetch}
 			statusEndpoint={(id) =>
-				`http://localhost:3333/api/admin/adm/${id}/status`
+				`${process.env.NEXT_PUBLIC_API_URL}/api/admin/adm/${id}/status`
 			}
-			deleteEndpoint={(id) => `http://localhost:3333/api/admin/adm/${id}/force`}
+			deleteEndpoint={(id) =>
+				`${process.env.NEXT_PUBLIC_API_URL}/api/admin/adm/${id}/force`
+			}
 			isInactive={(item) => item.status === "Inativo"}
-			actionLabels={{
-				activate: "Reativar",
-				deactivate: "Desativar",
-				delete: "Excluir",
-			}}
-			dialogMessages={{
-				activate: "Esta ação irá reativar o administrador.",
-				deactivate: "Esta ação irá desativar o administrador permanentemente.",
-				delete:
-					"Esta ação é irreversível e excluirá o administrador permanentemente do sistema.",
-			}}
 			showDeleteWhenInactive={true}
 		/>
 	);

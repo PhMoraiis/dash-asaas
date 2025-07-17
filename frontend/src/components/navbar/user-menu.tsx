@@ -22,6 +22,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import { useDictionary } from "@/hooks/use-dictionary";
 
 const avatarStyles = [
 	"adventurer-neutral",
@@ -45,6 +46,7 @@ export default function UserMenu() {
 	const dicebearUrl = `https://api.dicebear.com/9.x/fun-emoji/svg?seed=${encodeURIComponent(user?.name || "User")}`;
 
 	const [style, setStyle] = useState<string | null>(null);
+	const dict = useDictionary();
 
 	useEffect(() => {
 		// Tenta pegar o estilo salvo no localStorage
@@ -107,17 +109,17 @@ export default function UserMenu() {
 				<DropdownMenuGroup>
 					<DropdownMenuItem>
 						<LifebuoyIcon size={16} className="opacity-60" aria-hidden="true" />
-						<span>Ajuda</span>
+						<span>{dict.userMenu.help}</span>
 					</DropdownMenuItem>
 					<DropdownMenuItem>
 						<BookOpenIcon size={16} className="opacity-60" aria-hidden="true" />
-						<span>Docs</span>
+						<span>{dict.userMenu.docs}</span>
 					</DropdownMenuItem>
 				</DropdownMenuGroup>
 				<DropdownMenuSeparator />
 				<DropdownMenuItem onClick={handleLogout}>
 					<SignOutIcon size={16} className="opacity-60" aria-hidden="true" />
-					<span>Logout</span>
+					<span>{dict.userMenu.logout}</span>
 				</DropdownMenuItem>
 			</DropdownMenuContent>
 		</DropdownMenu>

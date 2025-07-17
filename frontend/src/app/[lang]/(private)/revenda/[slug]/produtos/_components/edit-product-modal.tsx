@@ -21,6 +21,7 @@ import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { toast } from "sonner";
 import { useEffect } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useDictionary } from "@/hooks/use-dictionary";
 
 const editProductSchema = z.object({
 	name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
@@ -58,11 +59,12 @@ export function EditProductModal({
 		},
 	});
 
+	const dict = useDictionary();
 	const queryClient = useQueryClient();
 	const editMutation = useMutation({
 		mutationFn: async (data: EditProductForm) => {
 			const res = await fetchWithAuth(
-				`http://localhost:3333/api/products/${product.id}`,
+				`${process.env.NEXT_PUBLIC_API_URL}/api/products/${product.id}`,
 				{
 					method: "PATCH",
 					headers: { "Content-Type": "application/json" },
@@ -77,13 +79,12 @@ export function EditProductModal({
 		},
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["products"] });
-			toast.success("Produto editado com sucesso!");
+			toast.success(dict.editProductModal.toastSuccess);
 			onOpenChange(false);
 			reset();
 		},
-		// biome-ignore lint/suspicious/noExplicitAny: ignore
-		onError: (error: any) => {
-			toast.error(error?.message || "Erro ao editar produto.");
+		onError: () => {
+			toast.error(dict.editProductModal.toastError);
 		},
 	});
 
@@ -102,9 +103,9 @@ export function EditProductModal({
 		<Dialog open={open} onOpenChange={onOpenChange}>
 			<DialogContent>
 				<DialogHeader>
-					<DialogTitle>Editar Produto</DialogTitle>
+					<DialogTitle>{dict.editProductModal.title}</DialogTitle>
 					<DialogDescription>
-						Altere os campos desejados e salve as alterações.
+						{dict.editProductModal.description}
 					</DialogDescription>
 				</DialogHeader>
 				<form
@@ -112,7 +113,7 @@ export function EditProductModal({
 					onSubmit={handleSubmit(onSubmit)}
 				>
 					<div className="space-y-2">
-						<Label htmlFor="name">Nome</Label>
+						<Label htmlFor="name">{dict.common.name}</Label>
 						<Input id="name" {...register("name")} />
 						{errors.name && (
 							<span className="text-red-500 text-xs">
@@ -121,7 +122,9 @@ export function EditProductModal({
 						)}
 					</div>
 					<div className="space-y-2">
-						<Label htmlFor="description">Descrição</Label>
+						<Label htmlFor="description">
+							{dict.createProductModal.descriptionLabel}
+						</Label>
 						<Input
 							id="description"
 							type="description"
@@ -136,7 +139,7 @@ export function EditProductModal({
 					<DialogFooter>
 						<DialogClose asChild>
 							<Button type="button" variant="secondary">
-								Cancelar
+								{dict.common.cancel}
 							</Button>
 						</DialogClose>
 						<Button
@@ -149,7 +152,7 @@ export function EditProductModal({
 							) : (
 								<div className="flex items-center justify-center">
 									<PencilSimpleIcon className="mr-2 h-4 w-4" />
-									Salvar Alterações
+									{dict.common.save}
 								</div>
 							)}
 						</Button>

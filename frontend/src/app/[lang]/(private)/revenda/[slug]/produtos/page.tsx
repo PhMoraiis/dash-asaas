@@ -82,6 +82,7 @@ import { EditProductModal } from "./_components/edit-product-modal";
 import { ArrowSquareOutIcon } from "@phosphor-icons/react/dist/ssr";
 import { useState } from "react";
 import { ProductDetailModal } from "./_components/product-detail-modal";
+import { useDictionary } from "@/hooks/use-dictionary";
 
 // Esquema do produto
 const productSchema = z.object({
@@ -160,6 +161,7 @@ function TokenCell({ token }: { token?: string }) {
 }
 
 export default function ProductsPage() {
+	const dict = useDictionary();
 	const [openCreateModal, setOpenCreateModal] = useState(false);
 	const [openEditModal, setOpenEditModal] = useState(false);
 	const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -189,7 +191,9 @@ export default function ProductsPage() {
 
 	// Função para buscar produtos da revenda logada
 	const fetchProducts = async () => {
-		const res = await fetchWithAuth("http://localhost:3333/api/products");
+		const res = await fetchWithAuth(
+			`${process.env.NEXT_PUBLIC_API_URL}/api/products`,
+		);
 		if (!res.ok) throw new Error("Erro ao buscar produtos");
 		return res.json();
 	};
@@ -211,17 +215,17 @@ export default function ProductsPage() {
 				name: p.name,
 				description: p.description,
 				active: p.active,
-				status: p.active ? "Ativo" : "Inativo",
+				status: p.active ? `${dict.table.active}` : `${dict.table.inactive}`,
 				webhookToken: p.webhookToken,
 				createdAt: p.createdAt,
 				updatedAt: p.updatedAt,
 			})) || [],
-		[productsData],
+		[productsData, dict.table.inactive, dict.table.active],
 	);
 
 	const columns: ColumnDef<Item>[] = [
 		{
-			header: "Nome",
+			header: `${dict.common.name}`,
 			accessorKey: "name",
 			cell: ({ row }) => (
 				<div className="font-medium">{row.getValue("name")}</div>
@@ -230,7 +234,7 @@ export default function ProductsPage() {
 			enableHiding: false,
 		},
 		{
-			header: "Descrição",
+			header: `${dict.productTable.descriptionLabel}`,
 			accessorKey: "description",
 			size: 220,
 			cell: ({ row }) => <span>{row.getValue("description") || "-"}</span>,
@@ -259,7 +263,7 @@ export default function ProductsPage() {
 			filterFn: statusFilterFn,
 		},
 		{
-			header: "Criado em",
+			header: `${dict.productTable.createdAt}`,
 			accessorKey: "createdAt",
 			size: 140,
 			cell: ({ row }) => (
@@ -273,7 +277,7 @@ export default function ProductsPage() {
 			),
 		},
 		{
-			header: "Detallhes",
+			header: `${dict.productTable.details}`,
 			id: "details",
 			cell: ({ row }) => (
 				<Button
@@ -282,7 +286,7 @@ export default function ProductsPage() {
 					className="cursor-pointer flex items-center justify-center"
 					onClick={() => handleOpenDetail(row.original.id)}
 				>
-					Ver mais <ArrowSquareOutIcon />
+					{dict.productTable.see} <ArrowSquareOutIcon />
 				</Button>
 			),
 			size: 100,
@@ -402,9 +406,9 @@ export default function ProductsPage() {
 							onChange={(e) =>
 								table.getColumn("name")?.setFilterValue(e.target.value)
 							}
-							placeholder="Filtrar por nome..."
+							placeholder={dict.productTable.filter}
 							type="text"
-							aria-label="Filtrar por nome"
+							aria-label={dict.productTable.filter}
 						/>
 						<div className="text-muted-foreground/80 pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 peer-disabled:opacity-50">
 							<ListFilterIcon size={16} aria-hidden="true" />
@@ -445,7 +449,7 @@ export default function ProductsPage() {
 						<PopoverContent className="w-auto min-w-36 p-3" align="start">
 							<div className="space-y-3">
 								<div className="text-muted-foreground text-xs font-medium">
-									Filters
+									{dict.table.filters}
 								</div>
 								<div className="space-y-3">
 									{uniqueStatusValues.map((value, i) => (
@@ -481,11 +485,11 @@ export default function ProductsPage() {
 									size={16}
 									aria-hidden="true"
 								/>
-								Visualizar
+								{dict.table.view}
 							</Button>
 						</DropdownMenuTrigger>
 						<DropdownMenuContent align="end">
-							<DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
+							<DropdownMenuLabel>{dict.table.toggleColumns}</DropdownMenuLabel>
 							{table
 								.getAllColumns()
 								.filter((column) => column.getCanHide())
@@ -532,7 +536,7 @@ export default function ProductsPage() {
 							size={16}
 							aria-hidden="true"
 						/>
-						Adicionar Produto
+						{dict.productTable.add}
 					</Button>
 				</div>
 			</div>
@@ -631,7 +635,7 @@ export default function ProductsPage() {
 									colSpan={columns.length}
 									className="h-24 text-center"
 								>
-									Nenhum resultado.
+									{dict.table.noResults}
 								</TableCell>
 							</TableRow>
 						)}
@@ -644,7 +648,7 @@ export default function ProductsPage() {
 				{/* Results per page */}
 				<div className="flex items-center gap-3">
 					<Label htmlFor={id} className="max-sm:sr-only">
-						Rows per page
+						{dict.table.rowsPerPage}
 					</Label>
 					<Select
 						value={table.getState().pagination.pageSize.toString()}

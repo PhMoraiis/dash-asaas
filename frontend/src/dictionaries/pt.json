@@ -1,5 +1,232 @@
 {
-	"products": {
-		"cart": "Adicionar ao Carrinho"
+	"common": {
+		"edit": "Editar",
+		"delete": "Excluir",
+		"cancel": "Cancelar",
+		"confirm": "Confirmar",
+		"close": "Fechar",
+		"actions": "Ações",
+		"save": "Salvar",
+		"add": "Adicionar",
+		"search": "Busque aqui...",
+		"noResults": "Nenhum resultado.",
+		"loading": "Carregando...",
+		"details": "Detalhes",
+		"yes": "Sim",
+		"no": "Não",
+		"activate": "Reativar",
+		"deactivate": "Desativar",
+		"name": "Nome"
+	},
+	"sidebar": {
+		"administrators": "Administradores",
+		"resellers": "Revendas",
+		"dashboard": "Dashboard",
+		"products": "Produtos",
+		"webhooks": "Webhooks",
+		"menu": "Menu de Cadastros",
+		"addReseller": "Cadastrar Revenda",
+		"addAdmin": "Cadastrar Administrador",
+		"addProduct": "Cadastrar Produto",
+		"signOut": "Sair"
+	},
+	"userMenu": {
+		"help": "Ajuda",
+		"docs": "Docs",
+		"logout": "Sair"
+	},
+	"rowActions": {
+		"confirmTitle": "Você tem certeza?",
+		"confirmActivate": "Esta ação irá reativar o item.",
+		"confirmDeactivate": "Esta ação irá desativar o item permanentemente.",
+		"confirmDeleteTitle": "Excluir item?",
+		"confirmDelete": "Esta ação é irreversível e excluirá permanentemente do sistema.",
+		"toastActived": "Reativado com sucesso.",
+		"toastDeactivated": "Desativado com sucesso.",
+		"toastDeleted": "Excluido com sucesso.",
+		"toastError": "Ocorreu um erro ao processar a ação."
+	},
+	"greetings": {
+		"welcomeBack": "Bem vindo de volta, {name}!",
+		"goodMorning": "Bom dia, {name}!",
+		"goodAfternoon": "Boa tarde, {name}!",
+		"goodNight": "Boa noite, {name}!"
+	},
+	"table": {
+		"view": "Visualizar",
+		"addAdmin": "Adicionar Administrador",
+		"rowsPerPage": "Linhas por página",
+		"filters": "Filtros",
+		"toggleColumns": "Visualizar colunas",
+		"noResults": "Nenhum resultado encontrado.",
+		"status": "Status",
+		"active": "Ativo",
+		"inactive": "Inativo",
+		"deleted": "Excluído"
+	},
+	"auth": {
+		"loginTitle": "Bem vindo ao Dashboard Hook",
+		"loginSubtitle": "Entre com sua conta para acessar o painel de controle.",
+		"email": "Email",
+		"password": "Senha",
+		"signIn": "Entrar",
+		"forgotPassword": "Esqueceu sua senha?",
+		"forgotPasswordLink": "Clique aqui",
+		"terms": "Ao entrar você aceita com os nossos",
+		"and": "e",
+		"termsOfService": "Termos de Serviço",
+		"privacyPolicy": "Política de Privacidade",
+		"home": "Home",
+		"emailRequired": "Email obrigatório",
+		"passwordRequired": "Senha obrigatória",
+		"loginError": "Erro ao logar",
+		"loginInvalid": "Login inválido"
+	},
+	"password": {
+		"changeTitle": "Troque sua senha",
+		"changeSubtitle": "Por segurança, defina uma nova senha para acessar o sistema.",
+		"currentPassword": "Senha atual",
+		"newPassword": "Nova senha",
+		"confirmNewPassword": "Confirme a nova senha",
+		"change": "Trocar senha",
+		"success": "Senha alterada com sucesso! Redirecionando..."
+	},
+	"reset": {
+		"title": "Redefina sua senha",
+		"subtitle": "Por favor, insira sua nova senha abaixo. A senha deve ter pelo menos 12 caracteres.",
+		"newPassword": "Nova senha",
+		"confirmPassword": "Confirme sua senha",
+		"reset": "Resetar senha",
+		"success": "Sua senha foi redefinida com sucesso."
+	},
+	"forgot": {
+		"title": "Recuperação de senha",
+		"subtitle": "Insira seu e-mail para receber um link de recuperação de senha.",
+		"sendLink": "Enviar link de recuperação",
+		"success": "Um link de recuperação foi enviado para o seu e-mail, verifique sua caixa de entrada.",
+		"backToLogin": "Retornar para o Login",
+		"back": "Voltar",
+		"invalidEmail": "E-mail inválido"
+	},
+	"createAdminModal": {
+		"toastSuccess": "Administrador criado com sucesso.",
+		"toastError": "Erro ao criar administrador.",
+		"toastExists": "Já existe um administrador com este e-mail.",
+		"title": "Cadastrar novo Administrador",
+		"description": "Preencha os campos abaixo para cadastrar um novo administrador.",
+		"buttonAdd": "Criar Administrador",
+		"passwordGenerated": "Senha gerada para o novo administrador",
+		"descriptionPassword": "Copie e envie a senha abaixo para o responsável. Ela será solicitada no primeiro acesso.",
+		"observationPassword": "OBS: A senha é gerada automaticamente e não pode ser recuperada.",
+		"nameLabel": "Nome"
+	},
+	"editAdminModal": {
+		"toastSuccess": "Administrador editado com sucesso!",
+		"toastError": "Erro ao editar administrador.",
+		"title": "Editar Administrador",
+		"description": "Altere os campos abaixo para editar o administrador."
+	},
+	"adminTable": {
+		"filter": "Filtrar por nome ou email",
+		"add": "Adicionar Administrador"
+	},
+	"createResellerModal": {
+		"toastSuccess": "Revenda criada com sucesso.",
+		"toastError": "Erro ao criar revenda.",
+		"toastExists": "Já existe uma revenda com este e-mail.",
+		"title": "Cadastrar nova Revenda",
+		"description": "Preencha os campos abaixo para cadastrar uma nova revenda.",
+		"buttonAdd": "Criar Revenda",
+		"passwordGenerated": "Senha gerada para a nova revenda",
+		"descriptionPassword": "Copie e envie a senha abaixo para o responsável. Ela será solicitada no primeiro acesso.",
+		"observationPassword": "OBS: A senha é gerada automaticamente e não pode ser recuperada."
+	},
+	"editResellerModal": {
+		"toastSuccess": "Revenda editada com sucesso!",
+		"toastError": "Erro ao editar revenda.",
+		"title": "Editar Revenda",
+		"description": "Altere os campos abaixo para editar a revenda."
+	},
+	"resellerTable": {
+		"filter": "Filtrar por nome ou email",
+		"add": "Adicionar Revenda"
+	},
+	"resellerDashboard": {
+		"labelFaturado": "Faturado",
+		"labelPago": "Pago",
+		"labelLiquido": "Líquido",
+		"firstChartTitle": "Cliente x Venda Hoje",
+		"firstChartDescription": "Clientes únicos e vendas do dia",
+		"firstChartLabel": "Clientes únicos",
+		"secondChartTitle": "Faturamento Mês",
+		"secondChartDescription": "Faturado, Pago e Líquido por dia"
+	},
+	"createProductModal": {
+		"toastSuccess": "Produto criada com sucesso!",
+		"title": "Cadastrar nova revenda",
+		"description": "Preencha os campos obrigatórios para criar uma nova revenda.",
+		"descriptionLabel": "Descrição",
+		"addProduct": "Criar Produto"
+	},
+	"editProductModal": {
+		"toastSuccess": "Produto editado com sucesso.",
+		"toastError": "Erro ao editar produto.",
+		"title": "Editar Produto",
+		"description": "Altere os campos abaixo para editar o produto."
+	},
+	"detailsProductModal": {
+		"toastSuccesTOKEN": "Token copiado!",
+		"toastSuccessURL": "URL copiada!",
+		"tokenSuccessRegen": "Token regenerado com sucesso!",
+		"title": "Detalhes do Produto",
+		"errorLoading": "Erro ao carregar produto.",
+		"productNotFound": "Produto não encontrado.",
+		"name": "Nome:",
+		"description": "Descrição:",
+		"status": "Status:",
+		"createdAt": "Criado em:",
+		"updatedAt": "Atualizado em:",
+		"titleConfig": "Configuração de Webhook no Asaas",
+		"token": "Token do Produto:",
+		"regen": "Regenerar Token",
+		"url": "URL do Endpoint:",
+		"paragraph1": "Como cadastrar o webhook no Asaas:",
+		"paragraph2": "Acesse o painel do Asaas e vá em ",
+		"paragraph3": "Configurações &gt; Webhooks",
+		"paragraph4": "Clique em",
+		"paragraph5": "Adicionar Webhook",
+		"paragraph6": "Informe a",
+		"paragraph7": "URL do Endpoint",
+		"paragraph8": "acima.",
+		"paragraph9": "Adicione o",
+		"paragraph10": "Token do Produto",
+		"paragraph11": "no campo",
+		"paragraph12": "do header.",
+		"paragraph13": "Selecione os eventos que deseja receber.",
+		"paragraph14": "Salve a configuração.",
+		"paragraph15": "Sempre que o Asaas disparar um evento, ele enviará para o endpoint acima usando o token do produto como autenticação."
+	},
+	"productTable": {
+		"descriptionLabel": "Descrição",
+		"createdAt": "Criado em",
+		"details": "Detalhes",
+		"filter": "Filtrar por nome",
+		"add": "Adicionar Produto",
+		"see": "Ver mais"
+	},
+	"detailsWebhookModal": {
+		"toastSuccess": "Payload copiado!",
+		"title": "Detalhes do Webhook",
+		"event": "Evento:",
+		"product": "Produto:",
+		"received": "Recebido em:",
+		"payloadReceived": "Payload Recebido"
+	},
+	"webhookTable": {
+		"event": "Evento",
+		"product": "Produto",
+		"createdAt": "Recebido em",
+		"details": "Detalhes",
+		"events": "Eventos"
 	}
 }

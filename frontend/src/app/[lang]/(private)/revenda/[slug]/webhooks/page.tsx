@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/suspicious/noExplicitAny: ignore */
 "use client";
 
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
@@ -45,10 +46,7 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import { useQuery } from "@tanstack/react-query";
-import {
-	WebhookDetailModal,
-	type Webhook as WebhookType,
-} from "./_components/webhook-detail-modal";
+import { WebhookDetailModal } from "./_components/webhook-detail-modal";
 import {
 	Popover,
 	PopoverContent,
@@ -64,25 +62,30 @@ import {
 	DropdownMenuLabel,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useDictionary } from "@/hooks/use-dictionary";
 
 const webhookSchema = z.object({
 	id: z.string(),
-	event: z.string(),
-	status: z.string(),
 	produtoId: z.string().nullable(),
 	createdAt: z.string(),
 	payload: z.record(z.any()),
 });
 
-type Webhook = z.infer<typeof webhookSchema>;
+type Webhook = {
+	id: string;
+	produtoId: string | null;
+	createdAt: string;
+	payload: Record<string, any>;
+};
 
 const _multiColumnFilterFn: FilterFn<Webhook> = (
 	row,
 	_columnId,
 	filterValue,
 ) => {
+	const payload = row.original.payload || {};
 	const searchableRowContent =
-		`${row.original.event} ${row.original.status}`.toLowerCase();
+		`${payload.event ?? ""} ${payload.status ?? ""}`.toLowerCase();
 	const searchTerm = (filterValue ?? "").toLowerCase();
 	return searchableRowContent.includes(searchTerm);
 };
@@ -99,13 +102,14 @@ export default function WebhooksPage() {
 	]);
 	const _inputRef = useRef<HTMLInputElement>(null);
 	const [openDetailModal, setOpenDetailModal] = useState(false);
-	const [selectedWebhook, setSelectedWebhook] = useState<WebhookType | null>(
-		null,
-	);
+	const [selectedWebhook, setSelectedWebhook] = useState<Webhook | null>(null);
+	const dict = useDictionary();
 
 	// Buscar webhooks
 	const fetchWebhooks = async () => {
-		const res = await fetchWithAuth("http://localhost:3333/api/webhooks");
+		const res = await fetchWithAuth(
+			`${process.env.NEXT_PUBLIC_API_URL}/api/webhooks`,
+		);
 		if (!res.ok) throw new Error("Erro ao buscar webhooks");
 		const data = await res.json();
 		return z.array(webhookSchema).parse(data);
@@ -125,41 +129,68 @@ export default function WebhooksPage() {
 
 	const eventFilterFn: FilterFn<Webhook> = (
 		row,
-		columnId,
+		_columnId,
 		filterValue: string[],
 	) => {
 		if (!filterValue?.length) return true;
-		const event = row.getValue(columnId) as string;
+		const event = row.original.payload?.event as string;
 		return filterValue.includes(event);
 	};
 
-	const columns: ColumnDef<WebhookType>[] = [
+	// Buscar produtos da revenda logada
+	const fetchProdutos = async () => {
+		const res = await fetchWithAuth(
+			`${process.env.NEXT_PUBLIC_API_URL}/api/products`,
+		);
+		if (!res.ok) throw new Error("Erro ao buscar produtos");
+		return await res.json(); // [{ id, name, ... }]
+	};
+
+	const { data: produtos = [] } = useQuery({
+		queryKey: ["produtos"],
+		queryFn: fetchProdutos,
+		staleTime: 1000 * 60,
+	});
+
+	const produtoMap = useMemo(() => {
+		const map: Record<string, string> = {};
+		produtos.forEach((p: { id: string; name: string }) => {
+			map[p.id] = p.name;
+		});
+		return map;
+	}, [produtos]);
+
+	const columns: ColumnDef<Webhook>[] = [
 		{
-			header: "Evento",
-			accessorKey: "event",
-			cell: ({ row }) => <span>{row.getValue("event")}</span>,
+			header: `${dict.webhookTable.event}`,
+			accessorKey: "payload.event",
+			cell: ({ row }) => <span>{row.original.payload?.event ?? "-"}</span>,
 			size: 180,
 			enableHiding: false,
 			filterFn: eventFilterFn,
 		},
 		{
 			header: "Status",
-			accessorKey: "status",
-			cell: ({ row }) => <Badge>{row.getValue("status")}</Badge>,
+			accessorKey: "payload.status",
+			cell: ({ row }) => {
+				const status =
+					row.original.payload?.status || row.original.payload?.payment?.status;
+				return <Badge>{status ?? "NO STATUS"}</Badge>;
+			},
 			size: 120,
 		},
 		{
-			header: "Produto",
+			header: `${dict.webhookTable.product}`,
 			accessorKey: "produtoId",
 			cell: ({ row }) => (
 				<span className="text-xs text-muted-foreground">
-					{row.getValue("produtoId") || "-"}
+					{produtoMap[row.original.produtoId ?? ""] || "-"}
 				</span>
 			),
 			size: 180,
 		},
 		{
-			header: "Criado em",
+			header: `${dict.webhookTable.createdAt}`,
 			accessorKey: "createdAt",
 			size: 140,
 			cell: ({ row }) => (
@@ -181,7 +212,7 @@ export default function WebhooksPage() {
 						setOpenDetailModal(true);
 					}}
 				>
-					Detalhes
+					{dict.webhookTable.details}
 				</Button>
 			),
 			size: 100,
@@ -213,7 +244,9 @@ export default function WebhooksPage() {
 	// Filtro de eventos
 	const uniqueEventValues = useMemo(() => {
 		const set = new Set<string>();
-		data.forEach((w) => set.add(w.event));
+		data.forEach((w) => {
+			if (w.payload?.event) set.add(w.payload.event);
+		});
 		return Array.from(set);
 	}, [data]);
 	const [selectedEvents, setSelectedEvents] = useState<string[]>([]);
@@ -224,7 +257,7 @@ export default function WebhooksPage() {
 			: selectedEvents.filter((v) => v !== value);
 		setSelectedEvents(newFilter);
 		table
-			.getColumn("event")
+			.getColumn("payload.event")
 			?.setFilterValue(newFilter.length ? newFilter : undefined);
 	};
 
@@ -241,7 +274,7 @@ export default function WebhooksPage() {
 									size={16}
 									aria-hidden="true"
 								/>
-								Filtrar
+								{dict.table.filters}
 								{selectedEvents.length > 0 && (
 									<span className="bg-background text-muted-foreground/70 -me-1 inline-flex h-5 max-h-full items-center rounded border px-1 font-[inherit] text-[0.625rem] font-medium">
 										{selectedEvents.length}
@@ -252,7 +285,7 @@ export default function WebhooksPage() {
 						<PopoverContent className="w-auto min-w-36 p-3" align="start">
 							<div className="space-y-3">
 								<div className="text-muted-foreground text-xs font-medium">
-									Eventos
+									{dict.webhookTable.events}
 								</div>
 								<div className="space-y-3">
 									{uniqueEventValues.map((value, i) => (
@@ -285,11 +318,11 @@ export default function WebhooksPage() {
 									size={16}
 									aria-hidden="true"
 								/>
-								Visualizar
+								{dict.table.view}
 							</Button>
 						</DropdownMenuTrigger>
 						<DropdownMenuContent align="end">
-							<DropdownMenuLabel>Alternar colunas</DropdownMenuLabel>
+							<DropdownMenuLabel>{dict.table.toggleColumns}</DropdownMenuLabel>
 							{table
 								.getAllColumns()
 								.filter((column) => column.getCanHide())
@@ -412,7 +445,7 @@ export default function WebhooksPage() {
 									colSpan={columns.length}
 									className="h-24 text-center"
 								>
-									Nenhum resultado.
+									{dict.table.noResults}
 								</TableCell>
 							</TableRow>
 						)}
@@ -422,7 +455,7 @@ export default function WebhooksPage() {
 			<div className="flex items-center justify-between gap-8">
 				<div className="flex items-center gap-3">
 					<Label htmlFor="rows-per-page" className="max-sm:sr-only">
-						Linhas por página
+						{dict.table.rowsPerPage}
 					</Label>
 					<select
 						value={table.getState().pagination.pageSize}

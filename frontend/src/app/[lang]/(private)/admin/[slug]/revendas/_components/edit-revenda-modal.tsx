@@ -21,6 +21,7 @@ import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { toast } from "sonner";
 import { useEffect } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useDictionary } from "@/hooks/use-dictionary";
 
 const editRevendaSchema = z.object({
 	name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
@@ -58,14 +59,18 @@ export function EditRevendaModal({
 		},
 	});
 
+	const dict = useDictionary();
 	const queryClient = useQueryClient();
 	const editMutation = useMutation({
 		mutationFn: async (data: EditRevendaForm) => {
-			const res = await fetchWithAuth(`/api/admin/revendas/${revenda.id}`, {
-				method: "PATCH",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(data),
-			});
+			const res = await fetchWithAuth(
+				`${process.env.NEXT_PUBLIC_API_URL}/api/admin/revendas/${revenda.id}`,
+				{
+					method: "PATCH",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify(data),
+				},
+			);
 			if (!res.ok) {
 				const err = await res.json();
 				throw new Error(err?.message || "Erro ao editar revenda.");
@@ -74,13 +79,12 @@ export function EditRevendaModal({
 		},
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["revendas"] });
-			toast.success("Revenda editada com sucesso!");
+			toast.success(dict.editResellerModal.toastSuccess);
 			onOpenChange(false);
 			reset();
 		},
-		// biome-ignore lint/suspicious/noExplicitAny: ignore
-		onError: (error: any) => {
-			toast.error(error?.message || "Erro ao editar revenda.");
+		onError: () => {
+			toast.error(dict.editResellerModal.toastError);
 		},
 	});
 
@@ -99,9 +103,9 @@ export function EditRevendaModal({
 		<Dialog open={open} onOpenChange={onOpenChange}>
 			<DialogContent>
 				<DialogHeader>
-					<DialogTitle>Editar revenda</DialogTitle>
+					<DialogTitle>{dict.editResellerModal.title}</DialogTitle>
 					<DialogDescription>
-						Altere os campos desejados e salve as alterações.
+						{dict.editResellerModal.description}
 					</DialogDescription>
 				</DialogHeader>
 				<form
@@ -109,7 +113,7 @@ export function EditRevendaModal({
 					onSubmit={handleSubmit(onSubmit)}
 				>
 					<div className="space-y-2">
-						<Label htmlFor="name">Nome</Label>
+						<Label htmlFor="name">{dict.common.name}</Label>
 						<Input id="name" {...register("name")} />
 						{errors.name && (
 							<span className="text-red-500 text-xs">
@@ -129,7 +133,7 @@ export function EditRevendaModal({
 					<DialogFooter>
 						<DialogClose asChild>
 							<Button type="button" variant="secondary">
-								Cancelar
+								{dict.common.cancel}
 							</Button>
 						</DialogClose>
 						<Button
@@ -142,7 +146,7 @@ export function EditRevendaModal({
 							) : (
 								<div className="flex items-center justify-center">
 									<PencilSimpleIcon className="mr-2 h-4 w-4" />
-									Salvar Alterações
+									{dict.common.save}
 								</div>
 							)}
 						</Button>

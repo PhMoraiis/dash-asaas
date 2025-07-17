@@ -17,6 +17,7 @@ import { CircleNotchIcon, PlusIcon } from "@phosphor-icons/react/dist/ssr";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { toast } from "sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useDictionary } from "@/hooks/use-dictionary";
 
 const createProductSchema = z.object({
 	name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
@@ -44,14 +45,18 @@ export function CreateProductModal({
 	});
 
 	const queryClient = useQueryClient();
+	const dict = useDictionary();
 
 	const createMutation = useMutation({
 		mutationFn: async (data: CreateProductForm) => {
-			const res = await fetchWithAuth("http://localhost:3333/api/products", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(data),
-			});
+			const res = await fetchWithAuth(
+				`${process.env.NEXT_PUBLIC_API_URL}/api/products`,
+				{
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify(data),
+				},
+			);
 			if (!res.ok) {
 				const err = await res.json();
 				throw new Error(err?.message || "Erro ao criar produto.");
@@ -59,7 +64,7 @@ export function CreateProductModal({
 			return res.json();
 		},
 		onSuccess: () => {
-			toast.success("Produto criada com sucesso!");
+			toast.success(dict.createProductModal.toastSuccess);
 			queryClient.invalidateQueries({ queryKey: ["products"] });
 			onOpenChange(false);
 			reset();
@@ -74,9 +79,9 @@ export function CreateProductModal({
 		<Dialog open={open} onOpenChange={onOpenChange}>
 			<DialogContent>
 				<DialogHeader>
-					<DialogTitle>Cadastrar nova revenda</DialogTitle>
+					<DialogTitle>{dict.createProductModal.title}</DialogTitle>
 					<DialogDescription>
-						Preencha os campos obrigatórios para criar uma nova revenda.
+						{dict.createProductModal.description}
 					</DialogDescription>
 				</DialogHeader>
 				<form
@@ -84,7 +89,7 @@ export function CreateProductModal({
 					onSubmit={handleSubmit(onSubmit)}
 				>
 					<div className="space-y-2">
-						<Label htmlFor="name">Nome</Label>
+						<Label htmlFor="name">{dict.common.name}</Label>
 						<Input id="name" {...register("name")} />
 						{errors.name && (
 							<span className="text-red-500 text-xs">
@@ -93,7 +98,9 @@ export function CreateProductModal({
 						)}
 					</div>
 					<div className="space-y-2 mb-4">
-						<Label htmlFor="description">Descrição</Label>
+						<Label htmlFor="description">
+							{dict.createProductModal.descriptionLabel}
+						</Label>
 						<Input
 							id="description"
 							type="description"
@@ -108,7 +115,7 @@ export function CreateProductModal({
 					<DialogFooter>
 						<DialogClose asChild>
 							<Button type="button" variant="secondary">
-								Cancelar
+								{dict.common.cancel}
 							</Button>
 						</DialogClose>
 						<Button
@@ -121,7 +128,7 @@ export function CreateProductModal({
 							) : (
 								<div className="flex items-center justify-center">
 									<PlusIcon className="mr-2 h-4 w-4" />
-									Criar Produto
+									{dict.createProductModal.addProduct}
 								</div>
 							)}
 						</Button>

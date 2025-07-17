@@ -23,7 +23,9 @@ import Link from "next/link";
 import { SidebarTrigger } from "../ui/sidebar";
 import { Separator } from "../ui/separator";
 import { useAuthStore } from "@/stores/auth-store";
-import { CommandBar } from "./command-bar";
+import { useRouter, usePathname, useParams } from "next/navigation";
+import { useDictionary } from "@/hooks/use-dictionary";
+// import { CommandBar } from "./command-bar";
 
 // Language options
 const languages = [
@@ -31,51 +33,74 @@ const languages = [
 	{ value: "pt", label: "Pt", flag: "/br.svg" },
 ];
 
-const getFormattedDate = () => {
-	const now = new Date();
-	return now.toLocaleDateString("pt-BR", {
-		weekday: "long",
-		day: "2-digit",
-		month: "long",
-	});
-};
-
 export default function Navbar() {
 	const id = useId();
-	const [selectedLang, setSelectedLang] = useState("pt");
 	const user = useAuthStore((s) => s.user);
 	const [greeting, setGreeting] = useState("");
 	const [GreetingIcon, setGreetingIcon] = useState(() => HandWavingIcon);
 	const [iconColor, setIconColor] = useState("#E4B273");
 
+	const dict = useDictionary();
+	const router = useRouter();
+	const pathname = usePathname();
+	const params = useParams();
+
+	const lang =
+		typeof params?.lang === "string"
+			? params.lang
+			: Array.isArray(params?.lang)
+				? params.lang[0]
+				: "pt";
+
+	const getFormattedDate = (lang: string) => {
+		const now = new Date();
+		return now.toLocaleDateString(lang === "en" ? "en-US" : "pt-BR", {
+			weekday: "long",
+			day: "2-digit",
+			month: "long",
+		});
+	};
+
 	useEffect(() => {
 		if (!user?.name) return;
-		setGreeting(`Bem vindo de volta, ${user.name}!`);
+		setGreeting(dict.greetings.welcomeBack.replace("{name}", user.name));
 		setGreetingIcon(() => HandWavingIcon);
 		setIconColor("#E4B273");
 
 		const timer = setTimeout(() => {
 			const hour = new Date().getHours();
-			let saudacao = "Bom dia";
+			let saudacao = dict.greetings.goodMorning;
 			let Icon = SunIcon;
 			let color = "#FCC321";
 
 			if (hour >= 12 && hour < 18) {
-				saudacao = "Boa tarde";
+				saudacao = dict.greetings.goodAfternoon;
 				Icon = SunHorizonIcon;
 				color = "#FF7C17";
 			} else if (hour >= 18 || hour < 5) {
-				saudacao = "Boa noite";
+				saudacao = dict.greetings.goodNight;
 				Icon = MoonStarsIcon;
 				color = "#60a5fa";
 			}
-			setGreeting(`${saudacao}, ${user.name}!`);
+			setGreeting(saudacao.replace("{name}", user.name));
 			setGreetingIcon(() => Icon);
 			setIconColor(color);
 		}, 120000);
 
 		return () => clearTimeout(timer);
-	}, [user?.name]);
+	}, [user?.name, dict.greetings]);
+
+	// Atualiza o idioma na URL ao trocar o select
+	const handleChangeLang = (lang: string) => {
+		const segments = pathname.split("/");
+		if (segments[1] === "pt" || segments[1] === "en") {
+			segments[1] = lang;
+		} else {
+			segments.splice(1, 0, lang);
+		}
+		const newPath = segments.join("/");
+		router.push(newPath);
+	};
 
 	return (
 		<header className="border-b px-4 md:px-6">
@@ -104,17 +129,17 @@ export default function Navbar() {
 							<GreetingIcon weight="fill" size={22} color={iconColor} />
 						</h1>
 						<span className="text-sm text-popover-foreground">
-							{getFormattedDate().charAt(0).toUpperCase() +
-								getFormattedDate().slice(1)}
+							{getFormattedDate(lang).charAt(0).toUpperCase() +
+								getFormattedDate(lang).slice(1)}
 						</span>
 					</div>
 				</div>
 				{/* Right side */}
 				<div className="flex items-center gap-2">
-					<CommandBar />
+					{/* <CommandBar /> */}
 					<ThemeToggle />
 					{/* Language selector */}
-					<Select defaultValue={selectedLang} onValueChange={setSelectedLang}>
+					<Select value={lang} onValueChange={handleChangeLang}>
 						<SelectTrigger
 							id={`language-${id}`}
 							className="[&>svg]:text-muted-foreground/80 hover:bg-accent hover:text-accent-foreground h-8 border-none px-2 shadow-none [&>svg]:shrink-0"

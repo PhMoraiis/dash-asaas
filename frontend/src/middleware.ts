@@ -110,7 +110,7 @@ export async function middleware(request: NextRequest) {
 
 	// --- NOVO: Consulta o backend para saber se precisa trocar a senha ---
 	try {
-		const meRes = await fetch("http://localhost:3333/api/me", {
+		const meRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/me`, {
 			headers: { Cookie: `auth_token=${token}` },
 			credentials: "include",
 		});

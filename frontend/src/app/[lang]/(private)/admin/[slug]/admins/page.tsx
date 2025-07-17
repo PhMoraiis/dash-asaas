@@ -75,6 +75,7 @@ import { useQuery } from "@tanstack/react-query";
 import { AdminRowActions } from "./_components/AdminRowActions";
 import { CreateAdminModal } from "./_components/create-admin-modal";
 import { EditAdminModal } from "./_components/edit-admin-modal";
+import { useDictionary } from "@/hooks/use-dictionary";
 
 const revendaSchema = z.object({
 	id: z.string(),
@@ -137,9 +138,12 @@ export default function AdminDashboardPage() {
 			desc: false,
 		},
 	]);
+	const dict = useDictionary();
 
 	const fetchAdmins = async () => {
-		const res = await fetchWithAuth("http://localhost:3333/api/admin/adm");
+		const res = await fetchWithAuth(
+			`${process.env.NEXT_PUBLIC_API_URL}/api/admin/adm`,
+		);
 		if (!res.ok) throw new Error("Erro ao buscar administradores");
 		return res.json();
 	};
@@ -162,14 +166,14 @@ export default function AdminDashboardPage() {
 				name: r.name,
 				email: r.email,
 				slug: formatSlug(r.slug),
-				status: r.active ? "Ativo" : "Inativo",
+				status: r.active ? `${dict.table.active}` : `${dict.table.inactive}`,
 			})) || [],
-		[adminsData],
+		[adminsData, dict.table.inactive, dict.table.active],
 	);
 
 	const columns: ColumnDef<Item>[] = [
 		{
-			header: "Name",
+			header: `${dict.common.name}`,
 			accessorKey: "name",
 			cell: ({ row }) => (
 				<div className="font-medium">{row.getValue("name")}</div>
@@ -311,9 +315,9 @@ export default function AdminDashboardPage() {
 							onChange={(e) =>
 								table.getColumn("name")?.setFilterValue(e.target.value)
 							}
-							placeholder="Filtrar por nome ou email..."
+							placeholder={dict.adminTable.filter}
 							type="text"
-							aria-label="Filtrar por nome ou email"
+							aria-label={dict.adminTable.filter}
 						/>
 						<div className="text-muted-foreground/80 pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 peer-disabled:opacity-50">
 							<ListFilterIcon size={16} aria-hidden="true" />
@@ -354,7 +358,7 @@ export default function AdminDashboardPage() {
 						<PopoverContent className="w-auto min-w-36 p-3" align="start">
 							<div className="space-y-3">
 								<div className="text-muted-foreground text-xs font-medium">
-									Filters
+									{dict.table.filters}
 								</div>
 								<div className="space-y-3">
 									{uniqueStatusValues.map((value, i) => (
@@ -390,11 +394,11 @@ export default function AdminDashboardPage() {
 									size={16}
 									aria-hidden="true"
 								/>
-								Visualizar
+								{dict.table.view}
 							</Button>
 						</DropdownMenuTrigger>
 						<DropdownMenuContent align="end">
-							<DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
+							<DropdownMenuLabel>{dict.table.toggleColumns}</DropdownMenuLabel>
 							{table
 								.getAllColumns()
 								.filter((column) => column.getCanHide())
@@ -441,7 +445,7 @@ export default function AdminDashboardPage() {
 							size={16}
 							aria-hidden="true"
 						/>
-						Adicionar Administrador
+						{dict.adminTable.add}
 					</Button>
 				</div>
 			</div>
@@ -540,7 +544,7 @@ export default function AdminDashboardPage() {
 									colSpan={columns.length}
 									className="h-24 text-center"
 								>
-									No results.
+									{dict.table.noResults}
 								</TableCell>
 							</TableRow>
 						)}
@@ -553,7 +557,7 @@ export default function AdminDashboardPage() {
 				{/* Results per page */}
 				<div className="flex items-center gap-3">
 					<Label htmlFor={id} className="max-sm:sr-only">
-						Rows per page
+						{dict.table.rowsPerPage}
 					</Label>
 					<Select
 						value={table.getState().pagination.pageSize.toString()}

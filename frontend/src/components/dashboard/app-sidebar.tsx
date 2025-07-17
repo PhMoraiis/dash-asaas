@@ -4,6 +4,8 @@ import {
 	CheckerboardIcon,
 	IdentificationBadgeIcon,
 	UserIcon,
+	WebhooksLogoIcon,
+	ChartPieSliceIcon,
 } from "@phosphor-icons/react/dist/ssr";
 import { NavMain } from "@/components/dashboard/nav-main";
 import {
@@ -18,43 +20,45 @@ import { SignOutButton } from "./sign-out-button";
 import { useAuthStore } from "@/stores/auth-store";
 import { useParams } from "next/navigation";
 import type { ComponentProps } from "react";
+import { useDictionary } from "@/hooks/use-dictionary";
 
 export default function AppSidebar(props: ComponentProps<typeof Sidebar>) {
 	const user = useAuthStore((s) => s.user);
 	const params = useParams();
 	const lang = params.lang;
 	const slug = params.slug;
+	const dict = useDictionary();
 
 	const data = {
 		navMain:
 			user?.role === "admin"
 				? [
 						{
-							title: "Administradores",
+							title: `${dict.sidebar.administrators}`,
 							url: `/${lang}/admin/${slug}/admins`,
 							icon: IdentificationBadgeIcon,
 						},
 						{
-							title: "Revendas",
+							title: `${dict.sidebar.resellers}`,
 							url: `/${lang}/admin/${slug}/revendas`,
 							icon: UserIcon,
 						},
 					]
 				: [
 						{
-							title: "Dashboard",
+							title: `${dict.sidebar.dashboard}`,
 							url: `/${lang}/revenda/${slug}/dashboard`,
+							icon: ChartPieSliceIcon,
+						},
+						{
+							title: `${dict.sidebar.products}`,
+							url: `/${lang}/revenda/${slug}/produtos`,
 							icon: CheckerboardIcon,
 						},
 						{
-							title: "Produtos",
-							url: `/${lang}/revenda/${slug}/produtos`,
-							icon: UserIcon,
-						},
-						{
-							title: "Webhooks",
+							title: `${dict.sidebar.webhooks}`,
 							url: `/${lang}/revenda/${slug}/webhooks`,
-							icon: IdentificationBadgeIcon,
+							icon: WebhooksLogoIcon,
 						},
 					],
 	};

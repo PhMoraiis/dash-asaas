@@ -8,10 +8,13 @@ export async function fetchWithAuth(
 
 	if (response.status === 401) {
 		// Tenta renovar o token
-		const refresh = await fetch("http://localhost:3333/api/refresh", {
-			method: "POST",
-			credentials: "include",
-		});
+		const refresh = await fetch(
+			`${process.env.NEXT_PUBLIC_API_URL}/api/refresh`,
+			{
+				method: "POST",
+				credentials: "include",
+			},
+		);
 		if (refresh.ok) {
 			// Tenta novamente a requisição original
 			response = await fetch(input, { ...init, credentials: "include" });

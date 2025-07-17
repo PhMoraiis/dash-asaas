@@ -26,6 +26,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CircleNotchIcon } from "@phosphor-icons/react/dist/ssr";
+import { useDictionary } from "@/hooks/use-dictionary";
 
 export type RowActionsProps<T> = {
 	row: Row<T>;
@@ -36,16 +37,6 @@ export type RowActionsProps<T> = {
 	deleteEndpoint: (id: string) => string;
 	// Status atual e labels customizáveis
 	isInactive: (item: T) => boolean;
-	actionLabels?: {
-		activate?: string;
-		deactivate?: string;
-		delete?: string;
-	};
-	dialogMessages?: {
-		activate?: string;
-		deactivate?: string;
-		delete?: string;
-	};
 	// Permite esconder ação de deletar se não quiser exibir
 	showDeleteWhenInactive?: boolean;
 };
@@ -57,17 +48,13 @@ export function RowActions<T extends { id: string }>({
 	statusEndpoint,
 	deleteEndpoint,
 	isInactive,
-	actionLabels,
-	dialogMessages,
 	showDeleteWhenInactive = true,
 }: RowActionsProps<T>) {
+	const dict = useDictionary();
 	const [openDialog, setOpenDialog] = useState(false);
 	const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 	const item = row.original;
 	const inactive = isInactive(item);
-	const actionLabel = inactive
-		? actionLabels?.activate || "Reativar"
-		: actionLabels?.deactivate || "Desativar";
 	const actionColor = inactive
 		? "text-green-600 focus:text-green-600"
 		: "text-destructive focus:text-destructive";
@@ -89,14 +76,14 @@ export function RowActions<T extends { id: string }>({
 			queryClient.invalidateQueries();
 			toast.success(
 				inactive
-					? actionLabels?.activate || "Ativado com sucesso!"
-					: actionLabels?.deactivate || "Desativado com sucesso!",
+					? dict.rowActions.toastActived
+					: dict.rowActions.toastDeactivated,
 			);
 			setOpenDialog(false);
 			refetch();
 		},
 		onError: () => {
-			toast.error("Erro ao atualizar status.");
+			toast.error(dict.rowActions.toastError);
 		},
 	});
 
@@ -111,14 +98,16 @@ export function RowActions<T extends { id: string }>({
 		},
 		onSuccess: () => {
 			queryClient.invalidateQueries();
-			toast.success(actionLabels?.delete || "Excluído permanentemente!");
+			toast.success(dict.rowActions.toastDeleted);
 			setOpenDeleteDialog(false);
 			refetch();
 		},
 		onError: () => {
-			toast.error("Erro ao excluir.");
+			toast.error(dict.rowActions.toastError);
 		},
 	});
+
+	const actionLabel = inactive ? dict.common.activate : dict.common.deactivate;
 
 	return (
 		<>
@@ -129,7 +118,7 @@ export function RowActions<T extends { id: string }>({
 							size="icon"
 							variant="ghost"
 							className="shadow-none"
-							aria-label="Ações"
+							aria-label={dict.common.actions}
 						>
 							<EllipsisIcon size={16} aria-hidden="true" />
 						</Button>
@@ -138,7 +127,7 @@ export function RowActions<T extends { id: string }>({
 				<DropdownMenuContent align="end">
 					<DropdownMenuGroup>
 						<DropdownMenuItem onSelect={() => onEdit(item)}>
-							<span>Editar</span>
+							<span>{dict.common.edit}</span>
 						</DropdownMenuItem>
 					</DropdownMenuGroup>
 					<DropdownMenuSeparator />
@@ -153,7 +142,7 @@ export function RowActions<T extends { id: string }>({
 							className="text-destructive focus:text-destructive"
 							onSelect={() => setOpenDeleteDialog(true)}
 						>
-							<span>{actionLabels?.delete || "Excluir"}</span>
+							<span>{dict.common.delete}</span>
 						</DropdownMenuItem>
 					)}
 				</DropdownMenuContent>
@@ -169,17 +158,18 @@ export function RowActions<T extends { id: string }>({
 							<CircleAlertIcon className="opacity-80" size={16} />
 						</div>
 						<AlertDialogHeader>
-							<AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
+							<AlertDialogTitle>
+								{dict.rowActions.confirmTitle}
+							</AlertDialogTitle>
 							<AlertDialogDescription>
 								{inactive
-									? dialogMessages?.activate || "Esta ação irá reativar o item."
-									: dialogMessages?.deactivate ||
-										"Esta ação irá desativar o item permanentemente."}
+									? dict.rowActions.confirmActivate
+									: dict.rowActions.confirmDeactivate}
 							</AlertDialogDescription>
 						</AlertDialogHeader>
 					</div>
 					<AlertDialogFooter>
-						<AlertDialogCancel>Cancelar</AlertDialogCancel>
+						<AlertDialogCancel>{dict.common.cancel}</AlertDialogCancel>
 						<AlertDialogAction
 							onClick={() => toggleActiveMutation.mutate()}
 							disabled={toggleActiveMutation.isPending}
@@ -207,15 +197,16 @@ export function RowActions<T extends { id: string }>({
 							/>
 						</div>
 						<AlertDialogHeader>
-							<AlertDialogTitle>Excluir item?</AlertDialogTitle>
+							<AlertDialogTitle>
+								{dict.rowActions.confirmDeleteTitle}
+							</AlertDialogTitle>
 							<AlertDialogDescription>
-								{dialogMessages?.delete ||
-									"Esta ação é irreversível e excluirá permanentemente do sistema."}
+								{dict.rowActions.confirmDelete}
 							</AlertDialogDescription>
 						</AlertDialogHeader>
 					</div>
 					<AlertDialogFooter>
-						<AlertDialogCancel>Cancelar</AlertDialogCancel>
+						<AlertDialogCancel>{dict.common.cancel}</AlertDialogCancel>
 						<AlertDialogAction
 							onClick={() => deleteMutation.mutate()}
 							disabled={deleteMutation.isPending}
@@ -223,7 +214,7 @@ export function RowActions<T extends { id: string }>({
 							{deleteMutation.isPending ? (
 								<CircleNotchIcon size={22} className="animate-spin" />
 							) : (
-								actionLabels?.delete || "Excluir"
+								dict.common.delete
 							)}
 						</AlertDialogAction>
 					</AlertDialogFooter>

@@ -10,12 +10,26 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { useRouter } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import { ArrowLeftIcon, CircleNotchIcon } from "@phosphor-icons/react/dist/ssr";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuthStore } from "@/stores/auth-store";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
+import Image from "next/image";
+import { useDictionary } from "@/hooks/use-dictionary";
+
+const languages = [
+	{ value: "en", label: "En", flag: "/eua.svg" },
+	{ value: "pt", label: "Pt", flag: "/br.svg" },
+];
 
 const changePasswordSchema = z
 	.object({
@@ -42,6 +56,15 @@ export default function ChangePasswordPage() {
 	const [loading, setLoading] = useState(false);
 	const router = useRouter();
 	const setUser = useAuthStore((s) => s.setUser);
+	const params = useParams();
+	const pathname = usePathname();
+	const lang =
+		typeof params?.lang === "string"
+			? params.lang
+			: Array.isArray(params?.lang)
+				? params.lang[0]
+				: "pt";
+	const dict = useDictionary();
 
 	const {
 		register,
@@ -57,21 +80,24 @@ export default function ChangePasswordPage() {
 		setLoading(true);
 		setError("");
 		try {
-			const res = await fetch("http://localhost:3333/api/change-password", {
-				method: "PATCH",
-				headers: { "Content-Type": "application/json" },
-				credentials: "include",
-				body: JSON.stringify({
-					currentPassword: data.currentPassword,
-					newPassword: data.newPassword,
-				}),
-			});
+			const res = await fetch(
+				`${process.env.NEXT_PUBLIC_API_URL}/api/change-password`,
+				{
+					method: "PATCH",
+					headers: { "Content-Type": "application/json" },
+					credentials: "include",
+					body: JSON.stringify({
+						currentPassword: data.currentPassword,
+						newPassword: data.newPassword,
+					}),
+				},
+			);
 			if (!res.ok) {
 				const result = await res.json();
 				throw new Error(result.message || "Erro ao trocar a senha.");
 			}
 			// Atualiza o usuário no estado global
-			const meRes = await fetch("http://localhost:3333/api/me", {
+			const meRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/me`, {
 				credentials: "include",
 			});
 			if (meRes.ok) {
@@ -94,36 +120,79 @@ export default function ChangePasswordPage() {
 		}
 	}
 
+	// Atualiza o idioma na URL ao trocar o select
+	const handleChangeLang = (lang: string) => {
+		const segments = pathname.split("/");
+		if (segments[1] === "pt" || segments[1] === "en") {
+			segments[1] = lang;
+		} else {
+			segments.splice(1, 0, lang);
+		}
+		const newPath = segments.join("/");
+		router.push(newPath);
+	};
+
 	return (
 		<div className="min-h-screen relative">
-			<Button
-				onClick={() => router.push("/")}
-				variant="ghost"
-				className="absolute top-4 left-4 rounded-2xl gap-2 hover:bg-border"
-				aria-label="Ir para home"
-			>
-				<ArrowLeftIcon /> Home
-			</Button>
+			<div className="flex items-center justify-between">
+				<div>
+					<Button
+						onClick={() => router.push("/")}
+						variant="ghost"
+						className="cursor-pointer absolute top-4 left-4 rounded-2xl gap-2 hover:bg-border"
+						aria-label="Go to home page"
+					>
+						<ArrowLeftIcon /> Home
+					</Button>
+				</div>
+				<div className="flex items-center justify-center p-4">
+					<Select value={lang} onValueChange={handleChangeLang}>
+						<SelectTrigger
+							className="[&>svg]:text-muted-foreground/80 hover:bg-accent hover:text-accent-foreground h-8 border-none px-2 shadow-none [&>svg]:shrink-0"
+							aria-label="Select language"
+						>
+							<SelectValue className="hidden sm:inline-flex" />
+						</SelectTrigger>
+						<SelectContent className="[&_*[role=option]]:ps-2 [&_*[role=option]]:pe-8 [&_*[role=option]>span]:start-auto [&_*[role=option]>span]:end-2 [&_*[role=option]>span]:flex [&_*[role=option]>span]:items-center [&_*[role=option]>span]:gap-2">
+							{languages.map((lang) => (
+								<SelectItem key={lang.value} value={lang.value}>
+									<span className="flex items-center gap-2">
+										<Image
+											src={lang.flag}
+											alt={lang.label}
+											width={20}
+											height={20}
+										/>
+										<span className="truncate">{lang.label}</span>
+									</span>
+								</SelectItem>
+							))}
+						</SelectContent>
+					</Select>
+				</div>
+			</div>
 			<div className="min-h-screen flex items-center justify-center bg-background">
 				<Card className="w-full max-w-md border-none shadow-none bg-background">
 					<CardHeader className="space-y-1">
 						<CardTitle className="text-3xl font-semibold">
-							Troque sua senha
+							{dict.password.changeTitle}
 						</CardTitle>
 						<CardDescription className="text-md">
-							Por segurança, defina uma nova senha para acessar o sistema.
+							{dict.password.changeSubtitle}
 						</CardDescription>
 					</CardHeader>
 					<CardContent>
 						{success ? (
 							<div className="text-green-600 text-center">
-								Senha alterada com sucesso! Redirecionando...
+								{dict.password.success}
 							</div>
 						) : (
 							<form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
 								<div className="space-y-4">
 									<div className="space-y-2">
-										<Label htmlFor="currentPassword">Senha atual</Label>
+										<Label htmlFor="currentPassword">
+											{dict.password.currentPassword}
+										</Label>
 										<Input
 											id="currentPassword"
 											type="password"
@@ -137,7 +206,9 @@ export default function ChangePasswordPage() {
 										)}
 									</div>
 									<div className="space-y-2">
-										<Label htmlFor="newPassword">Nova senha</Label>
+										<Label htmlFor="newPassword">
+											{dict.password.newPassword}
+										</Label>
 										<Input
 											id="newPassword"
 											type="password"
@@ -152,7 +223,9 @@ export default function ChangePasswordPage() {
 										)}
 									</div>
 									<div className="space-y-2">
-										<Label htmlFor="confirm">Confirme a nova senha</Label>
+										<Label htmlFor="confirm">
+											{dict.password.confirmNewPassword}
+										</Label>
 										<Input
 											id="confirm"
 											type="password"
@@ -172,7 +245,7 @@ export default function ChangePasswordPage() {
 									{loading ? (
 										<CircleNotchIcon className="animate-spin" />
 									) : (
-										"Trocar senha"
+										`${dict.password.change}`
 									)}
 								</Button>
 							</form>
