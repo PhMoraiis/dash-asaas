@@ -98,6 +98,7 @@ export async function forgotRoutes(app: FastifyInstance) {
 					.send({ error: true, message: "Token inválido ou expirado" });
 			}
 			// Atualiza senha
+			// biome-ignore lint/correctness/noUnusedVariables: ignore
 			let user: unknown;
 			if (reset.userType === "admin") {
 				user = await prisma.admin.update({

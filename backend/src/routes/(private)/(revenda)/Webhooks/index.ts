@@ -80,42 +80,4 @@ export async function webhooksRoutes(app: FastifyInstance) {
 			return reply.send({ success: true });
 		},
 	);
-
-	// Estatísticas para o dashboard
-	app.get(
-		"/api/webhooks/stats",
-		{
-			preHandler: [protectRoute, requireRole("revenda")],
-			schema: {
-				tags: ["webhooks", "stats"],
-				summary: "Estatísticas agregadas dos webhooks da revenda logada",
-			},
-		},
-		async (request, reply) => {
-			const { id: revendaId } = request.user as { id: string };
-			const total = await prisma.webhook.count({ where: { revendaId } });
-			const statusAgg = await prisma.webhook.groupBy({
-				by: ["status"],
-				where: { revendaId },
-				_count: { status: true },
-			});
-			const byStatus = Object.fromEntries(
-				statusAgg.map((s) => [s.status, s._count.status]),
-			);
-			const eventAgg = await prisma.webhook.groupBy({
-				by: ["event"],
-				where: { revendaId },
-				_count: { event: true },
-			});
-			const byEvent = Object.fromEntries(
-				eventAgg.map((e) => [e.event, e._count.event]),
-			);
-			const latest = await prisma.webhook.findMany({
-				where: { revendaId },
-				orderBy: { createdAt: "desc" },
-				take: 5,
-			});
-			return reply.send({ total, byStatus, byEvent, latest });
-		},
-	);
 }

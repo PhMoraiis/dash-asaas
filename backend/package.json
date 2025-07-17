@@ -15,7 +15,9 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.0.0",
+    "@types/lodash": "^4.17.20",
     "@types/node": "^24.0.3",
+    "lodash": "^4.17.21",
     "prisma": "^6.11.1",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3"

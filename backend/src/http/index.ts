@@ -20,6 +20,8 @@ import { adminRoutes } from "@/routes/(private)/(admin)/ManageAdmin";
 import { productRoutes } from "@/routes/(private)/(revenda)/ManageProduct";
 import { webhooksPublicRoutes } from "@/routes/(public)/Webhooks";
 import { webhooksRoutes } from "@/routes/(private)/(revenda)/Webhooks";
+import { chartsRoutes } from "@/routes/(private)/(revenda)/Charts";
+import { prisma, redis } from "../database/client";
 
 // Validator and Serializer Compilers ZOD
 const app = Fastify().withTypeProvider<ZodTypeProvider>();
@@ -88,10 +90,29 @@ app.register(fastifyJwt, {
 	},
 });
 
+// Health check
 app.get("/", async (_request, reply) => {
-	reply.send({
-		message: "Welcome to the Dashboard Webhooks ASAAS API",
-		version: ENV.API_VERSION,
+	let dbStatus = "ok";
+	let redisStatus = "ok";
+
+	// Checagem do banco de dados
+	try {
+		await prisma.$queryRaw`SELECT 1`;
+	} catch (_e) {
+		dbStatus = "unavailable";
+	}
+
+	// Checagem do Redis
+	try {
+		await redis.ping();
+	} catch (_e) {
+		redisStatus = "unavailable";
+	}
+
+	reply.status(dbStatus === "ok" && redisStatus === "ok" ? 200 : 503).send({
+		status: dbStatus === "ok" && redisStatus === "ok" ? "ok" : "unavailable",
+		database: dbStatus,
+		redis: redisStatus,
 	});
 });
 // Rotas de queueJobs
@@ -110,6 +131,8 @@ app.register(productRoutes);
 app.register(webhooksPublicRoutes);
 // Rotas de Webhooks (privadas)
 app.register(webhooksRoutes);
+// Rotas de Charts
+app.register(chartsRoutes);
 
 // Iniciar servidor
 async function start() {

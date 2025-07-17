@@ -7,7 +7,6 @@ import { requireRole } from "@/middlewares/role";
 import { generateUniqueSlug } from "@/utils/slugIncremental";
 import { createAdminSchema, updateAdminSchema } from "./schemas";
 import { generateRandomPassword } from "@/utils/generateRandomPassword";
-import { email } from "zod/v4";
 
 export async function adminRoutes(app: FastifyInstance) {
 	// Listar admins
@@ -161,7 +160,7 @@ export async function adminRoutes(app: FastifyInstance) {
 			try {
 				await prisma.admin.update({ where: { id }, data: { active } });
 				return reply.send({ success: true });
-			} catch (e) {
+			} catch (_e) {
 				return reply
 					.status(404)
 					.send({ error: true, message: "Admin não encontrado" });
@@ -189,7 +188,7 @@ export async function adminRoutes(app: FastifyInstance) {
 			try {
 				await prisma.admin.delete({ where: { id } });
 				return reply.send({ success: true });
-			} catch (e) {
+			} catch (_e) {
 				return reply
 					.status(404)
 					.send({ error: true, message: "Admin não encontrado" });

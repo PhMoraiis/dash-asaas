@@ -141,7 +141,7 @@ export async function revendasRoutes(app: FastifyInstance) {
 					},
 				});
 				return reply.send({ success: true });
-			} catch (e) {
+			} catch (_e) {
 				return reply
 					.status(404)
 					.send({ error: true, message: "Revenda não encontrada" });
@@ -171,7 +171,7 @@ export async function revendasRoutes(app: FastifyInstance) {
 			try {
 				await prisma.revenda.update({ where: { id }, data: { active } });
 				return reply.send({ success: true });
-			} catch (e) {
+			} catch (_e) {
 				return reply
 					.status(404)
 					.send({ error: true, message: "Revenda não encontrada" });
@@ -199,7 +199,7 @@ export async function revendasRoutes(app: FastifyInstance) {
 			try {
 				await prisma.revenda.delete({ where: { id } });
 				return reply.send({ success: true });
-			} catch (e) {
+			} catch (_e) {
 				return reply
 					.status(404)
 					.send({ error: true, message: "Revenda não encontrada" });

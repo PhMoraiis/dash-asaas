@@ -63,12 +63,9 @@ export async function webhooksPublicRoutes(app: FastifyInstance) {
 			await prisma.webhook.create({
 				data: {
 					asaasEventId,
-					event: body.event,
 					payload: body,
 					revendaId: revenda.id,
 					produtoId: produto.id,
-					externalId: body.payment?.id ?? null,
-					status: body.payment?.status,
 				},
 			});
 			console.log("Webhook salvo no banco:", asaasEventId);
