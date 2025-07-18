@@ -22,7 +22,7 @@ export const webhookWorker = new Worker(
 			// Aqui você pode implementar a lógica de negócio desejada
 			await prisma.webhook.update({
 				where: { asaasEventId: payload.id },
-				data: { processedAt: new Date(), status: "SUCCESS" },
+				data: { processedAt: new Date() },
 			});
 			console.info(`[WORKER] Sucesso: id=${payload.id}`);
 		} catch (err) {

@@ -5,7 +5,6 @@ import { hash } from "bcryptjs";
 import { z } from "zod";
 import crypto from "node:crypto";
 import { Resend } from "resend";
-import ENV from "@/env";
 
 export async function forgotRoutes(app: FastifyInstance) {
 	// Solicitar recuperação de senha
@@ -49,7 +48,7 @@ export async function forgotRoutes(app: FastifyInstance) {
 			});
 
 			// Envia e-mail usando Resend
-			const resend = new Resend(ENV.RESEND_API_KEY);
+			const resend = new Resend(process.env.RESEND_API_KEY);
 
 			await resend.emails.send({
 				from: "Dash <no-reply@philipemorais.com>",

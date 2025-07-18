@@ -32,13 +32,12 @@ const envSchema = z.object({
 });
 
 // Validação das variáveis de ambiente
-const ENV = (() => {
+const env = (() => {
 	try {
 		return envSchema.parse(process.env);
 	} catch (error) {
 		console.error("❌ Erro na validação das variáveis de ambiente:");
 		if (error instanceof z.ZodError) {
-			// biome-ignore lint/complexity/noForEach: ignore
 			error.errors.forEach((err) => {
 				console.error(`   - ${err.path.join(".")}: ${err.message}`);
 			});
@@ -52,5 +51,5 @@ const ENV = (() => {
 
 console.log("✅ Variáveis de ambiente validadas com sucesso");
 
-export default ENV;
+export default env;
 export type Env = z.infer<typeof envSchema>;

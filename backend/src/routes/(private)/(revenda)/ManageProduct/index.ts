@@ -5,7 +5,6 @@ import { requireRole } from "@/middlewares/role";
 import { createProductSchema, updateProductSchema } from "./schemas";
 import { z } from "zod";
 import { randomUUID } from "node:crypto";
-import ENV from "@/env";
 
 export async function productRoutes(app: FastifyInstance) {
 	// Criar produto
@@ -280,7 +279,7 @@ export async function productRoutes(app: FastifyInstance) {
 					.send({ error: true, message: "Produto não encontrado" });
 			}
 
-			const webhookUrl = `${ENV.EXTERNAL_API_URL}/api/webhooks/asaas`;
+			const webhookUrl = `${process.env.EXTERNAL_API_URL}/api/webhooks/asaas`;
 			return reply.send({ webhookUrl, webhookToken: produto.webhookToken });
 		},
 	);

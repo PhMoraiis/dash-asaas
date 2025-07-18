@@ -5,7 +5,6 @@ import { compare, hash } from "bcryptjs";
 import { z } from "zod";
 import { generateRefreshToken } from "@/utils/auth";
 import { protectRoute } from "@/middlewares/jwt";
-import ENV from "@/env";
 import { generateUniqueSlug } from "@/utils/slugIncremental";
 
 export async function authRoutes(app: FastifyInstance) {
@@ -92,14 +91,14 @@ export async function authRoutes(app: FastifyInstance) {
 			reply
 				.setCookie("auth_token", token, {
 					httpOnly: true,
-					secure: ENV.NODE_ENV === "production",
+					secure: process.env.NODE_ENV === "production",
 					sameSite: "lax",
 					path: "/",
 					maxAge: 60 * 60 * 24 * 7, // 7 dias
 				})
 				.setCookie("refresh_token", refreshToken, {
 					httpOnly: true,
-					secure: ENV.NODE_ENV === "production",
+					secure: process.env.NODE_ENV === "production",
 					sameSite: "lax",
 					path: "/",
 					maxAge: 60 * 60 * 24 * 7,
@@ -182,14 +181,14 @@ export async function authRoutes(app: FastifyInstance) {
 			reply
 				.setCookie("auth_token", token, {
 					httpOnly: true,
-					secure: ENV.NODE_ENV === "production",
+					secure: process.env.NODE_ENV === "production",
 					sameSite: "lax",
 					path: "/",
 					maxAge: 60 * 60 * 24 * 7,
 				})
 				.setCookie("refresh_token", newRefreshToken, {
 					httpOnly: true,
-					secure: ENV.NODE_ENV === "production",
+					secure: process.env.NODE_ENV === "production",
 					sameSite: "lax",
 					path: "/",
 					maxAge: 60 * 60 * 24 * 7,

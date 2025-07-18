@@ -3,6 +3,7 @@ import { prisma } from "@/database/client";
 import { protectRoute } from "@/middlewares/jwt";
 import { requireRole } from "@/middlewares/role";
 import { z } from "zod";
+import { webhookQueue } from "@/queues";
 
 export async function webhooksRoutes(app: FastifyInstance) {
 	app.get(
@@ -72,7 +73,6 @@ export async function webhooksRoutes(app: FastifyInstance) {
 					.status(404)
 					.send({ error: true, message: "Webhook não encontrado" });
 			}
-			const { webhookQueue } = await import("@/queues/index");
 			await webhookQueue.add("reprocess", {
 				revendaId,
 				payload: webhook.payload,

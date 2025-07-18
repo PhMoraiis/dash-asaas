@@ -1,7 +1,7 @@
 services:
   postgres:
     image: postgres:17-alpine
-    container_name: dashboard-postgres
+    container_name: dashboard-postgres-prod
     restart: unless-stopped
     environment:
       POSTGRES_USER: dashboard_user
@@ -11,18 +11,18 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+      - ./backend/scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
     networks:
       - dashboard-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U dashboard -d dashboard_webhooks_db"]
+      test: ["CMD-SHELL", "pg_isready -U dashboard_user -d dashboard_webhooks_db"]
       interval: 10s
       timeout: 5s
       retries: 5
 
   redis:
     image: redis:8-alpine
-    container_name: dashboard-redis
+    container_name: dashboard-redis-prod
     restart: unless-stopped
     ports:
       - "6379:6379"
@@ -39,7 +39,7 @@ services:
 
   redis-commander:
     image: rediscommander/redis-commander:latest
-    container_name: dashboard-redis-ui
+    container_name: dashboard-redis-ui-prod
     restart: unless-stopped
     environment:
       REDIS_HOSTS: local:redis:6379
@@ -47,6 +47,33 @@ services:
       - "8081:8081"
     depends_on:
       - redis
+    networks:
+      - dashboard-network
+
+  backend:
+    build: ./backend
+    container_name: dashboard-backend
+    restart: unless-stopped
+    env_file:
+      - ./backend/.env
+    ports:
+      - "3333:3333"
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - dashboard-network
+
+  frontend:
+    build: ./frontend
+    container_name: dashboard-frontend
+    restart: unless-stopped
+    env_file:
+      - ./frontend/.env
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
     networks:
       - dashboard-network
 

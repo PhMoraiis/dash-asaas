@@ -1,5 +1,4 @@
 import { PrismaClient } from "@/generated/prisma";
-import ENV from "../env";
 import IORedis from "ioredis";
 
 const globalForPrisma = globalThis as unknown as {
@@ -10,10 +9,15 @@ export const prisma =
 	globalForPrisma.prisma ??
 	new PrismaClient({
 		log:
-			ENV.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
+			process.env.NODE_ENV === "development"
+				? ["query", "error", "warn"]
+				: ["error"],
 	});
 
-if (ENV.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
 
 // Conexão Redis (usada em filas e agora para refresh token)
-export const redis = new IORedis(ENV.REDIS_URL);
+if (!process.env.REDIS_URL) {
+	throw new Error("REDIS_URL não definido nas variáveis de ambiente!");
+}
+export const redis = new IORedis(process.env.REDIS_URL);

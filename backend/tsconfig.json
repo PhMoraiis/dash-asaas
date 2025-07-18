@@ -1,40 +1,41 @@
 {
-  "compilerOptions": {
-    "target": "ES2022",
-    "lib": ["ES2022"],
-    "module": "ESNext",
-    "moduleResolution": "node",
-    "allowImportingTsExtensions": false,
-    "moduleDetection": "force",
-    "outDir": "./dist",
-    "rootDir": "./src",
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true,
-    "removeComments": false,
-    "allowSyntheticDefaultImports": true,
-    "resolveJsonModule": true,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"],
-      "@/types/*": ["./src/types/*"],
-      "@/utils/*": ["./src/utils/*"],
-      "@/config/*": ["./src/config/*"],
-      "@/middleware/*": ["./src/middleware/*"],
-      "@/routes/*": ["./src/routes/*"],
-      "@/services/*": ["./src/services/*"],
-      "@/database/*": ["./src/database/*"]
-    }
-  },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.spec.ts"],
-  "ts-node": {
-    "esm": true
-  }
+	"compilerOptions": {
+		"lib": [
+			"es2024",
+			"ESNext.Array",
+			"ESNext.Collection",
+			"ESNext.Iterator",
+			"ESNext.Promise"
+		],
+		"module": "nodenext",
+		"target": "es2024",
+		"strict": true,
+		"esModuleInterop": true,
+		"skipLibCheck": true,
+		"moduleResolution": "node16",
+		"allowImportingTsExtensions": false,
+		"moduleDetection": "force",
+		"outDir": "./dist",
+		"rootDir": "./src",
+		"forceConsistentCasingInFileNames": true,
+		"declaration": true,
+		"declarationMap": true,
+		"sourceMap": true,
+		"removeComments": false,
+		"allowSyntheticDefaultImports": true,
+		"resolveJsonModule": true,
+		"experimentalDecorators": true,
+		"emitDecoratorMetadata": true,
+		"baseUrl": ".",
+		"paths": {
+			"@/*": ["./src/*"],
+			"@/types/*": ["./src/types/*"],
+			"@/utils/*": ["./src/utils/*"],
+			"@/middlewares/*": ["./src/middlewares/*"],
+			"@/routes/*": ["./src/routes/*"],
+			"@/services/*": ["./src/services/*"],
+			"@/database/*": ["./src/database/*"],
+			"@/queues/*": ["./src/queues/*"]
+		}
+	},
 }
