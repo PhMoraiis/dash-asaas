@@ -3,15 +3,12 @@ services:
     image: postgres:17-alpine
     container_name: dashboard-postgres-prod
     restart: unless-stopped
-    environment:
-      POSTGRES_USER: dashboard_user
-      POSTGRES_PASSWORD: dashboard_pass
-      POSTGRES_DB: dashboard_webhooks_db
+    env_file:
+      - ./backend/.env
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./backend/scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
     networks:
       - dashboard-network
     healthcheck:
