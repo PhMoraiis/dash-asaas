@@ -8,10 +8,9 @@ services:
       POSTGRES_PASSWORD: dashboard_pass
       POSTGRES_DB: dashboard_webhooks_db
     ports:
-      - "5432:5432"
+      - "5430:5430"
     volumes:
       - asaas_postgres_data:/var/lib/postgresql/data
-      - ./backend/scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
     networks:
       - dashboard-network
     healthcheck:
