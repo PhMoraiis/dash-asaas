@@ -58,7 +58,7 @@ export async function forgotRoutes(app: FastifyInstance) {
     <p>Olá,</p>
     <p>Recebemos uma solicitação para redefinir sua senha.</p>
     <p>
-      <a href="http://localhost:3000/reset-password?token=${token}">
+      <a href="${process.env.FRONTEND_URL}/reset-password?token=${token}">
         Clique aqui para redefinir sua senha
       </a>
     </p>
