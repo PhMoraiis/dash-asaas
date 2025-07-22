@@ -3,10 +3,8 @@ services:
     image: postgres:17-alpine
     container_name: dashboard-postgres-prod
     restart: unless-stopped
-    environment:
-      POSTGRES_USER: dashboard_user
-      POSTGRES_PASSWORD: dashboard_pass
-      POSTGRES_DB: dashboard_webhooks_db
+    env_file:
+      - ./backend/.env
     ports:
       - "5430:5430"
     volumes:
