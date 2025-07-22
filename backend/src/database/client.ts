@@ -1,4 +1,4 @@
-import { PrismaClient } from "@/generated/prisma";
+import { PrismaClient } from "@prisma/client";
 import IORedis from "ioredis";
 
 const globalForPrisma = globalThis as unknown as {

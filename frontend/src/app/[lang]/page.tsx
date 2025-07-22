@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 
-export default async function Page() {
+export default function Page() {
 	const router = useRouter();
 
 	const handleClick = () => {

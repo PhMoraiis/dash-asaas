@@ -92,7 +92,7 @@ export async function revendasRoutes(app: FastifyInstance) {
 				},
 				orderBy: { createdAt: "desc" },
 			});
-			const revendasSerializadas = revendas.map((r) => ({
+			const revendasSerializadas = revendas.map((r: typeof revendas[0]) => ({
 				...r,
 				createdAt: r.createdAt.toISOString(),
 				updatedAt: r.updatedAt.toISOString(),

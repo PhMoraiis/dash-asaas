@@ -45,7 +45,7 @@ export async function adminRoutes(app: FastifyInstance) {
 				},
 				orderBy: { createdAt: "desc" },
 			});
-			const adminsSerializados = admins.map((a) => ({
+			const adminsSerializados = admins.map((a: typeof admins[0]) => ({
 				...a,
 				createdAt: a.createdAt.toISOString(),
 				updatedAt: a.updatedAt.toISOString(),

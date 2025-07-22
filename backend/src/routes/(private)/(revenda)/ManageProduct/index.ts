@@ -82,7 +82,7 @@ export async function productRoutes(app: FastifyInstance) {
 				orderBy: { createdAt: "desc" },
 			});
 			return reply.send(
-				produtos.map((p) => ({
+				produtos.map((p: typeof produtos[0]) => ({
 					...p,
 					createdAt: p.createdAt.toISOString(),
 					updatedAt: p.updatedAt.toISOString(),

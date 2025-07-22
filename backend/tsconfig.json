@@ -28,14 +28,33 @@
 		"emitDecoratorMetadata": true,
 		"baseUrl": ".",
 		"paths": {
-			"@/*": ["./src/*"],
-			"@/types/*": ["./src/types/*"],
-			"@/utils/*": ["./src/utils/*"],
-			"@/middlewares/*": ["./src/middlewares/*"],
-			"@/routes/*": ["./src/routes/*"],
-			"@/services/*": ["./src/services/*"],
-			"@/database/*": ["./src/database/*"],
-			"@/queues/*": ["./src/queues/*"]
+			"@/*": [
+				"./src/*"
+			],
+			"@/types/*": [
+				"./src/types/*"
+			],
+			"@/utils/*": [
+				"./src/utils/*"
+			],
+			"@/middlewares/*": [
+				"./src/middlewares/*"
+			],
+			"@/routes/*": [
+				"./src/routes/*"
+			],
+			"@/services/*": [
+				"./src/services/*"
+			],
+			"@/database/*": [
+				"./src/database/*"
+			],
+			"@/queues/*": [
+				"./src/queues/*"
+			],
+			"@/generated/*": [
+				"./src/generated/*"
+			]
 		}
 	},
 }

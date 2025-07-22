@@ -51,9 +51,9 @@ services:
       - dashboard-network
 
   backend:
+    platform: linux/amd64
     build: ./backend
     container_name: dashboard-backend
-    restart: unless-stopped
     env_file:
       - ./backend/.env
     ports:

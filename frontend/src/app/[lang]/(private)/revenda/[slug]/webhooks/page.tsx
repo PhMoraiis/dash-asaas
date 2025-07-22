@@ -162,6 +162,7 @@ export default function WebhooksPage() {
 
 	const columns: ColumnDef<Webhook>[] = [
 		{
+			id: "event",
 			header: `${dict.webhookTable.event}`,
 			accessorKey: "payload.event",
 			cell: ({ row }) => <span>{row.original.payload?.event ?? "-"}</span>,
@@ -170,6 +171,7 @@ export default function WebhooksPage() {
 			filterFn: eventFilterFn,
 		},
 		{
+			id: "status",
 			header: "Status",
 			accessorKey: "payload.status",
 			cell: ({ row }) => {
@@ -180,6 +182,7 @@ export default function WebhooksPage() {
 			size: 120,
 		},
 		{
+			id: "product",
 			header: `${dict.webhookTable.product}`,
 			accessorKey: "produtoId",
 			cell: ({ row }) => (
@@ -190,6 +193,7 @@ export default function WebhooksPage() {
 			size: 180,
 		},
 		{
+			id: "createdAt",
 			header: `${dict.webhookTable.createdAt}`,
 			accessorKey: "createdAt",
 			size: 140,
@@ -200,8 +204,8 @@ export default function WebhooksPage() {
 			),
 		},
 		{
-			header: "Ações",
 			id: "actions",
+			header: "Ações",
 			cell: ({ row }) => (
 				<Button
 					variant="outline"
@@ -257,7 +261,7 @@ export default function WebhooksPage() {
 			: selectedEvents.filter((v) => v !== value);
 		setSelectedEvents(newFilter);
 		table
-			.getColumn("payload.event")
+			.getColumn("event")
 			?.setFilterValue(newFilter.length ? newFilter : undefined);
 	};
 
