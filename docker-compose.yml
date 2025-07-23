@@ -69,7 +69,7 @@ services:
       - ./frontend/.env
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.app.rule=Host(`app.watidy.com.br`)"
+      - "traefik.http.routers.app.rule=Host(`app.manyflux.com.br`)"
       - "traefik.http.routers.app.entrypoints=websecure"
       - "traefik.http.routers.app.tls.certresolver=letsencrypt"
       - "traefik.http.services.app.loadbalancer.server.port=3004"
