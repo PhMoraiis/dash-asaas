@@ -10,7 +10,7 @@ services:
     volumes:
       - asaas_postgres_data:/var/lib/postgresql/data
     networks:
-      - dashboard-network
+      - web
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U dashboard_user -d dashboard_webhooks_db"]
       interval: 10s
@@ -27,7 +27,7 @@ services:
       - asaa_redis_data:/data
     command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy noeviction
     networks:
-      - dashboard-network
+      - web
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -45,7 +45,7 @@ services:
     depends_on:
       - redis
     networks:
-      - dashboard-network
+      - web
 
   backend:
     platform: linux/amd64
@@ -59,7 +59,7 @@ services:
       - postgres
       - redis
     networks:
-      - dashboard-network
+      - web
 
   frontend:
     build: ./frontend
@@ -72,13 +72,12 @@ services:
       - "traefik.http.routers.app.rule=Host(`app.manyflux.com.br`)"
       - "traefik.http.routers.app.entrypoints=websecure"
       - "traefik.http.routers.app.tls.certresolver=letsencrypt"
-      - "traefik.http.services.app.loadbalancer.server.port=3004"
+      - "traefik.http.services.app.loadbalancer.server.port=3000"
     ports:
-      - "3004:3004"
+      - "3000:3000"
     depends_on:
       - backend
     networks:
-      - dashboard-network
       - web
 
 volumes:
@@ -86,7 +85,5 @@ volumes:
   asaa_redis_data:
 
 networks:
-  dashboard-network:
-    driver: bridge
   web:
     external: true
