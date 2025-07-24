@@ -5,7 +5,6 @@ import { compare, hash } from "bcryptjs";
 import { z } from "zod";
 import { generateRefreshToken } from "@/utils/auth";
 import { protectRoute } from "@/middlewares/jwt";
-import { generateUniqueSlug } from "@/utils/slugIncremental";
 
 export async function authRoutes(app: FastifyInstance) {
 	app.post(
@@ -222,71 +221,6 @@ export async function authRoutes(app: FastifyInstance) {
 				.clearCookie("auth_token", { path: "/" })
 				.clearCookie("refresh_token", { path: "/" })
 				.send({ success: true });
-		},
-	);
-
-	// Rota secreta para bootstrap do primeiro admin
-	app.post(
-		"/__secret-create-admin",
-		{
-			schema: {
-				tags: ["admin"],
-				summary: "Criação secreta do primeiro admin",
-				description:
-					"Rota secreta para bootstrap do primeiro admin. Remover após uso.",
-				body: z.object({
-					name: z.string(),
-					email: z.string().email(),
-					password: z
-						.string()
-						.min(
-							12,
-							"Senha deve ter pelo menos 12 caracteres, incluindo letras maiúsculas, minúsculas, números e símbolos (@$!%*?&#).",
-						)
-						.regex(
-							/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{12,}$/,
-						),
-				}),
-				response: {
-					200: z.object({
-						success: z.boolean(),
-						id: z.string(),
-						email: z.string().email(),
-						slug: z.string(),
-						name: z.string(),
-					}),
-					409: z.object({
-						error: z.boolean(),
-						message: z.string(),
-					}),
-				},
-			},
-		},
-		async (request, reply) => {
-			const { name, email, password } = request.body as {
-				name: string;
-				email: string;
-				password: string;
-			};
-			// Verifica se já existe admin com esse email
-			const exists = await prisma.admin.findUnique({ where: { email } });
-			if (exists) {
-				return reply
-					.status(409)
-					.send({ error: true, message: "Admin já existe" });
-			}
-			const hashed = await hash(password, 12);
-			const slug = await generateUniqueSlug(name, "admin");
-			const admin = await prisma.admin.create({
-				data: { name, email, password: hashed, slug },
-			});
-			return reply.send({
-				success: true,
-				id: admin.id,
-				name: admin.name,
-				email: admin.email,
-				slug: admin.slug,
-			});
 		},
 	);
 
