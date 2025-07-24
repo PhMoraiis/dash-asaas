@@ -1,5 +1,5 @@
-import { prisma } from "@/database/client";
 import slugify from "slugify";
+import { prisma } from "../database/client";
 
 type ModelType = "admin" | "revenda";
 

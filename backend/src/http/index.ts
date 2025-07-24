@@ -115,6 +115,7 @@ app.get("/", async (_request, reply) => {
 		status: dbStatus === "ok" && redisStatus === "ok" ? "ok" : "unavailable",
 		database: dbStatus,
 		redis: redisStatus,
+		hello: "world",
 	});
 });
 // Rotas de queueJobs
@@ -139,7 +140,7 @@ app.register(chartsRoutes);
 // Iniciar servidor
 async function start() {
 	try {
-		await app.listen({ port: Number(process.env.PORT) });
+		await app.listen({ port: Number(process.env.PORT), host: "0.0.0.0" });
 		console.log(`🚀 Server is running at http://localhost:${process.env.PORT}`);
 		console.log(
 			`📚 Documentation available at http://localhost:${process.env.PORT}/${process.env.API_VERSION}/docs`,

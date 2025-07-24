@@ -16,7 +16,6 @@ RUN pnpm install
 # Copia o schema do Prisma primeiro
 COPY prisma/ ./prisma/
 
-# Gera o Prisma Client com os binary targets corretos
 RUN pnpm prisma generate
 
 # Copia o restante do código
@@ -25,14 +24,12 @@ COPY . .
 # Roda build (inclui tsc-alias para resolver path aliases)
 RUN pnpm build
 
-# Remove devDependencies para reduzir o tamanho da imagem
-RUN pnpm prune --prod
-
-# Gera o Prisma Client novamente após prune, pois foi removido
-RUN pnpm prisma generate
-
 # Exponha a porta padrão do Fastify
 EXPOSE 3333
 
-# Comando para rodar a aplicação
-CMD ["pnpm", "start"]
+# Copia o entrypoint para dentro do container
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+
+# Usa o entrypoint customizado
+ENTRYPOINT ["/app/entrypoint.sh"]
