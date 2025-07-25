@@ -14,7 +14,6 @@ function getLocale(request: NextRequest): string {
 	});
 	const languages = new Negotiator({ headers: negotiatorHeaders }).languages();
 	const matched = match(languages, locales, defaultLocale);
-	console.log("[middleware] 📍 getLocale:", matched);
 	return matched;
 }
 
@@ -24,8 +23,6 @@ function isPublicPath(pathname: string) {
 
 export async function middleware(request: NextRequest) {
 	const { pathname } = request.nextUrl;
-	console.log("\n============================");
-	console.log("[middleware] 🌐 pathname:", pathname);
 
 	// Arquivos estáticos ou Next internals
 	if (
@@ -33,7 +30,6 @@ export async function middleware(request: NextRequest) {
 		pathname.startsWith("/public") ||
 		pathname.match(/\.[^/]+$/)
 	) {
-		console.log("[middleware] ⛔ Ignorando rota estática");
 		return NextResponse.next();
 	}
 
@@ -50,7 +46,6 @@ export async function middleware(request: NextRequest) {
 		}
 		const url = new URL(request.url);
 		url.pathname = redirectPath;
-		console.log("[middleware] 🔀 Redirecionando para locale:", url.pathname);
 		return NextResponse.redirect(url);
 	}
 
@@ -58,20 +53,12 @@ export async function middleware(request: NextRequest) {
 		locales.find((loc) => pathname.startsWith(`/${loc}`)) || defaultLocale;
 	const pathWithoutLocale = pathname.replace(`/${locale}`, "");
 
-	console.log("[middleware] 🌍 Locale:", locale);
-	console.log("[middleware] 🧱 pathWithoutLocale:", pathWithoutLocale);
 
 	// Acesso público
 	if (isPublicPath(pathWithoutLocale)) {
-		console.log("[middleware] 🔓 Rota pública detectada");
 
 		const token = request.cookies.get("auth_token")?.value;
-		console.log("[middleware] 🍪 Token encontrado (público)?", !!token);
-		// DEBUG: Log todos os cookies para verificar
-		console.log(
-			"[middleware] 🍪 Todos os cookies:",
-			Object.fromEntries(request.cookies),
-		);
+			Object.fromEntries(request.cookies)
 
 		if (token) {
 			try {
@@ -83,9 +70,8 @@ export async function middleware(request: NextRequest) {
 				);
 				const role = payload.role as string;
 				const slug = payload.slug as string;
-				console.log("[middleware] ✅ JWT válido:", { role, slug });
 
-				// MELHORAR: Verificar mustChangePassword aqui também
+				// Verificar mustChangePassword aqui também
 				try {
 					const meRes = await fetch(
 						`${process.env.NEXT_PUBLIC_API_URL}/api/me`,
@@ -100,15 +86,9 @@ export async function middleware(request: NextRequest) {
 
 					if (meRes.ok) {
 						const user = await meRes.json();
-						console.log("[middleware] 👤 User API (público):", user);
 
-						if (
-							user.mustChangePassword &&
-							!pathname.startsWith(`/${locale}/new-password`)
-						) {
-							console.log(
-								"[middleware] 🔐 Redirecionando para troca de senha (público)",
-							);
+						// Se deve trocar senha, redireciona para new-password
+						if (user.mustChangePassword) {
 							return NextResponse.redirect(
 								new URL(`/${locale}/new-password`, request.url),
 							);
@@ -118,14 +98,13 @@ export async function middleware(request: NextRequest) {
 					console.warn("[middleware] ❌ Erro no fetch /api/me (público):", err);
 				}
 
+				// Se não precisa trocar senha, redireciona para dashboard
 				if (role === "admin") {
-					console.log("[middleware] 🚀 Redirecionando para painel admin");
 					return NextResponse.redirect(
 						new URL(`/${locale}/admin/${slug}/admins`, request.url),
 					);
 				}
 				if (role === "revenda") {
-					console.log("[middleware] 🚀 Redirecionando para painel revenda");
 					return NextResponse.redirect(
 						new URL(`/${locale}/revenda/${slug}/dashboard`, request.url),
 					);
@@ -142,12 +121,7 @@ export async function middleware(request: NextRequest) {
 
 	// Acesso privado: precisa estar autenticado
 	const token = request.cookies.get("auth_token")?.value;
-	console.log("[middleware] 🔐 Rota protegida, token presente?", !!token);
-	// DEBUG: Log todos os cookies para verificar
-	console.log(
-		"[middleware] 🍪 Todos os cookies (privado):",
-		Object.fromEntries(request.cookies),
-	);
+		Object.fromEntries(request.cookies)
 
 	if (!token) {
 		console.warn("[middleware] 🔁 Redirecionando para login (sem token)");
@@ -170,13 +144,12 @@ export async function middleware(request: NextRequest) {
 		);
 		role = payload.role as string;
 		slug = payload.slug as string;
-		console.log("[middleware] ✅ JWT decodificado:", { role, slug });
 	} catch (err) {
 		console.warn("[middleware] ❌ Erro ao verificar JWT:", err);
 		return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
 	}
 
-	// MELHORAR: Usar header Cookie completo
+	// Verificar mustChangePassword para todas as rotas privadas
 	try {
 		const meRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/me`, {
 			headers: {
@@ -187,27 +160,48 @@ export async function middleware(request: NextRequest) {
 		});
 		if (meRes.ok) {
 			const user = await meRes.json();
-			console.log("[middleware] 👤 User API:", user);
-			if (
-				user.mustChangePassword &&
-				!pathname.startsWith(`/${locale}/new-password`)
-			) {
-				console.log("[middleware] 🔐 Redirecionando para troca de senha");
-				return NextResponse.redirect(
-					new URL(`/${locale}/new-password`, request.url),
-				);
+
+			if (user.mustChangePassword) {
+				// Se deve trocar senha e NÃO está na página new-password, redireciona
+				if (!pathname.startsWith(`/${locale}/new-password`)) {
+					return NextResponse.redirect(
+						new URL(`/${locale}/new-password`, request.url),
+					);
+				}
+			} else {
+				// Se NÃO deve trocar senha e está na página new-password, redireciona para dashboard
+				if (pathname.startsWith(`/${locale}/new-password`)) {
+					if (role === "admin") {
+						return NextResponse.redirect(
+							new URL(`/${locale}/admin/${slug}/admins`, request.url),
+						);
+					}
+					if (role === "revenda") {
+						return NextResponse.redirect(
+							new URL(`/${locale}/revenda/${slug}/dashboard`, request.url),
+						);
+					}
+				}
 			}
 		} else {
 			console.warn("[middleware] ⚠️ Erro ao buscar /api/me:", meRes.status);
+			// Se não conseguir verificar o usuário, redireciona para login
+			return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
 		}
 	} catch (err) {
 		console.warn("[middleware] ❌ Erro no fetch /api/me:", err);
+		// Se não conseguir verificar o usuário, redireciona para login
+		return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
+	}
+
+	// Se chegou até aqui e está na página new-password, permite acesso (para casos onde mustChangePassword = true)
+	if (pathname.startsWith(`/${locale}/new-password`)) {
+		return NextResponse.next();
 	}
 
 	// Protege admin
 	const adminMatch = pathWithoutLocale.match(/^\/admin\/([^/]+)/);
 	if (adminMatch) {
-		console.log("[middleware] 🛡️ Checando rota admin:", adminMatch[1]);
 		if (role !== "admin" || adminMatch[1] !== slug) {
 			console.warn("[middleware] ⛔ Acesso negado ao admin");
 			return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
@@ -217,14 +211,12 @@ export async function middleware(request: NextRequest) {
 	// Protege revenda
 	const revendaMatch = pathWithoutLocale.match(/^\/revenda\/([^/]+)/);
 	if (revendaMatch) {
-		console.log("[middleware] 🛡️ Checando rota revenda:", revendaMatch[1]);
 		if (role !== "revenda" || revendaMatch[1] !== slug) {
 			console.warn("[middleware] ⛔ Acesso negado à revenda");
 			return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
 		}
 	}
 
-	console.log("[middleware] ✅ Acesso autorizado");
 	return NextResponse.next();
 }
 
