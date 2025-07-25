@@ -1,10 +1,10 @@
-import type { FastifyInstance } from "fastify";
-import { loginSchema } from "./schemas";
-import { prisma, redis } from "@/database/client";
 import { compare, hash } from "bcryptjs";
+import type { FastifyInstance } from "fastify";
 import { z } from "zod";
-import { generateRefreshToken } from "@/utils/auth";
+import { prisma, redis } from "@/database/client";
 import { protectRoute } from "@/middlewares/jwt";
+import { generateRefreshToken } from "@/utils/auth";
+import { loginSchema } from "./schemas";
 
 export async function authRoutes(app: FastifyInstance) {
 	app.post(
@@ -87,21 +87,20 @@ export async function authRoutes(app: FastifyInstance) {
 			); // 7 dias
 
 			// Seta cookies seguros
-			reply
-				.setCookie("auth_token", token, {
-					httpOnly: true,
-					secure: process.env.NODE_ENV === "production",
-					sameSite: "lax",
-					path: "/",
-					maxAge: 60 * 60 * 24 * 7, // 7 dias
-				})
-				.setCookie("refresh_token", refreshToken, {
-					httpOnly: true,
-					secure: process.env.NODE_ENV === "production",
-					sameSite: "lax",
-					path: "/",
-					maxAge: 60 * 60 * 24 * 7,
-				});
+			reply.setCookie("auth_token", token, {
+				httpOnly: true,
+				secure: process.env.NODE_ENV === "production",
+				sameSite: "lax",
+				maxAge: 24 * 60 * 60 * 1000, // 24 horas
+				path: "/",
+			});
+			reply.setCookie("refresh_token", refreshToken, {
+				httpOnly: true,
+				secure: process.env.NODE_ENV === "production",
+				sameSite: "lax",
+				maxAge: 7 * 24 * 60 * 60 * 1000, // 7 dias
+				path: "/",
+			});
 			return reply.send({
 				id: user.id,
 				name: user.name,

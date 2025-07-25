@@ -77,6 +77,7 @@ app.register(cookie, {
 		expires: new Date(Date.now() + 60 * 60 * 24 * 7 * 1000), // Expira em 7 dias
 		secure: process.env.NODE_ENV === "production", // Usa cookies seguros em produção
 		sameSite: "lax", // Protege contra CSRF
+		domain: process.env.COOKIE_DOMAIN, // Domínio do cookie
 	},
 });
 
