@@ -25,7 +25,7 @@ COPY . .
 RUN pnpm build
 
 # Exponha a porta padrão do Fastify
-EXPOSE 3333
+EXPOSE 8080
 
 # Copia o entrypoint para dentro do container
 COPY entrypoint.sh /app/entrypoint.sh
