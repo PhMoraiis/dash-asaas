@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 
 async function main() {
 	const adminEmail = process.env.ADMIN_EMAIL || "admin@admin.com";
-	const adminPassword = process.env.ADMIN_PASSWORD || "Admin@123456!@#";
+	const adminPassword = process.env.ADMIN_PASSWORD || "watidy1050!@#";
 	const adminName = process.env.ADMIN_NAME || "Administrador";
 
 	// Verifica se já existe admin
