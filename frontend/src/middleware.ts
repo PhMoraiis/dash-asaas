@@ -1,7 +1,7 @@
-import { NextResponse, type NextRequest } from "next/server";
-import Negotiator from "negotiator";
 import { match } from "@formatjs/intl-localematcher";
 import { jwtVerify } from "jose";
+import Negotiator from "negotiator";
+import { type NextRequest, NextResponse } from "next/server";
 
 const PUBLIC_PATHS = ["", "/", "/login", "/register", "/forgot-password"];
 const locales = ["pt", "en"];
@@ -67,6 +67,11 @@ export async function middleware(request: NextRequest) {
 
 		const token = request.cookies.get("auth_token")?.value;
 		console.log("[middleware] 🍪 Token encontrado (público)?", !!token);
+		// DEBUG: Log todos os cookies para verificar
+		console.log(
+			"[middleware] 🍪 Todos os cookies:",
+			Object.fromEntries(request.cookies),
+		);
 
 		if (token) {
 			try {
@@ -79,6 +84,39 @@ export async function middleware(request: NextRequest) {
 				const role = payload.role as string;
 				const slug = payload.slug as string;
 				console.log("[middleware] ✅ JWT válido:", { role, slug });
+
+				// MELHORAR: Verificar mustChangePassword aqui também
+				try {
+					const meRes = await fetch(
+						`${process.env.NEXT_PUBLIC_API_URL}/api/me`,
+						{
+							headers: {
+								Cookie: request.headers.get("cookie") || "",
+								"Content-Type": "application/json",
+							},
+							credentials: "include",
+						},
+					);
+
+					if (meRes.ok) {
+						const user = await meRes.json();
+						console.log("[middleware] 👤 User API (público):", user);
+
+						if (
+							user.mustChangePassword &&
+							!pathname.startsWith(`/${locale}/new-password`)
+						) {
+							console.log(
+								"[middleware] 🔐 Redirecionando para troca de senha (público)",
+							);
+							return NextResponse.redirect(
+								new URL(`/${locale}/new-password`, request.url),
+							);
+						}
+					}
+				} catch (err) {
+					console.warn("[middleware] ❌ Erro no fetch /api/me (público):", err);
+				}
 
 				if (role === "admin") {
 					console.log("[middleware] 🚀 Redirecionando para painel admin");
@@ -93,7 +131,10 @@ export async function middleware(request: NextRequest) {
 					);
 				}
 			} catch (err) {
-				console.warn("[middleware] ❌ Erro ao verificar JWT (rota pública):", err);
+				console.warn(
+					"[middleware] ❌ Erro ao verificar JWT (rota pública):",
+					err,
+				);
 			}
 		}
 		return NextResponse.next();
@@ -102,6 +143,11 @@ export async function middleware(request: NextRequest) {
 	// Acesso privado: precisa estar autenticado
 	const token = request.cookies.get("auth_token")?.value;
 	console.log("[middleware] 🔐 Rota protegida, token presente?", !!token);
+	// DEBUG: Log todos os cookies para verificar
+	console.log(
+		"[middleware] 🍪 Todos os cookies (privado):",
+		Object.fromEntries(request.cookies),
+	);
 
 	if (!token) {
 		console.warn("[middleware] 🔁 Redirecionando para login (sem token)");
@@ -130,10 +176,13 @@ export async function middleware(request: NextRequest) {
 		return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
 	}
 
-	// --- NOVO BLOCO ---
+	// MELHORAR: Usar header Cookie completo
 	try {
 		const meRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/me`, {
-			headers: { Cookie: `auth_token=${token}` },
+			headers: {
+				Cookie: request.headers.get("cookie") || "",
+				"Content-Type": "application/json",
+			},
 			credentials: "include",
 		});
 		if (meRes.ok) {
@@ -144,9 +193,9 @@ export async function middleware(request: NextRequest) {
 				!pathname.startsWith(`/${locale}/new-password`)
 			) {
 				console.log("[middleware] 🔐 Redirecionando para troca de senha");
-				const url = new URL(request.url);
-				url.pathname = `/${locale}/new-password`;
-				return NextResponse.redirect(url);
+				return NextResponse.redirect(
+					new URL(`/${locale}/new-password`, request.url),
+				);
 			}
 		} else {
 			console.warn("[middleware] ⚠️ Erro ao buscar /api/me:", meRes.status);
@@ -154,7 +203,6 @@ export async function middleware(request: NextRequest) {
 	} catch (err) {
 		console.warn("[middleware] ❌ Erro no fetch /api/me:", err);
 	}
-	// --- FIM NOVO BLOCO ---
 
 	// Protege admin
 	const adminMatch = pathWithoutLocale.match(/^\/admin\/([^/]+)/);
