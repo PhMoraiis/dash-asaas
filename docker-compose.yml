@@ -114,7 +114,7 @@ services:
     build: ./frontend
     restart: unless-stopped
     ports:
-      - "3636:3636"
+      - "3636:3000"
     depends_on:
       - backend
     networks:
@@ -124,7 +124,7 @@ services:
       - "traefik.http.routers.app.rule=Host(`app.manyflux.com.br`)"
       - "traefik.http.routers.app.entrypoints=websecure"
       - "traefik.http.routers.app.tls.certresolver=letsencrypt"
-      - "traefik.http.services.app.loadbalancer.server.port=3636"
+      - "traefik.http.services.app.loadbalancer.server.port=3000"
 
 volumes:
   asaas_postgres_data:
