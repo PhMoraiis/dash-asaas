@@ -125,3 +125,4 @@ volumes:
 
 networks:
   web:
+    external: true
