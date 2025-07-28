@@ -1,7 +1,6 @@
 services:
   postgres:
     image: postgres:17-alpine
-    container_name: dashboard-postgres-prod
     restart: unless-stopped
     ports:
       - "5430:5432"
@@ -22,7 +21,6 @@ services:
 
   redis:
     image: redis:8-alpine
-    container_name: dashboard-redis-prod
     restart: unless-stopped
     ports:
       - "6379:6379"
@@ -39,7 +37,6 @@ services:
 
   redis-commander:
     image: rediscommander/redis-commander:latest
-    container_name: dashboard-redis-ui-prod
     restart: unless-stopped
     environment:
       REDIS_HOSTS: local:redis:6379
@@ -53,7 +50,6 @@ services:
   backend:
     platform: linux/amd64
     build: ./backend
-    container_name: dashboard-backend
     ports:
       - "8080:8080"
     depends_on:
@@ -116,7 +112,6 @@ services:
 
   frontend:
     build: ./frontend
-    container_name: dashboard-frontend
     restart: unless-stopped
     ports:
       - "3636:3636"
