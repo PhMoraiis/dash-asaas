@@ -3,8 +3,6 @@ services:
     image: postgres:17-alpine
     container_name: dashboard-postgres-prod
     restart: unless-stopped
-    env_file:
-      - ./backend/.env
     ports:
       - "5430:5432"
     volumes:
@@ -51,14 +49,6 @@ services:
     platform: linux/amd64
     build: ./backend
     container_name: dashboard-backend
-    env_file:
-      - ./backend/.env
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.api.rule=Host(`api.manyflux.com.br`)"
-      - "traefik.http.routers.api.entrypoints=websecure"
-      - "traefik.http.routers.api.tls.certresolver=letsencrypt"
-      - "traefik.http.services.api.loadbalancer.server.port=8080"
     ports:
       - "8080:8080"
     depends_on:
@@ -71,14 +61,6 @@ services:
     build: ./frontend
     container_name: dashboard-frontend
     restart: unless-stopped
-    env_file:
-      - ./frontend/.env
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.app.rule=Host(`app.manyflux.com.br`)"
-      - "traefik.http.routers.app.entrypoints=websecure"
-      - "traefik.http.routers.app.tls.certresolver=letsencrypt"
-      - "traefik.http.services.app.loadbalancer.server.port=3000"
     ports:
       - "3000:3000"
     depends_on:
@@ -92,4 +74,3 @@ volumes:
 
 networks:
   web:
-    external: true
