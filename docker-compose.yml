@@ -7,7 +7,7 @@ services:
     volumes:
       - asaas_postgres_data:/var/lib/postgresql/data
     networks:
-      - web
+      - dokploy-network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U dashboard_user -d dashboard_webhooks_db"]
       interval: 10s
@@ -28,7 +28,7 @@ services:
       - asaa_redis_data:/data
     command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy noeviction
     networks:
-      - web
+      - dokploy-network
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -45,7 +45,7 @@ services:
     depends_on:
       - redis
     networks:
-      - web
+      - dokploy-network
 
   backend:
     platform: linux/amd64
@@ -56,7 +56,7 @@ services:
       - postgres
       - redis
     networks:
-      - web
+      - dokploy-network
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.api.rule=Host(`api.manyflux.com.br`)"
@@ -118,7 +118,7 @@ services:
     depends_on:
       - backend
     networks:
-      - web
+      - dokploy-network
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.app.rule=Host(`app.manyflux.com.br`)"
@@ -131,5 +131,5 @@ volumes:
   asaa_redis_data:
 
 networks:
-  web:
+  dokploy-network:
     external: true
