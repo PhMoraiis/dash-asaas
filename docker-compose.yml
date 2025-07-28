@@ -61,6 +61,12 @@ services:
       - redis
     networks:
       - web
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api.rule=Host(`api.manyflux.com.br`)"
+      - "traefik.http.routers.api.entrypoints=websecure"
+      - "traefik.http.routers.api.tls.certresolver=letsencrypt"
+      - "traefik.http.services.api.loadbalancer.server.port=8080"
     environment:
       # URLs compostas
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
@@ -118,6 +124,12 @@ services:
       - backend
     networks:
       - web
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.app.rule=Host(`app.manyflux.com.br`)"
+      - "traefik.http.routers.app.entrypoints=websecure"
+      - "traefik.http.routers.app.tls.certresolver=letsencrypt"
+      - "traefik.http.services.app.loadbalancer.server.port=3636"
 
 volumes:
   asaas_postgres_data:
