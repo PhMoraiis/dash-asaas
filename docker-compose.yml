@@ -61,6 +61,8 @@ services:
       - redis
     networks:
       - web
+    environment:
+      REDIS_URL: ${REDIS_URL}
 
   frontend:
     build: ./frontend
