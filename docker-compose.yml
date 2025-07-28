@@ -119,6 +119,9 @@ services:
       - backend
     networks:
       - dokploy-network
+    environment:
+      NEXT_PUBLIC_JWT_SECRET: ${NEXT_PUBLIC_JWT_SECRET}
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.app.rule=Host(`app.manyflux.com.br`)"
