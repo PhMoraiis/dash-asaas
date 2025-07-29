@@ -6,6 +6,8 @@ RUN npm install -g pnpm && pnpm install
 
 FROM node:23 AS builder
 WORKDIR /app
+ENV NEXT_PUBLIC_JWT_SECRET=jta9W4oM7CLaV0KAN1ziug18q65qwQ8
+ENV NEXT_PUBLIC_API_URL=https://api2.manyflux.com.br
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npm install -g pnpm && pnpm build
@@ -13,6 +15,8 @@ RUN npm install -g pnpm && pnpm build
 FROM node:23-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
+ENV NEXT_PUBLIC_JWT_SECRET=jta9W4oM7CLaV0KAN1ziug18q65qwQ8
+ENV NEXT_PUBLIC_API_URL=https://api2.manyflux.com.br
 RUN npm install -g pnpm
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
@@ -21,4 +25,4 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/next.config.ts ./next.config.ts
 
 EXPOSE 3000
-CMD ["pnpm", "start"] 
+CMD ["pnpm", "start"]
