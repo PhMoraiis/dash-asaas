@@ -63,6 +63,7 @@ export default function LoginPage() {
 	async function onSubmit(values: { email: string; password: string }) {
 		setError("");
 		try {
+			console.log(`${process.env.NEXT_PUBLIC_API_URL}/api/login`)
 			const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/login`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
