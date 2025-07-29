@@ -51,7 +51,7 @@ services:
     platform: linux/amd64
     build: ./backend
     ports:
-      - "8080:8080"
+      - "8181:8181"
     depends_on:
       - postgres
       - redis
@@ -62,7 +62,7 @@ services:
     #   - "traefik.http.routers.api.rule=Host(`api.manyflux.com.br`)"
     #   - "traefik.http.routers.api.entrypoints=websecure"
     #   - "traefik.http.routers.api.tls.certresolver=letsencrypt"
-    #   - "traefik.http.services.api.loadbalancer.server.port=8080"
+    #   - "traefik.http.services.api.loadbalancer.server.port=8181"
     environment:
       # URLs compostas
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
