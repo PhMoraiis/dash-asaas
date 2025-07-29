@@ -125,7 +125,6 @@ export async function middleware(request: NextRequest) {
 
 	if (!token) {
 		console.warn("[middleware] 🔁 Redirecionando para login (sem token)");
-		console.warn(`[middleware] 🔁 ${process.env.NEXT_PUBLIC_API_URL}/api/login`);
 		return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
 	}
 

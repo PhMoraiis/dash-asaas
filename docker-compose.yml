@@ -120,8 +120,8 @@ services:
     networks:
       - dokploy-network
     environment:
-      NEXT_PUBLIC_JWT_SECRET: ${NEXT_PUBLIC_JWT_SECRET}
-      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+      NEXT_PUBLIC_JWT_SECRET: ${NEXT_PUBLIC_JWT_SECRET:-jta9W4oM7CLaV0KAN1ziug18q65qwQ8}
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-https://api2.manyflux.com.br}
     # labels:
     #   - "traefik.enable=true"
     #   - "traefik.http.routers.app.rule=Host(`app.manyflux.com.br`)"
