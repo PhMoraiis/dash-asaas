@@ -1,23 +1,23 @@
 services:
-  postgres:
-    image: postgres:17-alpine
-    restart: unless-stopped
-    ports:
-      - "5430:5432"
-    volumes:
-      - asaas_postgres_data:/var/lib/postgresql/data
-    networks:
-      - dokploy-network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U dashboard_user -d dashboard_webhooks_db"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+  # postgres:
+  #   image: postgres:17-alpine
+  #   restart: unless-stopped
+  #   ports:
+  #     - "5430:5432"
+  #   volumes:
+  #     - asaas_postgres_data:/var/lib/postgresql/data
+  #   networks:
+  #     - dokploy-network
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U dashboard_user -d dashboard_webhooks_db"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+  #   environment:
+  #     POSTGRES_USER: ${POSTGRES_USER}
+  #     POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+  #     POSTGRES_DB: ${POSTGRES_DB}
+  #     DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
 
   redis:
     image: redis:8-alpine
@@ -130,7 +130,7 @@ services:
       - "traefik.http.services.app.loadbalancer.server.port=3000"
 
 volumes:
-  asaas_postgres_data:
+  # asaas_postgres_data:
   asaa_redis_data:
 
 networks:
